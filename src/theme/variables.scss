@@ -152,6 +152,13 @@
 // Dark mode support (optional)
 @media (prefers-color-scheme: dark) {
   :root {
+    --ion-background-color: #0F172A;
+    --ion-text-color: #F8FAFC;
+    --ion-toolbar-background: #1E293B;
+    --ion-tab-bar-background: #1E293B;
+    --ion-item-background: #1E293B;
+    --ion-card-background: #1E293B;
+
     --bg-base: #0F172A;
     --bg-surface: #1E293B;
     --bg-card: #1E293B;

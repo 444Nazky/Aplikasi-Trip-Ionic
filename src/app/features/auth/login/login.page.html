@@ -1,87 +1,104 @@
-<ion-content class="ion-no-border">
-  <div class="login-page">
-    <!-- Hero Section -->
-    <div class="login-hero">
-      <div class="hero-icon">
+<ion-content [fullscreen]="true" class="login-ion-content">
+  <div class="login-container">
+    <!-- Header Hero: Dark Slate Background -->
+    <div class="hero-section">
+      <div class="hero-icon-badge">
         <ion-icon name="bus"></ion-icon>
       </div>
       <h1 class="hero-title">Trip Angkutan</h1>
-      <p class="hero-desc">Sistem Pencatatan Angkutan Perkebunan</p>
+      <p class="hero-subtitle">Sistem Pencatatan Angkutan Perkebunan</p>
     </div>
 
     <!-- Device Region Lock Card -->
-    <div class="device-lock-card">
-      <div class="lock-icon">
+    <div class="region-badge-card">
+      <div class="region-icon-wrapper">
         <ion-icon name="shield-checkmark"></ion-icon>
       </div>
-      <div class="lock-info">
-        <span class="lock-title">Device Region Locked</span>
-        <span class="lock-region">BADAU</span>
+      <div class="region-text-group">
+        <span class="region-label">Device Region Locked</span>
+        <span class="region-value">BADAU</span>
       </div>
     </div>
 
-    <!-- Main Login Card -->
-    <div class="login-card">
-      <!-- Officer Selection -->
-      <div class="officer-section">
-        <span class="section-label">Petugas</span>
-        <div class="officer-pill">
-          <div class="officer-avatar">
-            <ion-icon name="person"></ion-icon>
-          </div>
-          <div class="officer-details">
-            <span class="officer-name">Budi Santoso</span>
-            <span class="officer-id">ID: OFF-001</span>
-          </div>
-          <ion-icon name="chevron-down" class="chevron"></ion-icon>
+    <!-- Main Content Card -->
+    <div class="main-card">
+      <!-- Officer Profile Card -->
+      <div class="officer-card">
+        <div class="officer-avatar">BS</div>
+        <div class="officer-meta">
+          <span class="officer-id">ID: usr-001</span>
+          <span class="officer-name">Budi Santoso</span>
+          <span class="officer-role">Petugas Lapangan</span>
         </div>
       </div>
 
-      <!-- PIN Input Section -->
-      <div class="pin-section">
-        <span class="section-label">PIN Akses</span>
+      <!-- PIN Access Display -->
+      <div class="pin-display-wrapper">
+        <span class="pin-label">PIN AKSES</span>
 
-        <!-- PIN Dots Display -->
-        <div class="pin-display">
-          <div *ngFor="let dot of [0,1,2,3,4,5]"
-               class="pin-dot"
-               [class.filled]="pin.length > dot"
-               [class.error]="error">
-          </div>
+        <div class="pin-dots-container">
+          @for (dot of [0, 1, 2, 3, 4, 5]; track dot) {
+            <div class="pin-dot"
+                 [class.filled]="pin.length > dot"
+                 [class.error]="error">
+            </div>
+          }
         </div>
 
-        <p class="pin-hint" *ngIf="!error">Masukkan 6-digit PIN Anda</p>
-        <p class="pin-hint text-danger" *ngIf="error">PIN tidak valid. Coba lagi.</p>
+        <p class="pin-status-text" [class.error-text]="error">
+          @if (error) {
+            {{ errorMessage || 'PIN tidak valid. Coba lagi.' }}
+          } @else {
+            Masukkan 6 digit PIN Anda
+          }
+        </p>
 
-        <!-- Hidden input for keyboard -->
-        <input type="password" inputmode="numeric" maxlength="6"
-               [(ngModel)]="pin" class="pin-hidden-input" (keyup.enter)="login()" autofocus/>
+        <!-- Hidden Input for keyboard accessibility -->
+        <input type="password"
+               inputmode="numeric"
+               maxlength="6"
+               [(ngModel)]="pin"
+               class="hidden-pin-input"
+               (keyup.enter)="login()" />
       </div>
 
-      <!-- Numpad -->
-      <div class="numpad">
-        <button *ngFor="let num of [1,2,3,4,5,6,7,8,9]"
-                class="numpad-key"
-                (click)="pressKey(num.toString())">
-          {{ num }}
+      <!-- Numpad 3x4 -->
+      <div class="numpad-grid">
+        @for (num of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track num) {
+          <button type="button"
+                  class="numpad-btn"
+                  (click)="pressKey(num.toString())">
+            {{ num }}
+          </button>
+        }
+        <div class="numpad-placeholder"></div>
+        <button type="button"
+                class="numpad-btn"
+                (click)="pressKey('0')">
+          0
         </button>
-        <div class="numpad-key empty"></div>
-        <button class="numpad-key" (click)="pressKey('0')">0</button>
-        <button class="numpad-key backspace" (click)="pressBackspace()">
+        <button type="button"
+                class="numpad-btn backspace-btn"
+                (click)="pressBackspace()"
+                aria-label="Hapus digit">
           <ion-icon name="backspace-outline"></ion-icon>
         </button>
       </div>
 
-      <!-- Login Button -->
-      <ion-button expand="block" class="login-btn"
+      <!-- Submit Action Button -->
+      <ion-button expand="block"
+                  class="submit-login-btn"
                   [disabled]="loading || pin.length !== 6"
                   (click)="login()">
-        <ion-spinner *ngIf="loading" name="dots" class="btn-spinner"></ion-spinner>
-        <span *ngIf="!loading">Masuk</span>
+        @if (loading) {
+          <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+        } @else {
+          <span>Masuk</span>
+        }
       </ion-button>
     </div>
 
-    <!-- Footer -->
-    <p class="login-footer">Trip Angkutan · v1.0</p>
+    <!-- Version Footer -->
+    <p class="app-version-footer">Trip Angkutan · v1.0</p>
   </div>
 </ion-content>

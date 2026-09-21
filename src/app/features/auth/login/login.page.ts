@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -19,22 +19,27 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private toast = inject(ToastController);
+
   pin = '';
   loading = false;
-
-  constructor(
-    private auth: AuthService,
-    private router: Router,
-    private toast: ToastController
-  ) {}
+  error = false;
+  errorMessage = '';
 
   pressKey(key: string): void {
+    this.error = false;
     if (this.pin.length < 6) {
       this.pin += key;
+      if (this.pin.length === 6) {
+        this.login();
+      }
     }
   }
 
   pressBackspace(): void {
+    this.error = false;
     this.pin = this.pin.slice(0, -1);
   }
 
@@ -44,12 +49,15 @@ export class LoginPage {
       return;
     }
     this.loading = true;
+    this.error = false;
     const result = await this.auth.login(this.pin);
     this.loading = false;
     if (result.success) {
       this.router.navigate(['/tabs/home'], { replaceUrl: true });
     } else {
-      await this.showToast(result.message ?? 'Login gagal');
+      this.error = true;
+      this.errorMessage = result.message ?? 'PIN tidak valid. Coba lagi.';
+      await this.showToast(this.errorMessage);
       this.pin = '';
     }
   }
