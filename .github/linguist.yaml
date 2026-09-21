@@ -1,13 +1,1 @@
-# GitHub linguist overrides
-override:
-  "*.ts": TypeScript
-  "*.scss": SCSS
-  "*.html": HTML
-  "*.json": JSON
-  "*.js": JavaScript
-  "*.xml": XML
-  "*.gradle": Gradle
-  "*.properties": Properties
-  "*.bat": Batch
-  "*.sh": Shell
-  "*.md": Markdown
+*.html linguist-detectable=false
