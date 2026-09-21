@@ -13,4 +13,14 @@ export class CameraService {
     });
     return photo.webPath ?? '';
   }
+
+  async pickFromGallery(): Promise<string> {
+    const photo = await Camera.getPhoto({
+      quality: 70,
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Photos,
+      allowEditing: false,
+    });
+    return photo.webPath ?? '';
+  }
 }

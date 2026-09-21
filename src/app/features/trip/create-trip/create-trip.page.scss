@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════
-// Create Trip — Plantation Modern
+// Create Trip — Modern Light Theme
 // ═══════════════════════════════════════════════════════════
 
 .form-page {
-  padding: 16px 20px 32px;
+  padding: 16px 20px 100px;
 }
 
 // ── Step Bar ──
@@ -27,44 +27,44 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--color-surface-alt);
-  color: var(--color-text-muted);
+  background: var(--bg-card);
+  color: var(--text-muted);
   font-size: 13px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--border-light);
   transition: all 0.2s ease;
 
   .active & {
-    background: var(--ion-color-primary);
+    background: var(--accent-blue);
     color: white;
-    border-color: var(--ion-color-primary);
-    box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.15);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
   }
 }
 
 .step-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   white-space: nowrap;
 
   .active & {
-    color: var(--ion-color-primary);
+    color: var(--accent-blue);
   }
 }
 
 .step-line {
   flex: 1;
   height: 2px;
-  background: var(--color-border);
+  background: var(--border-light);
   margin: 0 12px;
   margin-bottom: 22px;
 
   &.active-line {
-    background: linear-gradient(90deg, var(--ion-color-primary) 0%, var(--color-border) 100%);
+    background: linear-gradient(90deg, var(--accent-blue) 0%, var(--border-light) 100%);
   }
 }
 
@@ -83,7 +83,7 @@
 .section-title {
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: var(--text-primary);
   letter-spacing: -0.01em;
   margin: 0;
 }
@@ -91,8 +91,8 @@
 .field-required {
   font-size: 10px;
   font-weight: 700;
-  color: var(--ion-color-danger);
-  background: rgba(var(--ion-color-danger-rgb), 0.08);
+  color: var(--accent-red);
+  background: var(--accent-red-light);
   padding: 2px 8px;
   border-radius: var(--radius-full);
   text-transform: uppercase;
@@ -103,18 +103,18 @@
 .segment-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
 }
 
 .segment-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 20px 12px;
-  background: var(--color-surface);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  gap: 12px;
+  padding: 24px 16px;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-xl);
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -123,42 +123,38 @@
   }
 
   &.active {
-    border-color: var(--ion-color-primary);
-    background: rgba(var(--ion-color-primary-rgb), 0.04);
-    box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.08);
+    border-color: var(--accent-blue);
+    background: var(--accent-blue-light);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
   }
 }
 
 .segment-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
 
   ion-icon {
-    font-size: 24px;
+    font-size: 26px;
   }
 
   &.loaded {
-    background: var(--color-emerald-50);
-    color: var(--ion-color-primary);
+    background: var(--accent-green-light);
+    color: var(--accent-green);
   }
 
   &.empty {
-    background: var(--color-surface-alt);
-    color: var(--color-text-muted);
+    background: var(--bg-card);
+    color: var(--text-secondary);
   }
 
   .active & {
-    &.loaded {
-      background: var(--ion-color-primary);
-      color: white;
-    }
-    &.empty {
-      background: var(--ion-color-primary);
+    &.loaded, &.empty {
+      background: var(--accent-blue);
       color: white;
     }
   }
@@ -170,33 +166,33 @@
 
 .segment-name {
   display: block;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: var(--text-primary);
   margin-bottom: 2px;
 
   .active & {
-    color: var(--ion-color-primary);
+    color: var(--accent-blue);
   }
 }
 
 .segment-desc {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
 }
 
 // ── Input Card ──
 .input-card {
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-lg);
   transition: border-color 0.2s ease;
 
   &:focus-within {
-    border-color: var(--ion-color-primary);
-    box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.08);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
   }
 }
 
@@ -206,19 +202,21 @@
   --padding-start: 14px;
   --padding-end: 14px;
   font-size: 15px;
+  --background: transparent;
+  --border-width: 0;
 }
 
 // ── Photo Upload ──
 .photo-upload {
   margin-top: 12px;
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius-lg);
+  border: 2px dashed var(--border-light);
+  border-radius: var(--radius-xl);
   overflow: hidden;
   cursor: pointer;
   transition: border-color 0.2s ease;
 
   &:hover {
-    border-color: var(--ion-color-primary);
+    border-color: var(--accent-blue);
   }
 }
 
@@ -228,18 +226,18 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 32px 16px;
-  background: var(--color-surface-alt);
+  padding: 40px 16px;
+  background: var(--bg-card);
 
   ion-icon {
-    font-size: 32px;
-    color: var(--color-text-muted);
+    font-size: 36px;
+    color: var(--text-muted);
   }
 
   span {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: var(--text-secondary);
   }
 }
 
@@ -254,18 +252,18 @@
 
 .photo-check {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 28px;
-  height: 28px;
+  bottom: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--ion-color-primary);
+  background: var(--accent-blue);
   display: flex;
   align-items: center;
   justify-content: center;
 
   ion-icon {
-    font-size: 16px;
+    font-size: 18px;
     color: white;
   }
 }
@@ -276,13 +274,16 @@
 }
 
 .submit-btn {
-  --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
+  --background: var(--accent-blue);
+  --background-hover: var(--accent-blue-dark);
   --color: white;
-  --box-shadow: var(--shadow-primary);
+  --box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
   --padding-top: 16px;
   --padding-bottom: 16px;
+  --border-radius: var(--radius-full);
   font-size: 16px;
   font-weight: 700;
+  height: 56px;
 
   &:active:not(:disabled) {
     transform: scale(0.98);

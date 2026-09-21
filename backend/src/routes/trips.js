@@ -1,0 +1,129 @@
+const express = require('express');
+const router = express.Router();
+const { v4: uuidv4 } = require('uuid');
+const db = require('../db');
+const { authenticate } = require('../middleware/auth');
+
+// Generate trip number
+function generateTripNo() {
+  const date = new Date();
+  const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `TRP${dateStr}${random}`;
+}
+
+// Create trip
+router.post('/', authenticate, (req, res) => {
+  try {
+    const { statusMuatan, routeFrom, routeTo, keterangan, fotoKosongPath } = req.body;
+    const { officerId, regionId } = req.officer;
+
+    const tripId = uuidv4();
+    const noTrip = generateTripNo();
+
+    db.prepare(`
+      INSERT INTO trips (id, no_trip, officer_id, region_id, status_muatan, route_from, route_to, keterangan, foto_kosong_path)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(tripId, noTrip, officerId, regionId, statusMuatan, routeFrom, routeTo, keterangan, fotoKosongPath);
+
+    res.status(201).json({ id: tripId, noTrip });
+  } catch (error) {
+    console.error('Create trip error:', error);
+    res.status(500).json({ error: 'Failed to create trip' });
+  }
+});
+
+// Add vehicle to trip
+router.post('/:tripId/vehicles', authenticate, (req, res) => {
+  try {
+    const { tripId } = req.params;
+    const { noPolisi, vehicleType, golongan, hasLoad, tariffAmount, fotoPath, latitude, longitude } = req.body;
+
+    // Find tariff
+    let tariff = null;
+    if (golongan === 'Eksternal') {
+      tariff = db.prepare(`
+        SELECT * FROM tariffs
+        WHERE golongan = ? AND vehicle_type = ? AND is_active = 1
+      `).get(golongan, vehicleType);
+    }
+
+    const vehicleId = uuidv4();
+    db.prepare(`
+      INSERT INTO vehicles (id, no_polisi, vehicle_type, golongan, trip_id, has_load, tariff_id, tariff_amount, foto_path, latitude, longitude)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      vehicleId, noPolisi, vehicleType, golongan, tripId,
+      hasLoad ? 1 : 0, tariff?.id || null, tariffAmount || 0,
+      fotoPath, latitude, longitude
+    );
+
+    // Link to trip
+    db.prepare(`
+      INSERT INTO trip_vehicles (id, trip_id, vehicle_id)
+      VALUES (?, ?, ?)
+    `).run(uuidv4(), tripId, vehicleId);
+
+    res.status(201).json({ id: vehicleId, noPolisi });
+  } catch (error) {
+    console.error('Add vehicle error:', error);
+    res.status(500).json({ error: 'Failed to add vehicle' });
+  }
+});
+
+// Get trips for officer
+router.get('/', authenticate, (req, res) => {
+  try {
+    const { regionId } = req.officer;
+    const { date, status } = req.query;
+
+    let query = `
+      SELECT t.*,
+        (SELECT COUNT(*) FROM trip_vehicles tv WHERE tv.trip_id = t.id) as vehicle_count
+      FROM trips t
+      WHERE t.region_id = ?
+    `;
+    const params = [regionId];
+
+    if (date) {
+      query += ` AND DATE(t.created_at) = ?`;
+      params.push(date);
+    }
+
+    query += ` ORDER BY t.created_at DESC LIMIT 50`;
+
+    const trips = db.prepare(query).all(...params);
+    res.json(trips);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch trips' });
+  }
+});
+
+// Get trip detail
+router.get('/:id', authenticate, (req, res) => {
+  try {
+    const trip = db.prepare(`
+      SELECT t.*, o.name as officer_name
+      FROM trips t
+      JOIN officers o ON t.officer_id = o.id
+      WHERE t.id = ?
+    `).get(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({ error: 'Trip not found' });
+    }
+
+    const vehicles = db.prepare(`
+      SELECT v.*, tv.id as trip_vehicle_id
+      FROM vehicles v
+      JOIN trip_vehicles tv ON v.id = tv.vehicle_id
+      WHERE tv.trip_id = ?
+    `).all(req.params.id);
+
+    res.json({ ...trip, vehicles });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch trip' });
+  }
+});
+
+module.exports = router;

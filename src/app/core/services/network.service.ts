@@ -2,11 +2,9 @@ import { Injectable } from '@angular/core';
 import { Network } from '@capacitor/network';
 import { BehaviorSubject } from 'rxjs';
 
-/** Wraps @capacitor/network for connectivity detection + change notifications. */
 @Injectable({ providedIn: 'root' })
 export class NetworkService {
   private online$ = new BehaviorSubject<boolean>(true);
-  readonly onlineStatus$ = this.online$.asObservable();
 
   constructor() {
     this.init();
@@ -20,7 +18,12 @@ export class NetworkService {
     });
   }
 
-  isOnline(): boolean {
-    return this.online$.value;
+  async isOnline(): Promise<boolean> {
+    const status = await Network.getStatus();
+    return status.connected;
+  }
+
+  get onlineStatus$() {
+    return this.online$.asObservable();
   }
 }

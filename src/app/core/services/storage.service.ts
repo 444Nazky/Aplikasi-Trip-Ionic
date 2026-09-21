@@ -37,7 +37,7 @@ export class StorageService {
   }
 
   async getCurrentUser(): Promise<UserModel | null> {
-    return (await (await this.db()).get(KEY_USER)) ?? null;
+    return ((await this.db()).get(KEY_USER) ?? null);
   }
 
   async clearCurrentUser(): Promise<void> {
@@ -46,7 +46,7 @@ export class StorageService {
 
   // ---- Trips ----
   async getAllTrips(): Promise<TripModel[]> {
-    return (await (await this.db()).get(KEY_TRIPS)) ?? [];
+    return ((await this.db()).get(KEY_TRIPS) ?? []);
   }
 
   async saveTrip(trip: TripModel): Promise<void> {
@@ -98,6 +98,6 @@ export class StorageService {
   }
 
   async getTariffs(): Promise<TariffModel[]> {
-    return (await (await this.db()).get(KEY_TARIFFS)) ?? [];
+    return ((await this.db()).get(KEY_TARIFFS) ?? []);
   }
 }

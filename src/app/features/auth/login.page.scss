@@ -1,0 +1,80 @@
+@use postcss (--ion-background: #F8F9FA; }
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  gap: 1.5rem;
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.app-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  margin: 0;
+}
+
+.subtitle {
+  color: var(--ion-color-medium);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.pin-container {
+  width: 100%;
+  max-width: 280px;
+}
+
+.pin-input {
+  --background: transparent;
+  --padding: 0;
+  --placeholder-color: var(--ion-color-medium);
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.5rem;
+  text-align: center;
+  border-bottom: 2px solid var(--ion-color-medium);
+  border-radius: 0;
+  margin-bottom: 1.5rem;
+}
+
+.pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.pin-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ion-color-light-shade);
+  transition: background 0.15s ease;
+
+  &.filled {
+    background: var(--ion-color-primary);
+  }
+}
+
+.login-btn {
+  --border-radius: 12px;
+  margin-top: 1rem;
+  height: 52px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.error-text {
+  color: var(--ion-color-danger);
+  text-align: center;
+  font-size: 0.875rem;
+  margin-top: 1rem;
+}

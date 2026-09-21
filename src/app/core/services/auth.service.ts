@@ -32,7 +32,7 @@ export class AuthService {
     const deviceId = await this.getDeviceId();
 
     // 1. Try remote API login if online
-    if (this.network.isOnline()) {
+    if (await this.network.isOnline()) {
       try {
         const res = await this.api.login(pinHash, deviceId);
         if (res.success && res.data) {

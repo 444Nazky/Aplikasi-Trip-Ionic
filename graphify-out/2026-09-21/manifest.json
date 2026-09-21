@@ -1,12 +1,12 @@
 {
   "android/app/build.gradle": {
-    "mtime": 1789963087.3189788,
-    "ast_hash": "95a78f5c20ceec3ad60e1be7aada427e",
+    "mtime": 1789968485.5649292,
+    "ast_hash": "c58fda4f126f35a6798f93473c91e48a",
     "semantic_hash": ""
   },
   "android/app/capacitor.build.gradle": {
-    "mtime": 1789963201.2338142,
-    "ast_hash": "8071d4d9e4fd8fac49dff1ed69d6b21e",
+    "mtime": 1789968497.5379338,
+    "ast_hash": "d190f80efd6e057269a662fe1feb272b",
     "semantic_hash": ""
   },
   "android/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java": {
@@ -95,8 +95,8 @@
     "semantic_hash": ""
   },
   "src/app/core/services/auth.service.ts": {
-    "mtime": 1789961275.0373516,
-    "ast_hash": "5e7dd50d231b174aeb93fb2a9d840367",
+    "mtime": 1789969215.7690368,
+    "ast_hash": "add4192ea3445ae46de9dba206544a0f",
     "semantic_hash": ""
   },
   "src/app/core/services/camera.service.ts": {
@@ -175,8 +175,8 @@
     "semantic_hash": ""
   },
   "src/app/features/auth/login/login.page.ts": {
-    "mtime": 1789962060.9561057,
-    "ast_hash": "c6741ad5ff169c3c2978990080ff38db",
+    "mtime": 1789969248.2726126,
+    "ast_hash": "c58a54dcc40232ac7077c53ef04cb22d",
     "semantic_hash": ""
   },
   "src/app/features/auth/splash/splash.page.ts": {
@@ -437,11 +437,6 @@
   "src/assets/shapes.svg": {
     "mtime": 1789763387.0,
     "ast_hash": "e535ce83da20a4b7719ca3d45195ebd5",
-    "semantic_hash": ""
-  },
-  ".github/linguist.yaml": {
-    "mtime": 1789965189.4644434,
-    "ast_hash": "cc3dbce41343e083fd3b61170bcc1a52",
     "semantic_hash": ""
   },
   "README.md": {

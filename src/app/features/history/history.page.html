@@ -1,0 +1,28 @@
+<ion-page>
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <ion-title>Riwayat Trip</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+    <ion-list>
+      <ion-item *ngFor="let trip of trips" (click)="viewTrip(trip.id)" button>
+        <ion-label>
+          <h3>{{ trip.noTrip }}</h3>
+          <p>{{ trip.rute }} - {{ trip.vehicleCount }} kendaraan</p>
+          <p class="time">{{ trip.time }}</p>
+        </ion-label>
+        <ion-note slot="end" color="success">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          Synced
+        </ion-note>
+      </ion-item>
+    </ion-list>
+
+    <div *ngIf="trips.length === 0" class="empty">
+      <ion-icon name="document-text-outline"></ion-icon>
+      <p>Belum ada trip</p>
+    </div>
+  </ion-content>
+</ion-page>

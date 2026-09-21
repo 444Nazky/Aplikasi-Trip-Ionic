@@ -22,14 +22,17 @@ export class SyncService {
   ) {}
 
   start(): void {
-    this.network.onlineStatus$.subscribe((online) => {
-      if (online) this.processQueue();
+    this.network.onlineStatus$.subscribe(async (online) => {
+      if (online) {
+        await this.processQueue();
+      }
     });
     this.timer = setInterval(() => this.processQueue(), APP_CONSTANTS.syncIntervalMs);
   }
 
   async processQueue(): Promise<void> {
-    if (this.syncing || !this.network.isOnline()) return;
+    if (this.syncing) return;
+    if (!(await this.network.isOnline())) return;
     this.syncing = true;
     try {
       const pending = await this.storage.getPendingTrips();
@@ -43,6 +46,7 @@ export class SyncService {
 
   private async syncTrip(trip: TripModel): Promise<void> {
     try {
+      // Upload photos first
       for (const vehicle of trip.vehicles) {
         if (!vehicle.fotoSelfieUrl && vehicle.fotoSelfiePath) {
           vehicle.fotoSelfieUrl = await this.api.uploadPhoto(vehicle.fotoSelfiePath);

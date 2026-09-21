@@ -7,7 +7,7 @@ import { SyncService } from './core/services/sync.service';
   standalone: true,
   imports: [IonApp, IonRouterOutlet],
   templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
+  styleUrl: 'app.component.scss',
 })
 export class AppComponent {
   constructor(private sync: SyncService) {
