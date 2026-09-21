@@ -1,16 +1,16 @@
 # Graph Report - Aplikasi-Trip-Ionic  (2026-09-21)
 
 ## Corpus Check
-- 58 files · ~17,213 words
+- 58 files · ~17,234 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 396 nodes · 635 edges · 32 communities (26 shown, 6 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 38 edges (avg confidence: 0.8)
+- 396 nodes · 640 edges · 32 communities (25 shown, 7 thin omitted)
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 39 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `823f9eb6`
+- Built from commit: `edf55194`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -23,7 +23,7 @@
 - devDependencies
 - angular.json
 - options
-- package.json
+- LoginPage
 - Trip Angkutan Android
 - architect
 - production
@@ -49,9 +49,9 @@
 5. `Trip Angkutan` - 14 edges
 6. `ApiService` - 13 edges
 7. `SyncService` - 13 edges
-8. `TripService` - 11 edges
-9. `Trip Angkutan Android` - 11 edges
-10. `options` - 10 edges
+8. `NetworkService` - 11 edges
+9. `TripService` - 11 edges
+10. `Trip Angkutan Android` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `TripService` --references--> `TripModel`  [EXTRACTED]
@@ -68,7 +68,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (32 total, 6 thin omitted)
+## Communities (32 total, 7 thin omitted)
 
 ### Community 0 - "input-vehicle.page.ts"
 Cohesion: 0.08
@@ -79,8 +79,8 @@ Cohesion: 0.04
 Nodes (47): @angular/common, @angular/compiler, @angular/core, @angular/forms, @angular/platform-browser, @angular/platform-browser-dynamic, @angular/router, @capacitor/android (+39 more)
 
 ### Community 2 - "ApiService"
-Cohesion: 0.10
-Nodes (8): ApiService, Injectable, NetworkService, Injectable, SyncService, Injectable, HomePage, Component
+Cohesion: 0.13
+Nodes (6): ApiService, Injectable, SyncService, Injectable, HomePage, Component
 
 ### Community 3 - "TripModel"
 Cohesion: 0.08
@@ -91,8 +91,8 @@ Cohesion: 0.10
 Nodes (9): StorageService, Injectable, TariffModel, ProfilePage, Component, SuccessDialogPage, Component, TripDetailPage (+1 more)
 
 ### Community 5 - "devDependencies"
-Cohesion: 0.08
-Nodes (25): @angular/build, @angular/compiler-cli, angular-eslint, @angular/language-service, @capacitor/cli, eslint, @ionic/angular-toolkit, jsdom (+17 more)
+Cohesion: 0.05
+Nodes (37): @angular/build, @angular/compiler-cli, angular-eslint, @angular/language-service, @capacitor/cli, eslint, @ionic/angular-toolkit, jsdom (+29 more)
 
 ### Community 6 - "angular.json"
 Cohesion: 0.12
@@ -101,10 +101,6 @@ Nodes (15): analytics, schematicCollections, standalone, styleext, standalone, s
 ### Community 7 - "options"
 Cohesion: 0.15
 Nodes (13): options, assets, browser, index, inlineStyleLanguage, outputPath, polyfills, scripts (+5 more)
-
-### Community 8 - "package.json"
-Cohesion: 0.15
-Nodes (12): author, homepage, name, private, scripts, build, lint, ng (+4 more)
 
 ### Community 9 - "Trip Angkutan Android"
 Cohesion: 0.17
@@ -149,14 +145,14 @@ Nodes (6): prefix, projectType, root, schematics, sourceRoot, app
 ## Knowledge Gaps
 - **122 isolated node(s):** `$schema`, `version`, `newProjectRoot`, `projectType`, `schematics` (+117 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `StorageService` connect `StorageService` to `input-vehicle.page.ts`, `ApiService`, `TripModel`, `HistoryPage`?**
   _High betweenness centrality (0.044) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `package.json`?**
+- **Why does `dependencies` connect `dependencies` to `devDependencies`?**
   _High betweenness centrality (0.035) - this node is a cross-community bridge._
 - **Why does `TripModel` connect `TripModel` to `input-vehicle.page.ts`, `ApiService`, `StorageService`, `HistoryPage`?**
   _High betweenness centrality (0.029) - this node is a cross-community bridge._
@@ -167,4 +163,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.0425531914893617 - nodes in this community are weakly interconnected._
 - **Should `ApiService` be split into smaller, more focused modules?**
-  _Cohesion score 0.10317460317460317 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._

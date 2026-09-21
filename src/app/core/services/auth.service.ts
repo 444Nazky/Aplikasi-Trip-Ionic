@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { StorageService } from './storage.service';
 import { ApiService } from './api.service';
+import { NetworkService } from './network.service';
 import { hashPin } from '../utils/hash.util';
 import { UserModel } from '../../data/models/user.model';
 
@@ -12,7 +13,11 @@ const DEVICE_ID_KEY = 'device_id';
 export class AuthService {
   currentUser: UserModel | null = null;
 
-  constructor(private storage: StorageService, private api: ApiService) {}
+  constructor(
+    private storage: StorageService,
+    private api: ApiService,
+    private network: NetworkService
+  ) {}
 
   async getDeviceId(): Promise<string> {
     const existing = await Preferences.get({ key: DEVICE_ID_KEY });
@@ -25,6 +30,16 @@ export class AuthService {
   async login(pin: string): Promise<{ success: boolean; message?: string }> {
     const pinHash = await hashPin(pin);
     const deviceId = await this.getDeviceId();
+
+    // Offline fallback: allow previously logged-in users to resume their session.
+    if (!this.network.isOnline()) {
+      const restored = await this.restoreSession();
+      if (restored && this.currentUser) {
+        return { success: true };
+      }
+      return { success: false, message: 'Tidak ada koneksi internet. Silakan coba lagi.' };
+    }
+
     try {
       const res = await this.api.login(pinHash, deviceId);
       if (!res.success || !res.data) {

@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ToastController, IonContent, IonInput, IonButton, IonSpinner } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -8,7 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonInput, IonButton, IonSpinner],
+  imports: [IonContent, IonInput, IonButton, IonSpinner],
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
@@ -31,7 +29,7 @@ export class LoginPage {
     const result = await this.auth.login(this.pin);
     this.loading = false;
     if (result.success) {
-      this.router.navigateByUrl('/tabs/home', { replaceUrl: true });
+      this.router.navigate(['/tabs/home'], { replaceUrl: true });
     } else {
       await this.showToast(result.message ?? 'Login gagal');
     }
