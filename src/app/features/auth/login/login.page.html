@@ -1,0 +1,20 @@
+<ion-content class="ion-padding">
+  <div class="login-container">
+    <h1>TRIP ANGKUTAN</h1>
+    <p>Masukkan PIN 6 Digit</p>
+
+    <ion-input
+      type="password"
+      inputmode="numeric"
+      maxlength="6"
+      [(ngModel)]="pin"
+      placeholder="------"
+      class="pin-input">
+    </ion-input>
+
+    <ion-button expand="block" [disabled]="loading" (click)="login()">
+      <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
+      <span *ngIf="!loading">MASUK</span>
+    </ion-button>
+  </div>
+</ion-content>

@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Riwayat Trip</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let trip of trips" (click)="viewDetail(trip)" button>
+      <ion-label>
+        <h3>{{ trip.noTrip }}</h3>
+        <p>{{ trip.statusMuatan }} | {{ trip.vehicles.length }} kendaraan</p>
+        <p>{{ trip.createdAt | date: 'medium' }}</p>
+      </ion-label>
+      <ion-note slot="end">{{ trip.total | currency: 'IDR' }}</ion-note>
+      <ion-badge *ngIf="!trip.isSynced" slot="end" color="warning">pending</ion-badge>
+    </ion-item>
+  </ion-list>
+  <p *ngIf="!trips.length" class="ion-text-center ion-padding">Belum ada trip.</p>
+</ion-content>

@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Trip Angkutan</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="!isOnline" class="offline-banner">
+    Mode Offline - Data akan disinkronkan saat online
+  </div>
+
+  <h2>Selamat Datang, {{ userName }}</h2>
+  <p>Region: {{ regionName }}</p>
+
+  <ion-button expand="block" routerLink="/create-trip">
+    BUAT TRIP BARU
+  </ion-button>
+
+  <ion-button expand="block" fill="outline" [disabled]="!isOnline" (click)="manualSync()">
+    SYNC MANUAL
+  </ion-button>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Ringkasan Hari Ini</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col>{{ tripCount }} Trip</ion-col>
+          <ion-col>{{ vehicleCount }} Angkutan</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ noTrip }} | Kendaraan ke-{{ vehicleCount }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label position="floating">Plat Nomor</ion-label>
+    <ion-input [(ngModel)]="noPolisi" placeholder="B 1234 ABC"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Golongan</ion-label>
+    <ion-select [(ngModel)]="golongan">
+      <ion-select-option value="Eksternal">Eksternal</ion-select-option>
+      <ion-select-option value="Internal">Internal</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Jenis Kendaraan</ion-label>
+    <ion-select [(ngModel)]="jenis">
+      <ion-select-option value="Truk">Truk</ion-select-option>
+      <ion-select-option value="Mobil">Mobil</ion-select-option>
+      <ion-select-option value="Motor">Motor</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Status Muatan</ion-label>
+    <ion-select [(ngModel)]="muatan">
+      <ion-select-option value="Dengan Muatan">Dengan Muatan</ion-select-option>
+      <ion-select-option value="Tanpa Muatan">Tanpa Muatan</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-button expand="block" (click)="capturePhoto()">
+    <ion-icon name="camera" slot="start"></ion-icon>
+    Ambil Foto Selfie
+  </ion-button>
+
+  <img *ngIf="fotoPath" [src]="fotoPath" class="photo-preview" />
+  <p *ngIf="gpsText">Lokasi: {{ gpsText }}</p>
+
+  <ion-button
+    expand="block"
+    color="success"
+    [disabled]="!isValid || saving"
+    (click)="submit()">
+    <ion-spinner *ngIf="saving" name="dots"></ion-spinner>
+    <span *ngIf="!saving">SIMPAN DATA</span>
+  </ion-button>
+</ion-content>

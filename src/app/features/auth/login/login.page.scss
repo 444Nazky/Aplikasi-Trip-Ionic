@@ -1,0 +1,17 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20vh;
+  text-align: center;
+}
+
+.pin-input {
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 8px;
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 8px;
+  width: 220px;
+}

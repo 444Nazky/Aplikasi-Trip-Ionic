@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/history"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ trip?.noTrip }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" *ngIf="trip">
+  <ion-item lines="none">
+    <ion-label>
+      <p>Status Muatan: {{ trip.statusMuatan }}</p>
+      <p>Dibuat: {{ trip.createdAt | date: 'medium' }}</p>
+      <p>Sync: {{ trip.isSynced ? 'Tersinkron' : 'Pending' }}</p>
+    </ion-label>
+  </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let v of trip.vehicles">
+      <ion-label>
+        <h3>{{ v.noPolisi }} ({{ v.jenisKendaraan }}, {{ v.golongan }})</h3>
+        <p>{{ v.muatan }}</p>
+      </ion-label>
+      <ion-note slot="end">{{ v.tarif | currency: 'IDR' }}</ion-note>
+    </ion-item>
+  </ion-list>
+</ion-content>
