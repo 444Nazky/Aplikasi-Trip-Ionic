@@ -1,2 +1,102 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+// ═══════════════════════════════════════════════════════════
+// OpenCode / VS Code Dark Developer Console Palette
+// ═══════════════════════════════════════════════════════════
+
+:root {
+  // ── Palette OpenCode ──
+  --bg-main: #0d0e12;
+  --bg-surface: #14161d;
+  --bg-surface-elevated: #1a1d26;
+  --bg-surface-hover: #222634;
+  --border-subtle: #2a2e3d;
+  --border-focus: #3b82f6;
+
+  --color-bg: #0d0e12;
+  --color-surface: #14161d;
+  --color-surface-alt: #1a1d26;
+  --color-surface-dark: #14161d;
+  --color-surface-dark-alt: #1a1d26;
+  --color-border: #2a2e3d;
+  --color-border-light: #2a2e3d;
+
+  // ── Text & Muted ──
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #8b949e;
+  --color-text-muted: #57606a;
+  --color-text-inverse: #0d0e12;
+
+  // ── Accents ──
+  --accent-red: #ff4a5a;
+  --accent-blue: #3b82f6;
+  --accent-pink: #f472b6;
+  --accent-green: #22c55e;
+  --accent-yellow: #eab308;
+
+  // ── Typography ──
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  // ── Ionic Colors Override (Developer Dark Theme) ──
+  --ion-background-color: #0d0e12;
+  --ion-text-color: #e6edf3;
+
+  --ion-color-primary: #3b82f6;
+  --ion-color-primary-rgb: 59, 130, 246;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #2563eb;
+  --ion-color-primary-tint: #60a5fa;
+
+  --ion-color-secondary: #f472b6;
+  --ion-color-secondary-rgb: 244, 114, 182;
+  --ion-color-secondary-contrast: #0d0e12;
+  --ion-color-secondary-contrast-rgb: 13, 14, 18;
+  --ion-color-secondary-shade: #db2777;
+  --ion-color-secondary-tint: #f472b6;
+
+  --ion-color-success: #22c55e;
+  --ion-color-success-rgb: 34, 197, 94;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #16a34a;
+  --ion-color-success-tint: #4ade80;
+
+  --ion-color-warning: #eab308;
+  --ion-color-warning-rgb: 234, 179, 8;
+  --ion-color-warning-contrast: #0d0e12;
+  --ion-color-warning-contrast-rgb: 13, 14, 18;
+  --ion-color-warning-shade: #ca8a04;
+  --ion-color-warning-tint: #fde047;
+
+  --ion-color-danger: #ff4a5a;
+  --ion-color-danger-rgb: 255, 74, 90;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #e11d48;
+  --ion-color-danger-tint: #fb7185;
+
+  --ion-color-dark: #14161d;
+  --ion-color-dark-rgb: 20, 22, 29;
+  --ion-color-dark-contrast: #e6edf3;
+  --ion-color-dark-contrast-rgb: 230, 237, 243;
+  --ion-color-dark-shade: #0d0e12;
+  --ion-color-dark-tint: #1a1d26;
+
+  --ion-color-medium: #8b949e;
+  --ion-color-medium-rgb: 139, 148, 158;
+  --ion-color-medium-contrast: #0d0e12;
+  --ion-color-medium-contrast-rgb: 13, 14, 18;
+  --ion-color-medium-shade: #57606a;
+  --ion-color-medium-tint: #a0aec0;
+
+  --ion-color-light: #1a1d26;
+  --ion-color-light-rgb: 26, 29, 38;
+  --ion-color-light-contrast: #e6edf3;
+  --ion-color-light-contrast-rgb: 230, 237, 243;
+  --ion-color-light-shade: #14161d;
+  --ion-color-light-tint: #222634;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.6);
+}

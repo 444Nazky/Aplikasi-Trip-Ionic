@@ -1,5 +1,299 @@
-.photo-preview {
+// ═══════════════════════════════════════════════════════════
+// Create Trip — Plantation Modern
+// ═══════════════════════════════════════════════════════════
+
+.form-page {
+  padding: 16px 20px 32px;
+}
+
+// ── Step Bar ──
+.step-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 28px;
+  padding: 0 12px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-border);
+  transition: all 0.2s ease;
+
+  .active & {
+    background: var(--ion-color-primary);
+    color: white;
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.15);
+  }
+}
+
+.step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+
+  .active & {
+    color: var(--ion-color-primary);
+  }
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--color-border);
+  margin: 0 12px;
+  margin-bottom: 22px;
+
+  &.active-line {
+    background: linear-gradient(90deg, var(--ion-color-primary) 0%, var(--color-border) 100%);
+  }
+}
+
+// ── Section ──
+.form-section {
+  margin-bottom: 24px;
+}
+
+.field-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.field-required {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ion-color-danger);
+  background: rgba(var(--ion-color-danger-rgb), 0.08);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// ── Segment Grid ──
+.segment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.segment-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 12px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &.active {
+    border-color: var(--ion-color-primary);
+    background: rgba(var(--ion-color-primary-rgb), 0.04);
+    box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.08);
+  }
+}
+
+.segment-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  &.loaded {
+    background: var(--color-emerald-50);
+    color: var(--ion-color-primary);
+  }
+
+  &.empty {
+    background: var(--color-surface-alt);
+    color: var(--color-text-muted);
+  }
+
+  .active & {
+    &.loaded {
+      background: var(--ion-color-primary);
+      color: white;
+    }
+    &.empty {
+      background: var(--ion-color-primary);
+      color: white;
+    }
+  }
+}
+
+.segment-text {
+  text-align: center;
+}
+
+.segment-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+
+  .active & {
+    color: var(--ion-color-primary);
+  }
+}
+
+.segment-desc {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+// ── Input Card ──
+.input-card {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.08);
+  }
+}
+
+.styled-input {
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  --padding-start: 14px;
+  --padding-end: 14px;
+  font-size: 15px;
+}
+
+// ── Photo Upload ──
+.photo-upload {
+  margin-top: 12px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--ion-color-primary);
+  }
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 16px;
+  background: var(--color-surface-alt);
+
+  ion-icon {
+    font-size: 32px;
+    color: var(--color-text-muted);
+  }
+
+  span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+}
+
+.upload-done {
+  position: relative;
+}
+
+.photo-thumb {
   width: 100%;
-  border-radius: 8px;
-  margin: 12px 0;
+  display: block;
+}
+
+.photo-check {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ion-color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 16px;
+    color: white;
+  }
+}
+
+// ── Actions ──
+.form-actions {
+  margin-top: 8px;
+}
+
+.submit-btn {
+  --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
+  --color: white;
+  --box-shadow: var(--shadow-primary);
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  font-size: 16px;
+  font-weight: 700;
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+.btn-spinner {
+  margin-right: 8px;
+}
+
+// ── Animation ──
+.fade-in {
+  animation: slideUp 0.3s ease-out;
 }

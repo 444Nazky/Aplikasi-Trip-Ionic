@@ -17,6 +17,7 @@ import {
   IonInput,
   IonButton,
   IonSpinner,
+  IonIcon,
 } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { LocationService } from '../../../core/services/location.service';
@@ -43,6 +44,7 @@ import { StatusMuatanTrip } from '../../../data/models/trip.model';
     IonInput,
     IonButton,
     IonSpinner,
+    IonIcon,
   ],
   templateUrl: './create-trip.page.html',
   styleUrls: ['./create-trip.page.scss'],

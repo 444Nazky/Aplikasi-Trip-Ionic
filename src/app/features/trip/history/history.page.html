@@ -1,20 +1,53 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>Riwayat Trip</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let trip of trips" (click)="viewDetail(trip)" button>
-      <ion-label>
-        <h3>{{ trip.noTrip }}</h3>
-        <p>{{ trip.statusMuatan }} | {{ trip.vehicles.length }} kendaraan</p>
-        <p>{{ trip.createdAt | date: 'medium' }}</p>
-      </ion-label>
-      <ion-note slot="end">{{ trip.total | currency: 'IDR' }}</ion-note>
-      <ion-badge *ngIf="!trip.isSynced" slot="end" color="warning">pending</ion-badge>
-    </ion-item>
-  </ion-list>
-  <p *ngIf="!trips.length" class="ion-text-center ion-padding">Belum ada trip.</p>
+  <!-- Empty State -->
+  <div *ngIf="!trips.length" class="empty-state">
+    <div class="empty-icon-wrap">
+      <ion-icon name="document-text-outline"></ion-icon>
+    </div>
+    <h3 class="empty-title">Belum ada trip</h3>
+    <p class="empty-desc">Riwayat perjalanan Anda akan muncul di sini.</p>
+  </div>
+
+  <!-- Trip List -->
+  <div class="trip-list" *ngIf="trips.length">
+    <div
+      *ngFor="let trip of trips"
+      class="trip-card"
+      (click)="viewDetail(trip)"
+    >
+      <div class="trip-top">
+        <div class="trip-no-wrap">
+          <span class="trip-no">{{ trip.noTrip }}</span>
+          <span *ngIf="!trip.isSynced" class="sync-pill pending">Pending</span>
+          <span *ngIf="trip.isSynced" class="sync-pill synced">Synced</span>
+        </div>
+        <span class="trip-total">{{ trip.total | currency: 'IDR' }}</span>
+      </div>
+
+      <div class="trip-body">
+        <div class="trip-chip">
+          <ion-icon name="cube-outline"></ion-icon>
+          <span>{{ trip.statusMuatan }}</span>
+        </div>
+        <div class="trip-chip">
+          <ion-icon name="car-sport-outline"></ion-icon>
+          <span>{{ trip.vehicles.length }} kendaraan</span>
+        </div>
+      </div>
+
+      <div class="trip-bottom">
+        <div class="trip-time">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>{{ trip.createdAt | date: 'dd MMM yyyy, HH:mm' }}</span>
+        </div>
+        <ion-icon name="chevron-forward" class="trip-arrow"></ion-icon>
+      </div>
+    </div>
+  </div>
 </ion-content>

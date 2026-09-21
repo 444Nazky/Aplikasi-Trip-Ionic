@@ -1,16 +1,49 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>Trip Selesai</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding ion-text-center" *ngIf="trip">
-  <ion-icon name="checkmark-circle" color="success" style="font-size: 72px"></ion-icon>
-  <h2>{{ trip.noTrip }}</h2>
-  <p>{{ trip.vehicles.length }} kendaraan tercatat</p>
-  <p>Total: {{ total | currency: 'IDR' }}</p>
-  <p *ngIf="!trip.isSynced" class="ion-color-warning">
-    Data akan disinkronkan saat online.
-  </p>
-  <ion-button expand="block" (click)="done()">SELESAI</ion-button>
+<ion-content *ngIf="trip">
+  <div class="success-page">
+    <div class="success-hero">
+      <div class="success-ring">
+        <div class="success-circle">
+          <ion-icon name="checkmark"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="success-title">Trip Berhasil Diselesaikan</h2>
+    <p class="success-sub">Data tersimpan dan siap disinkronkan</p>
+
+    <div class="summary-card">
+      <div class="summary-row">
+        <span class="summary-label">No. Trip</span>
+        <span class="summary-value">{{ trip.noTrip }}</span>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-row">
+        <span class="summary-label">Kendaraan</span>
+        <span class="summary-value">{{ trip.vehicles.length }} unit</span>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-row total-row">
+        <span class="summary-label">Total Tarif</span>
+        <span class="summary-value total">{{ total | currency: 'IDR' }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="!trip.isSynced" class="sync-note">
+      <ion-icon name="cloud-upload-outline"></ion-icon>
+      <span>Data akan disinkronkan saat online.</span>
+    </div>
+
+    <div class="success-actions">
+      <ion-button expand="block" (click)="done()" class="done-btn">
+        Selesai
+        <ion-icon name="arrow-forward" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
 </ion-content>

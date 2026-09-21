@@ -1,54 +1,155 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>{{ noTrip }} | Kendaraan ke-{{ vehicleCount }}</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/create-trip"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Input Kendaraan</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-item>
-    <ion-label position="floating">Plat Nomor</ion-label>
-    <ion-input [(ngModel)]="noPolisi" placeholder="B 1234 ABC"></ion-input>
-  </ion-item>
+<ion-content>
+  <div class="form-page">
+    <!-- Trip Info Bar -->
+    <div class="info-bar">
+      <div class="info-item">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <span>{{ noTrip }}</span>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <ion-icon name="car-sport-outline"></ion-icon>
+        <span>Kendaraan #{{ vehicleCount }}</span>
+      </div>
+    </div>
 
-  <ion-item>
-    <ion-label>Golongan</ion-label>
-    <ion-select [(ngModel)]="golongan">
-      <ion-select-option value="Eksternal">Eksternal</ion-select-option>
-      <ion-select-option value="Internal">Internal</ion-select-option>
-    </ion-select>
-  </ion-item>
+    <!-- License Plate -->
+    <div class="form-section">
+      <label class="field-label">Plat Nomor</label>
+      <div class="plate-input-card">
+        <div class="plate-icon">
+          <ion-icon name="ellipse"></ion-icon>
+        </div>
+        <ion-input
+          [(ngModel)]="noPolisi"
+          placeholder="B 1234 ABC"
+          class="plate-input"
+          [maxlength]="20"
+        ></ion-input>
+      </div>
+    </div>
 
-  <ion-item>
-    <ion-label>Jenis Kendaraan</ion-label>
-    <ion-select [(ngModel)]="jenis">
-      <ion-select-option value="Truk">Truk</ion-select-option>
-      <ion-select-option value="Mobil">Mobil</ion-select-option>
-      <ion-select-option value="Motor">Motor</ion-select-option>
-    </ion-select>
-  </ion-item>
+    <!-- Vehicle Category -->
+    <div class="form-section">
+      <label class="field-label">Kategori Kendaraan</label>
+      <div class="category-grid">
+        <button
+          class="category-card"
+          [class.active]="golongan === 'Eksternal'"
+          (click)="golongan = 'Eksternal'"
+        >
+          <div class="cat-icon">
+            <ion-icon name="car-outline"></ion-icon>
+          </div>
+          <div class="cat-info">
+            <span class="cat-name">Eksternal</span>
+            <span class="cat-desc">Dengan Tarif</span>
+          </div>
+        </button>
+        <button
+          class="category-card"
+          [class.active]="golongan === 'Internal'"
+          (click)="golongan = 'Internal'"
+        >
+          <div class="cat-icon internal">
+            <ion-icon name="business-outline"></ion-icon>
+          </div>
+          <div class="cat-info">
+            <span class="cat-name">Internal</span>
+            <span class="cat-desc">Tanpa Tarif</span>
+          </div>
+        </button>
+      </div>
+    </div>
 
-  <ion-item>
-    <ion-label>Status Muatan</ion-label>
-    <ion-select [(ngModel)]="muatan">
-      <ion-select-option value="Dengan Muatan">Dengan Muatan</ion-select-option>
-      <ion-select-option value="Tanpa Muatan">Tanpa Muatan</ion-select-option>
-    </ion-select>
-  </ion-item>
+    <!-- Vehicle Type -->
+    <div class="form-section">
+      <label class="field-label">Jenis Kendaraan</label>
+      <div class="type-row">
+        <button
+          *ngFor="let t of vehicleTypes"
+          class="type-chip"
+          [class.active]="jenis === t.value"
+          (click)="jenis = t.value"
+        >
+          <ion-icon [name]="t.icon"></ion-icon>
+          <span>{{ t.label }}</span>
+        </button>
+      </div>
+    </div>
 
-  <ion-button expand="block" (click)="capturePhoto()">
-    <ion-icon name="camera" slot="start"></ion-icon>
-    Ambil Foto Selfie
-  </ion-button>
+    <!-- Load Status -->
+    <div class="form-section">
+      <label class="field-label">Status Muatan</label>
+      <div class="load-toggle">
+        <button
+          class="load-btn"
+          [class.active]="muatan === 'Dengan Muatan'"
+          [class.loaded]="muatan === 'Dengan Muatan'"
+          (click)="muatan = 'Dengan Muatan'"
+        >
+          <ion-icon name="cube"></ion-icon>
+          <span>Berat</span>
+        </button>
+        <button
+          class="load-btn"
+          [class.active]="muatan === 'Tanpa Muatan'"
+          [class.empty]="muatan === 'Tanpa Muatan'"
+          (click)="muatan = 'Tanpa Muatan'"
+        >
+          <ion-icon name="cube-outline"></ion-icon>
+          <span>Kosong</span>
+        </button>
+      </div>
+    </div>
 
-  <img *ngIf="fotoPath" [src]="fotoPath" class="photo-preview" />
-  <p *ngIf="gpsText">Lokasi: {{ gpsText }}</p>
+    <!-- Photo & GPS -->
+    <div class="form-section">
+      <label class="field-label">Foto Selfie & Lokasi GPS</label>
+      <div class="capture-card" (click)="capturePhoto()">
+        <div *ngIf="!fotoPath" class="capture-empty">
+          <div class="capture-icon-wrap">
+            <ion-icon name="camera"></ion-icon>
+          </div>
+          <span class="capture-text">Ketuk untuk ambil foto</span>
+          <span class="capture-sub">Selfie dengan kendaraan & muatan</span>
+        </div>
+        <div *ngIf="fotoPath" class="capture-done">
+          <img [src]="fotoPath" class="capture-preview" />
+          <div class="capture-badge">
+            <ion-icon name="checkmark"></ion-icon>
+            Foto & GPS tercatat
+          </div>
+        </div>
+      </div>
 
-  <ion-button
-    expand="block"
-    color="success"
-    [disabled]="!isValid || saving"
-    (click)="submit()">
-    <ion-spinner *ngIf="saving" name="dots"></ion-spinner>
-    <span *ngIf="!saving">SIMPAN DATA</span>
-  </ion-button>
+      <div *ngIf="gpsText" class="gps-info">
+        <ion-icon name="location"></ion-icon>
+        <span>{{ gpsText }}</span>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="form-actions">
+      <ion-button
+        expand="block"
+        [disabled]="!isValid || saving"
+        (click)="submit()"
+        class="submit-btn"
+      >
+        <ion-spinner *ngIf="saving" name="dots" class="btn-spinner"></ion-spinner>
+        <span *ngIf="!saving">Simpan Data</span>
+        <ion-icon *ngIf="!saving" name="checkmark-circle" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
 </ion-content>

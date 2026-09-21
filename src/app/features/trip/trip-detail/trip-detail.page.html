@@ -1,28 +1,62 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/tabs/history"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ trip?.noTrip }}</ion-title>
+    <ion-title>Trip Detail</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding" *ngIf="trip">
-  <ion-item lines="none">
-    <ion-label>
-      <p>Status Muatan: {{ trip.statusMuatan }}</p>
-      <p>Dibuat: {{ trip.createdAt | date: 'medium' }}</p>
-      <p>Sync: {{ trip.isSynced ? 'Tersinkron' : 'Pending' }}</p>
-    </ion-label>
-  </ion-item>
+<ion-content *ngIf="trip">
+  <div class="detail-page">
+    <!-- Summary Card -->
+    <div class="summary-card">
+      <div class="summary-top">
+        <h2 class="summary-no">{{ trip.noTrip }}</h2>
+        <span *ngIf="!trip.isSynced" class="sync-pill pending">Pending</span>
+        <span *ngIf="trip.isSynced" class="sync-pill synced">Synced</span>
+      </div>
 
-  <ion-list>
-    <ion-item *ngFor="let v of trip.vehicles">
-      <ion-label>
-        <h3>{{ v.noPolisi }} ({{ v.jenisKendaraan }}, {{ v.golongan }})</h3>
-        <p>{{ v.muatan }}</p>
-      </ion-label>
-      <ion-note slot="end">{{ v.tarif | currency: 'IDR' }}</ion-note>
-    </ion-item>
-  </ion-list>
+      <div class="summary-meta">
+        <div class="meta-chip">
+          <ion-icon name="cube-outline"></ion-icon>
+          <span>{{ trip.statusMuatan }}</span>
+        </div>
+        <div class="meta-chip">
+          <ion-icon name="car-sport-outline"></ion-icon>
+          <span>{{ trip.vehicles.length }} kendaraan</span>
+        </div>
+        <div class="meta-chip">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>{{ trip.createdAt | date: 'dd MMM, HH:mm' }}</span>
+        </div>
+      </div>
+
+      <div class="summary-total">
+        <span class="total-label">Total Tarif</span>
+        <span class="total-value">{{ totalTarif | currency: 'IDR' }}</span>
+      </div>
+    </div>
+
+    <!-- Vehicle List -->
+    <h3 class="section-title">Daftar Kendaraan</h3>
+
+    <div class="vehicle-list">
+      <div *ngFor="let v of trip.vehicles; let i = index" class="vehicle-card">
+        <div class="vehicle-top">
+          <div class="vehicle-num">
+            <span class="num-badge">{{ i + 1 }}</span>
+          </div>
+          <div class="vehicle-info">
+            <span class="vehicle-plate">{{ v.noPolisi }}</span>
+            <span class="vehicle-type">{{ v.jenisKendaraan }} · {{ v.golongan }}</span>
+          </div>
+          <span class="vehicle-tarif">{{ v.tarif | currency: 'IDR' }}</span>
+        </div>
+        <div class="vehicle-tags">
+          <span class="tag" [class.empty-tag]="v.muatan === 'Tanpa Muatan'">{{ v.muatan }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </ion-content>

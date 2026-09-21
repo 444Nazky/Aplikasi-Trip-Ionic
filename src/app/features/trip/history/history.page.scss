@@ -1,0 +1,159 @@
+// ═══════════════════════════════════════════════════════════
+// History Page — Plantation Modern
+// ═══════════════════════════════════════════════════════════
+
+// ── Empty State ──
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 32px;
+  text-align: center;
+}
+
+.empty-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: var(--color-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+
+  ion-icon {
+    font-size: 36px;
+    color: var(--color-text-muted);
+  }
+}
+
+.empty-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 6px;
+}
+
+.empty-desc {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 260px;
+}
+
+// ── Trip List ──
+.trip-list {
+  padding: 16px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// ── Trip Card ──
+.trip-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.trip-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.trip-no-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trip-no {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+}
+
+.sync-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.03em;
+
+  &.pending {
+    background: rgba(var(--ion-color-warning-rgb), 0.1);
+    color: var(--ion-color-warning);
+  }
+
+  &.synced {
+    background: var(--color-emerald-50);
+    color: var(--ion-color-primary);
+  }
+}
+
+.trip-total {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ion-color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.trip-body {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.trip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-surface-alt);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+
+  ion-icon {
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+}
+
+.trip-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.trip-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  ion-icon { font-size: 14px; }
+}
+
+.trip-arrow {
+  font-size: 16px;
+  color: var(--color-text-muted);
+}

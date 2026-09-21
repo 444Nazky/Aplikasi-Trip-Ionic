@@ -1,36 +1,112 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>Trip Angkutan</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content>
+  <!-- Offline Banner -->
   <div *ngIf="!isOnline" class="offline-banner">
-    Mode Offline - Data akan disinkronkan saat online
+    <div class="offline-dot"></div>
+    <span>Mode Offline — Data akan disinkronkan saat online</span>
   </div>
 
-  <h2>Selamat Datang, {{ userName }}</h2>
-  <p>Region: {{ regionName }}</p>
+  <div class="home-content">
+    <!-- Profile Banner -->
+    <div class="profile-banner">
+      <div class="banner-pattern"></div>
+      <div class="banner-content">
+        <div class="banner-left">
+          <p class="banner-greeting">Selamat datang,</p>
+          <h1 class="banner-name">{{ userName }}</h1>
+          <div class="banner-badges">
+            <div class="region-badge">
+              <div class="region-dot"></div>
+              <span>Region: {{ regionName }}</span>
+            </div>
+            <div class="status-badge" [class.online]="isOnline">
+              <div class="status-dot"></div>
+              <span>{{ isOnline ? 'Online' : 'Offline' }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="banner-avatar">
+          <span class="avatar-text">{{ getInitials(userName) }}</span>
+        </div>
+      </div>
+    </div>
 
-  <ion-button expand="block" routerLink="/create-trip">
-    BUAT TRIP BARU
-  </ion-button>
+    <!-- Main CTA -->
+    <div class="cta-card" routerLink="/create-trip">
+      <div class="cta-left">
+        <div class="cta-icon-wrap">
+          <ion-icon name="add"></ion-icon>
+        </div>
+        <div class="cta-text">
+          <h2 class="cta-title">Mulai Trip</h2>
+          <p class="cta-desc">Catat kendaraan & muatan angkutan</p>
+        </div>
+      </div>
+      <div class="cta-arrow-wrap">
+        <ion-icon name="arrow-forward"></ion-icon>
+      </div>
+    </div>
 
-  <ion-button expand="block" fill="outline" [disabled]="!isOnline" (click)="manualSync()">
-    SYNC MANUAL
-  </ion-button>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrap emerald">
+          <ion-icon name="car-sport"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ tripCount }}</span>
+          <span class="stat-label">Trip Hari Ini</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap amber">
+          <ion-icon name="route"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ vehicleCount }}</span>
+          <span class="stat-label">Kendaraan</span>
+        </div>
+      </div>
+      <div class="stat-card" (click)="manualSync()" [class.clickable]="isOnline">
+        <div class="stat-icon-wrap teal" [class.pulse-anim]="isOnline">
+          <ion-icon name="sync"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">—</span>
+          <span class="stat-label">Sync Data</span>
+        </div>
+      </div>
+    </div>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Ringkasan Hari Ini</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-grid>
-        <ion-row>
-          <ion-col>{{ tripCount }} Trip</ion-col>
-          <ion-col>{{ vehicleCount }} Angkutan</ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-card-content>
-  </ion-card>
+    <!-- Recent Activity -->
+    <div class="section-header" *ngIf="recentTrips.length">
+      <h3 class="section-title">Aktivitas Terbaru</h3>
+      <span class="section-action" routerLink="/tabs/history">Lihat Semua</span>
+    </div>
+
+    <div class="recent-list" *ngIf="recentTrips.length">
+      <div *ngFor="let trip of recentTrips" class="recent-item">
+        <div class="recent-status-icon" [class.synced]="trip.isSynced">
+          <ion-icon [name]="trip.isSynced ? 'checkmark-circle' : 'time-outline'"></ion-icon>
+        </div>
+        <div class="recent-info">
+          <span class="recent-title">{{ trip.noTrip }}</span>
+          <span class="recent-meta">{{ trip.vehicles.length }} kendaraan · {{ trip.createdAt | date: 'dd MMM, HH:mm' }}</span>
+        </div>
+        <span class="recent-pill" [class.synced]="trip.isSynced">
+          {{ trip.isSynced ? 'Synced' : 'Pending' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="empty-recent" *ngIf="!recentTrips.length">
+      <ion-icon name="document-text-outline"></ion-icon>
+      <p>Belum ada aktivitas hari ini</p>
+    </div>
+  </div>
 </ion-content>

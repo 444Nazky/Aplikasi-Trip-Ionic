@@ -7,11 +7,6 @@ import {
   IonTitle,
   IonContent,
   IonIcon,
-  IonCard,
-  IonCardContent,
-  IonItem,
-  IonLabel,
-  IonNote,
   IonButton,
 } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -29,11 +24,6 @@ import { SyncService } from '../../core/services/sync.service';
     IonTitle,
     IonContent,
     IonIcon,
-    IonCard,
-    IonCardContent,
-    IonItem,
-    IonLabel,
-    IonNote,
     IonButton,
   ],
   templateUrl: './profile.page.html',
@@ -61,6 +51,15 @@ export class ProfilePage implements OnInit {
     this.pendingSync = await this.sync.pendingCount();
   }
 
+  getInitials(name: string): string {
+    if (!name) return '?';
+    return name
+      .split(' ')
+      .slice(0, 2)
+      .map((w) => w.charAt(0).toUpperCase())
+      .join('');
+  }
+
   async logout(): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: 'Logout',
@@ -69,6 +68,7 @@ export class ProfilePage implements OnInit {
         { text: 'Batal', role: 'cancel' },
         {
           text: 'Logout',
+          role: 'destructive',
           handler: async () => {
             await this.auth.logout();
             this.router.navigateByUrl('/login', { replaceUrl: true });

@@ -8,14 +8,14 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonItem,
-  IonLabel,
   IonInput,
   IonSelect,
   IonSelectOption,
   IonButton,
   IonIcon,
   IonSpinner,
+  IonButtons,
+  IonBackButton,
 } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { LocationService } from '../../../core/services/location.service';
@@ -36,14 +36,14 @@ import { StatusMuatanVehicle, VehicleModel } from '../../../data/models/vehicle.
     IonToolbar,
     IonTitle,
     IonContent,
-    IonItem,
-    IonLabel,
     IonInput,
     IonSelect,
     IonSelectOption,
     IonButton,
     IonIcon,
     IonSpinner,
+    IonButtons,
+    IonBackButton,
   ],
   templateUrl: './input-vehicle.page.html',
   styleUrls: ['./input-vehicle.page.scss'],
@@ -58,6 +58,12 @@ export class InputVehiclePage implements OnInit {
   fotoPath = '';
   gpsText = '';
   saving = false;
+
+  vehicleTypes = [
+    { value: 'Truk' as JenisKendaraan, label: 'Truk', icon: 'car-sport-outline' },
+    { value: 'Mobil' as JenisKendaraan, label: 'Mobil', icon: 'car-outline' },
+    { value: 'Motor' as JenisKendaraan, label: 'Motor', icon: 'bicycle-outline' },
+  ];
 
   private lastGps?: { lat: number; lng: number; accuracy: number };
 

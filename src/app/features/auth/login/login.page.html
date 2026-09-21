@@ -1,20 +1,98 @@
-<ion-content class="ion-padding">
-  <div class="login-container">
-    <h1>TRIP ANGKUTAN</h1>
-    <p>Masukkan PIN 6 Digit</p>
+<ion-content class="ion-no-border">
+  <div class="login-page">
+    <!-- Hero Background -->
+    <div class="login-hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <div class="hero-icon">
+          <ion-icon name="bus-outline"></ion-icon>
+        </div>
+        <h1 class="hero-title">Trip Angkutan</h1>
+        <p class="hero-desc">Sistem Pencatatan Angkutan Perkebunan</p>
+      </div>
+    </div>
 
-    <ion-input
-      type="password"
-      inputmode="numeric"
-      maxlength="6"
-      [(ngModel)]="pin"
-      placeholder="------"
-      class="pin-input">
-    </ion-input>
+    <!-- Device Region Lock -->
+    <div class="login-header">
+      <div class="device-lock-card">
+        <div class="lock-icon">
+          <ion-icon name="shield-checkmark"></ion-icon>
+        </div>
+        <div class="lock-info">
+          <span class="lock-title">Device Region Locked</span>
+          <span class="lock-region">BADAU</span>
+        </div>
+      </div>
+    </div>
 
-    <ion-button expand="block" [disabled]="loading" (click)="login()">
-      <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
-      <span *ngIf="!loading">MASUK</span>
-    </ion-button>
+    <!-- Main Card -->
+    <div class="login-card">
+      <!-- Officer Selection -->
+      <div class="officer-section">
+        <h3 class="section-label">Petugas</h3>
+        <div class="officer-pill">
+          <div class="officer-avatar-sm">
+            <ion-icon name="person"></ion-icon>
+          </div>
+          <div class="officer-details">
+            <span class="officer-name">Petugas Kebun</span>
+            <span class="officer-id">ID: usr-001</span>
+          </div>
+          <ion-icon name="chevron-down" class="chevron"></ion-icon>
+        </div>
+      </div>
+
+      <!-- PIN Input -->
+      <div class="pin-section">
+        <h3 class="section-label">PIN Akses</h3>
+        <div class="pin-dots">
+          <span *ngFor="let dot of [0,1,2,3,4,5]"
+            class="pin-dot"
+            [class.filled]="pin.length > dot"
+            [class.active]="pin.length === dot"
+          ></span>
+        </div>
+        <p class="pin-hint">Masukkan PIN 6 digit</p>
+
+        <input
+          type="password"
+          inputmode="numeric"
+          maxlength="6"
+          [(ngModel)]="pin"
+          class="pin-hidden-input"
+          (keyup.enter)="login()"
+          autofocus
+        />
+      </div>
+
+      <!-- Numpad -->
+      <div class="numpad">
+        <button *ngFor="let num of [1,2,3,4,5,6,7,8,9]"
+          class="numpad-key"
+          (click)="pressKey(num.toString())"
+        >
+          {{ num }}
+        </button>
+        <button class="numpad-key empty" disabled></button>
+        <button class="numpad-key" (click)="pressKey('0')">0</button>
+        <button class="numpad-key backspace" (click)="pressBackspace()">
+          <ion-icon name="backspace-outline"></ion-icon>
+        </button>
+      </div>
+
+      <!-- Login Button -->
+      <ion-button
+        expand="block"
+        class="login-btn"
+        [disabled]="loading || pin.length !== 6"
+        (click)="login()"
+      >
+        <ion-spinner *ngIf="loading" name="dots" class="btn-spinner"></ion-spinner>
+        <span *ngIf="!loading">Masuk</span>
+      </ion-button>
+    </div>
+
+    <!-- Footer -->
+    <p class="login-footer">Trip Angkutan · v1.0</p>
   </div>
 </ion-content>

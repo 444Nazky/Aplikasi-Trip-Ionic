@@ -10,6 +10,7 @@ import { TripModel } from '../../../data/models/trip.model';
   standalone: true,
   imports: [CommonModule, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonButton],
   templateUrl: './success-dialog.page.html',
+  styleUrls: ['./success-dialog.page.scss'],
 })
 export class SuccessDialogPage implements OnInit {
   trip: TripModel | null = null;

@@ -1,9 +1,228 @@
-.profile-header {
-  text-align: center;
+// ═══════════════════════════════════════════════════════════
+// Profile Page — Plantation Modern
+// ═══════════════════════════════════════════════════════════
+
+.profile-page {
+  padding: 16px 20px 32px;
+}
+
+// ── Profile Card ──
+.profile-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, var(--color-surface-dark) 0%, var(--color-surface-dark-alt) 100%);
+  border-radius: var(--radius-xl);
+  padding: 32px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-emerald);
+  overflow: hidden;
+}
+
+.card-pattern {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 60% 80%, rgba(245,158,11,0.06) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.card-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 16px;
 }
 
-.avatar-icon {
-  font-size: 80px;
-  color: var(--ion-color-medium);
+.avatar-text {
+  font-size: 26px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+.profile-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+}
+
+.profile-region {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  ion-icon { font-size: 14px; }
+}
+
+// ── Stats ──
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  text-align: center;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+
+  ion-icon { font-size: 20px; }
+
+  &.emerald {
+    background: var(--color-emerald-50);
+    ion-icon { color: var(--ion-color-primary); }
+  }
+
+  &.amber {
+    background: var(--color-amber-50);
+    ion-icon { color: var(--ion-color-warning); }
+  }
+}
+
+.stat-number {
+  display: block;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  margin-bottom: 4px;
+
+  &.warning {
+    color: var(--ion-color-warning);
+  }
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// ── Info List ──
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.info-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--color-emerald-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 20px;
+    color: var(--ion-color-primary);
+  }
+
+  &.region {
+    background: rgba(var(--ion-color-tertiary-rgb), 0.08);
+    ion-icon { color: var(--ion-color-tertiary); }
+  }
+
+  &.success {
+    background: var(--color-emerald-50);
+    ion-icon { color: var(--ion-color-primary); }
+  }
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.info-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+// ── Logout ──
+.logout-section {
+  margin-bottom: 16px;
+}
+
+.logout-btn {
+  --border-color: rgba(var(--ion-color-danger-rgb), 0.3);
+  --color: var(--ion-color-danger);
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  font-weight: 600;
+
+  &:active {
+    transform: scale(0.98);
+    --background: rgba(var(--ion-color-danger-rgb), 0.04);
+  }
+}
+
+.version-text {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin: 0;
 }

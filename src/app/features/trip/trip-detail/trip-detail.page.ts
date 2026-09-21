@@ -7,10 +7,7 @@ import {
   IonBackButton,
   IonTitle,
   IonContent,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonNote,
+  IonIcon,
 } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { StorageService } from '../../../core/services/storage.service';
@@ -27,15 +24,17 @@ import { TripModel } from '../../../data/models/trip.model';
     IonBackButton,
     IonTitle,
     IonContent,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonNote,
+    IonIcon,
   ],
   templateUrl: './trip-detail.page.html',
+  styleUrls: ['./trip-detail.page.scss'],
 })
 export class TripDetailPage implements OnInit {
   trip: TripModel | null = null;
+
+  get totalTarif(): number {
+    return this.trip?.vehicles.reduce((s, v) => s + v.tarif, 0) ?? 0;
+  }
 
   constructor(private route: ActivatedRoute, private storage: StorageService) {}
 

@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/tabs/home"></ion-back-button>
@@ -7,32 +7,95 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-item>
-    <ion-label>Status Muatan</ion-label>
-    <ion-select [(ngModel)]="statusMuatan">
-      <ion-select-option value="Ada Muatan">Ada Muatan</ion-select-option>
-      <ion-select-option value="Kosong">Kosong</ion-select-option>
-    </ion-select>
-  </ion-item>
+<ion-content>
+  <div class="form-page">
+    <!-- Step Indicator -->
+    <div class="step-bar">
+      <div class="step active">
+        <div class="step-dot">1</div>
+        <span class="step-label">Status Muatan</span>
+      </div>
+      <div class="step-line active-line"></div>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <span class="step-label">Input Kendaraan</span>
+      </div>
+    </div>
 
-  <div *ngIf="statusMuatan === 'Kosong'">
-    <ion-item>
-      <ion-label position="floating">Keterangan</ion-label>
-      <ion-input [(ngModel)]="keterangan"></ion-input>
-    </ion-item>
-    <ion-button expand="block" (click)="capturePhoto()">
-      Ambil Foto Kondisi
-    </ion-button>
-    <img *ngIf="fotoKosongPath" [src]="fotoKosongPath" class="photo-preview" />
+    <!-- Muatan Segmented Cards -->
+    <div class="form-section">
+      <h3 class="section-title">Kondisi Angkutan</h3>
+      <div class="segment-grid">
+        <button
+          class="segment-card"
+          [class.active]="statusMuatan === 'Ada Muatan'"
+          (click)="statusMuatan = 'Ada Muatan'"
+        >
+          <div class="segment-icon-wrap loaded">
+            <ion-icon name="cube"></ion-icon>
+          </div>
+          <div class="segment-text">
+            <span class="segment-name">Ada Muatan</span>
+            <span class="segment-desc">Angkutan dengan muatan</span>
+          </div>
+        </button>
+        <button
+          class="segment-card"
+          [class.active]="statusMuatan === 'Kosong'"
+          (click)="statusMuatan = 'Kosong'"
+        >
+          <div class="segment-icon-wrap empty">
+            <ion-icon name="cube-outline"></ion-icon>
+          </div>
+          <div class="segment-text">
+            <span class="segment-name">Kosong</span>
+            <span class="segment-desc">Angkutan tanpa muatan</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty trip details -->
+    <div *ngIf="statusMuatan === 'Kosong'" class="form-section fade-in">
+      <div class="field-header">
+        <h3 class="section-title">Keterangan</h3>
+        <span class="field-required">Wajib</span>
+      </div>
+
+      <div class="input-card">
+        <ion-input
+          [(ngModel)]="keterangan"
+          placeholder="Tulis keterangan kondisi kendaraan..."
+          class="styled-input"
+        ></ion-input>
+      </div>
+
+      <div class="photo-upload" (click)="capturePhoto()">
+        <div *ngIf="!fotoKosongPath" class="upload-placeholder">
+          <ion-icon name="camera-outline"></ion-icon>
+          <span>Ambil Foto Kondisi</span>
+        </div>
+        <div *ngIf="fotoKosongPath" class="upload-done">
+          <img [src]="fotoKosongPath" class="photo-thumb" />
+          <div class="photo-check">
+            <ion-icon name="checkmark"></ion-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="form-actions">
+      <ion-button
+        expand="block"
+        [disabled]="!canSubmit || saving"
+        (click)="submit()"
+        class="submit-btn"
+      >
+        <ion-spinner *ngIf="saving" name="dots" class="btn-spinner"></ion-spinner>
+        <span *ngIf="!saving">Mulai Input Kendaraan</span>
+        <ion-icon *ngIf="!saving" name="arrow-forward" slot="end"></ion-icon>
+      </ion-button>
+    </div>
   </div>
-
-  <ion-button
-    expand="block"
-    color="success"
-    [disabled]="!canSubmit || saving"
-    (click)="submit()">
-    <ion-spinner *ngIf="saving" name="dots"></ion-spinner>
-    <span *ngIf="!saving">MULAI INPUT KENDARAAN</span>
-  </ion-button>
 </ion-content>

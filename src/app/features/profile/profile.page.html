@@ -1,32 +1,83 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>Profil</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="profile-header">
-    <ion-icon name="person-circle" class="avatar-icon"></ion-icon>
-    <h2>{{ userName }}</h2>
-    <p>{{ regionName }}</p>
+<ion-content>
+  <div class="profile-page">
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <div class="card-pattern"></div>
+      <div class="card-content">
+        <div class="profile-avatar">
+          <span class="avatar-text">{{ getInitials(userName) }}</span>
+        </div>
+        <h2 class="profile-name">{{ userName }}</h2>
+        <div class="profile-region">
+          <ion-icon name="location-outline"></ion-icon>
+          <span>{{ regionName }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon emerald">
+          <ion-icon name="car-sport"></ion-icon>
+        </div>
+        <span class="stat-number">{{ totalTrips }}</span>
+        <span class="stat-label">Total Trip</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon amber">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+        </div>
+        <span class="stat-number" [class.warning]="pendingSync > 0">{{ pendingSync }}</span>
+        <span class="stat-label">Pending Sync</span>
+      </div>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="info-list">
+      <div class="info-card">
+        <div class="info-icon-wrap">
+          <ion-icon name="person-outline"></ion-icon>
+        </div>
+        <div class="info-content">
+          <span class="info-label">Nama Petugas</span>
+          <span class="info-value">{{ userName }}</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon-wrap region">
+          <ion-icon name="map-outline"></ion-icon>
+        </div>
+        <div class="info-content">
+          <span class="info-label">Wilayah Kerja</span>
+          <span class="info-value">{{ regionName }}</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon-wrap success">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
+        <div class="info-content">
+          <span class="info-label">Status Device</span>
+          <span class="info-value">Terdaftar</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <div class="logout-section">
+      <ion-button expand="block" fill="outline" color="danger" (click)="logout()" class="logout-btn">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Keluar dari Akun
+      </ion-button>
+    </div>
+
+    <p class="version-text">Trip Angkutan v1.0 · Capacitor 7</p>
   </div>
-
-  <ion-card>
-    <ion-card-content>
-      <ion-item>
-        <ion-label>Total Trip</ion-label>
-        <ion-note>{{ totalTrips }}</ion-note>
-      </ion-item>
-      <ion-item>
-        <ion-label>Pending Sync</ion-label>
-        <ion-note [color]="pendingSync > 0 ? 'warning' : undefined">
-          {{ pendingSync }}
-        </ion-note>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-button expand="block" color="danger" (click)="logout()">
-    LOGOUT
-  </ion-button>
 </ion-content>

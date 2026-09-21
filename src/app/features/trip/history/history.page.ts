@@ -5,11 +5,7 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonBadge,
+  IonIcon,
 } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { StorageService } from '../../../core/services/storage.service';
@@ -24,11 +20,7 @@ import { TripModel } from '../../../data/models/trip.model';
     IonToolbar,
     IonTitle,
     IonContent,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonNote,
-    IonBadge,
+    IonIcon,
   ],
   templateUrl: './history.page.html',
   styleUrls: ['./history.page.scss'],
