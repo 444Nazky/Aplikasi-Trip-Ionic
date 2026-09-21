@@ -17,19 +17,6 @@
       "norm_label": "cameraservice"
     },
     {
-      "label": "GpsResult",
-      "file_type": "code",
-      "source_file": "src/app/core/services/location.service.ts",
-      "source_location": "L6",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "id": "src_app_core_services_location_service_gpsresult",
-      "community": 0,
-      "community_name": "input-vehicle.page.ts",
-      "norm_label": "gpsresult"
-    },
-    {
       "label": "LocationService",
       "file_type": "code",
       "source_file": "src/app/core/services/location.service.ts",
@@ -69,19 +56,6 @@
       "norm_label": "tripservice"
     },
     {
-      "label": "RegionModel",
-      "file_type": "code",
-      "source_file": "src/app/data/models/region.model.ts",
-      "source_location": "L1",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "id": "src_app_data_models_region_model_regionmodel",
-      "community": 0,
-      "community_name": "input-vehicle.page.ts",
-      "norm_label": "regionmodel"
-    },
-    {
       "label": "Golongan",
       "file_type": "code",
       "source_file": "src/app/data/models/tariff.model.ts",
@@ -108,6 +82,19 @@
       "norm_label": "jeniskendaraan"
     },
     {
+      "label": "TariffModel",
+      "file_type": "code",
+      "source_file": "src/app/data/models/tariff.model.ts",
+      "source_location": "L4",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "src_app_data_models_tariff_model_tariffmodel",
+      "community": 0,
+      "community_name": "input-vehicle.page.ts",
+      "norm_label": "tariffmodel"
+    },
+    {
       "label": "StatusMuatanTrip",
       "file_type": "code",
       "source_file": "src/app/data/models/trip.model.ts",
@@ -119,6 +106,19 @@
       "community": 0,
       "community_name": "input-vehicle.page.ts",
       "norm_label": "statusmuatantrip"
+    },
+    {
+      "label": "TripStatus",
+      "file_type": "code",
+      "source_file": "src/app/data/models/trip.model.ts",
+      "source_location": "L4",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "src_app_data_models_trip_model_tripstatus",
+      "community": 0,
+      "community_name": "input-vehicle.page.ts",
+      "norm_label": "tripstatus"
     },
     {
       "label": "StatusMuatanVehicle",
@@ -212,6 +212,32 @@
       "norm_label": "mainactivity"
     },
     {
+      "label": "AppComponent",
+      "file_type": "code",
+      "source_file": "src/app/app.component.ts",
+      "source_location": "L12",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "src_app_app_component_appcomponent",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "appcomponent"
+    },
+    {
+      "label": "ApiResponse",
+      "file_type": "code",
+      "source_file": "src/app/core/services/api.service.ts",
+      "source_location": "L8",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "src_app_core_services_api_service_apiresponse",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "apiresponse"
+    },
+    {
       "label": "ApiService",
       "file_type": "code",
       "source_file": "src/app/core/services/api.service.ts",
@@ -221,8 +247,21 @@
       "_origin": "ast",
       "id": "src_app_core_services_api_service_apiservice",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": "apiservice"
+    },
+    {
+      "label": "GpsResult",
+      "file_type": "code",
+      "source_file": "src/app/core/services/location.service.ts",
+      "source_location": "L6",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "src_app_core_services_location_service_gpsresult",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "gpsresult"
     },
     {
       "label": "NetworkService",
@@ -234,7 +273,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_network_service_networkservice",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": "networkservice"
     },
     {
@@ -247,8 +286,21 @@
       "_origin": "ast",
       "id": "src_app_core_services_sync_service_syncservice",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": "syncservice"
+    },
+    {
+      "label": "RegionModel",
+      "file_type": "code",
+      "source_file": "src/app/data/models/region.model.ts",
+      "source_location": "L1",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "src_app_data_models_region_model_regionmodel",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "regionmodel"
     },
     {
       "label": "HomePage",
@@ -260,21 +312,8 @@
       "_origin": "ast",
       "id": "src_app_features_home_home_page_homepage",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": "homepage"
-    },
-    {
-      "label": "AppComponent",
-      "file_type": "code",
-      "source_file": "src/app/app.component.ts",
-      "source_location": "L12",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "id": "src_app_app_component_appcomponent",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "appcomponent"
     },
     {
       "label": "AuthGuard",
@@ -286,21 +325,8 @@
       "_origin": "ast",
       "id": "src_app_core_guards_auth_guard_authguard",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "authguard"
-    },
-    {
-      "label": "ApiResponse",
-      "file_type": "code",
-      "source_file": "src/app/core/services/api.service.ts",
-      "source_location": "L8",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "id": "src_app_core_services_api_service_apiresponse",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "apiresponse"
     },
     {
       "label": "AuthService",
@@ -312,34 +338,8 @@
       "_origin": "ast",
       "id": "src_app_core_services_auth_service_authservice",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "authservice"
-    },
-    {
-      "label": "TripModel",
-      "file_type": "code",
-      "source_file": "src/app/data/models/trip.model.ts",
-      "source_location": "L6",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "id": "src_app_data_models_trip_model_tripmodel",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "tripmodel"
-    },
-    {
-      "label": "TripStatus",
-      "file_type": "code",
-      "source_file": "src/app/data/models/trip.model.ts",
-      "source_location": "L4",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "id": "src_app_data_models_trip_model_tripstatus",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "tripstatus"
     },
     {
       "label": "UserModel",
@@ -351,7 +351,7 @@
       "_origin": "ast",
       "id": "src_app_data_models_user_model_usermodel",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "usermodel"
     },
     {
@@ -364,7 +364,7 @@
       "_origin": "ast",
       "id": "src_app_features_auth_login_login_page_loginpage",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "loginpage"
     },
     {
@@ -377,8 +377,21 @@
       "_origin": "ast",
       "id": "src_app_features_auth_splash_splash_page_splashpage",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "splashpage"
+    },
+    {
+      "label": "ProfilePage",
+      "file_type": "code",
+      "source_file": "src/app/features/profile/profile.page.ts",
+      "source_location": "L42",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "src_app_features_profile_profile_page_profilepage",
+      "community": 3,
+      "community_name": "AuthService",
+      "norm_label": "profilepage"
     },
     {
       "label": "TabsPage",
@@ -390,21 +403,8 @@
       "_origin": "ast",
       "id": "src_app_features_tabs_tabs_page_tabspage",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "tabspage"
-    },
-    {
-      "label": "HistoryPage",
-      "file_type": "code",
-      "source_file": "src/app/features/trip/history/history.page.ts",
-      "source_location": "L36",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "id": "src_app_features_trip_history_history_page_historypage",
-      "community": 30,
-      "community_name": "HistoryPage",
-      "norm_label": "historypage"
     },
     {
       "label": "StorageService",
@@ -420,30 +420,30 @@
       "norm_label": "storageservice"
     },
     {
-      "label": "TariffModel",
+      "label": "TripModel",
       "file_type": "code",
-      "source_file": "src/app/data/models/tariff.model.ts",
-      "source_location": "L4",
+      "source_file": "src/app/data/models/trip.model.ts",
+      "source_location": "L6",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "id": "src_app_data_models_tariff_model_tariffmodel",
+      "id": "src_app_data_models_trip_model_tripmodel",
       "community": 4,
       "community_name": "StorageService",
-      "norm_label": "tariffmodel"
+      "norm_label": "tripmodel"
     },
     {
-      "label": "ProfilePage",
+      "label": "HistoryPage",
       "file_type": "code",
-      "source_file": "src/app/features/profile/profile.page.ts",
-      "source_location": "L42",
+      "source_file": "src/app/features/trip/history/history.page.ts",
+      "source_location": "L36",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "id": "src_app_features_profile_profile_page_profilepage",
+      "id": "src_app_features_trip_history_history_page_historypage",
       "community": 4,
       "community_name": "StorageService",
-      "norm_label": "profilepage"
+      "norm_label": "historypage"
     },
     {
       "label": "SuccessDialogPage",
@@ -496,16 +496,16 @@
       "norm_label": ".getcurrentposition()"
     },
     {
-      "label": ".isWithinRegion()",
+      "label": ".getTariffs()",
       "file_type": "code",
-      "source_file": "src/app/core/services/location.service.ts",
-      "source_location": "L31",
+      "source_file": "src/app/core/services/storage.service.ts",
+      "source_location": "L100",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_app_core_services_location_service_locationservice_iswithinregion",
+      "id": "src_app_core_services_storage_service_storageservice_gettariffs",
       "community": 0,
       "community_name": "input-vehicle.page.ts",
-      "norm_label": ".iswithinregion()"
+      "norm_label": ".gettariffs()"
     },
     {
       "label": ".calculate()",
@@ -518,18 +518,6 @@
       "community": 0,
       "community_name": "input-vehicle.page.ts",
       "norm_label": ".calculate()"
-    },
-    {
-      "label": ".constructor()",
-      "file_type": "code",
-      "source_file": "src/app/core/services/tariff.service.ts",
-      "source_location": "L9",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_core_services_tariff_service_tariffservice_constructor",
-      "community": 0,
-      "community_name": "input-vehicle.page.ts",
-      "norm_label": ".constructor()"
     },
     {
       "label": ".addVehicle()",
@@ -556,16 +544,16 @@
       "norm_label": ".completetrip()"
     },
     {
-      "label": ".constructor()",
+      "label": ".startTrip()",
       "file_type": "code",
       "source_file": "src/app/core/services/trip.service.ts",
-      "source_location": "L14",
+      "source_location": "L16",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_app_core_services_trip_service_tripservice_constructor",
+      "id": "src_app_core_services_trip_service_tripservice_starttrip",
       "community": 0,
       "community_name": "input-vehicle.page.ts",
-      "norm_label": ".constructor()"
+      "norm_label": ".starttrip()"
     },
     {
       "label": "generateId()",
@@ -590,18 +578,6 @@
       "community": 0,
       "community_name": "input-vehicle.page.ts",
       "norm_label": "generatetripnumber()"
-    },
-    {
-      "label": "isInsideRegion()",
-      "file_type": "code",
-      "source_file": "src/app/data/models/region.model.ts",
-      "source_location": "L12",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_data_models_region_model_isinsideregion",
-      "community": 0,
-      "community_name": "input-vehicle.page.ts",
-      "norm_label": "isinsideregion()"
     },
     {
       "label": ".canSubmit()",
@@ -804,7 +780,7 @@
       "_origin": "ast",
       "id": "src_app_app_component_appcomponent_constructor",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -816,7 +792,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_api_service_apiservice_addvehicle",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".addvehicle()"
     },
     {
@@ -828,7 +804,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_api_service_apiservice_completetrip",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".completetrip()"
     },
     {
@@ -840,7 +816,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_api_service_apiservice_constructor",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -852,7 +828,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_api_service_apiservice_createtrip",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".createtrip()"
     },
     {
@@ -864,7 +840,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_api_service_apiservice_refreshtoken",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".refreshtoken()"
     },
     {
@@ -876,7 +852,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_api_service_apiservice_uploadphoto",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".uploadphoto()"
     },
     {
@@ -888,8 +864,20 @@
       "_origin": "ast",
       "id": "src_app_core_services_auth_service_authservice_constructor",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".constructor()"
+    },
+    {
+      "label": ".isWithinRegion()",
+      "file_type": "code",
+      "source_file": "src/app/core/services/location.service.ts",
+      "source_location": "L31",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_core_services_location_service_locationservice_iswithinregion",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": ".iswithinregion()"
     },
     {
       "label": ".constructor()",
@@ -900,7 +888,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_network_service_networkservice_constructor",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -912,7 +900,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_network_service_networkservice_init",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".init()"
     },
     {
@@ -924,7 +912,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_network_service_networkservice_isonline",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".isonline()"
     },
     {
@@ -936,7 +924,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_sync_service_syncservice_constructor",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -948,7 +936,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_sync_service_syncservice_processqueue",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".processqueue()"
     },
     {
@@ -960,20 +948,20 @@
       "_origin": "ast",
       "id": "src_app_core_services_sync_service_syncservice_start",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".start()"
     },
     {
-      "label": ".syncTrip()",
+      "label": "isInsideRegion()",
       "file_type": "code",
-      "source_file": "src/app/core/services/sync.service.ts",
-      "source_location": "L44",
+      "source_file": "src/app/data/models/region.model.ts",
+      "source_location": "L12",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_app_core_services_sync_service_syncservice_synctrip",
+      "id": "src_app_data_models_region_model_isinsideregion",
       "community": 2,
-      "community_name": "ApiService",
-      "norm_label": ".synctrip()"
+      "community_name": "sync.service.ts",
+      "norm_label": "isinsideregion()"
     },
     {
       "label": ".constructor()",
@@ -984,7 +972,7 @@
       "_origin": "ast",
       "id": "src_app_features_home_home_page_homepage_constructor",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -996,7 +984,7 @@
       "_origin": "ast",
       "id": "src_app_features_home_home_page_homepage_ionviewwillenter",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".ionviewwillenter()"
     },
     {
@@ -1008,7 +996,7 @@
       "_origin": "ast",
       "id": "src_app_features_home_home_page_homepage_manualsync",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".manualsync()"
     },
     {
@@ -1020,7 +1008,7 @@
       "_origin": "ast",
       "id": "src_app_features_home_home_page_homepage_ngoninit",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".ngoninit()"
     },
     {
@@ -1032,7 +1020,7 @@
       "_origin": "ast",
       "id": "src_app_features_home_home_page_homepage_refreshsummary",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": ".refreshsummary()"
     },
     {
@@ -1044,7 +1032,7 @@
       "_origin": "ast",
       "id": "src_app_core_guards_auth_guard_authguard_canactivate",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".canactivate()"
     },
     {
@@ -1056,7 +1044,7 @@
       "_origin": "ast",
       "id": "src_app_core_guards_auth_guard_authguard_constructor",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".constructor()"
     },
     {
@@ -1068,7 +1056,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_api_service_apiservice_login",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".login()"
     },
     {
@@ -1080,7 +1068,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_auth_service_authservice_getdeviceid",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".getdeviceid()"
     },
     {
@@ -1092,7 +1080,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_auth_service_authservice_isloggedin",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".isloggedin()"
     },
     {
@@ -1104,8 +1092,20 @@
       "_origin": "ast",
       "id": "src_app_core_services_auth_service_authservice_login",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".login()"
+    },
+    {
+      "label": ".logout()",
+      "file_type": "code",
+      "source_file": "src/app/core/services/auth.service.ts",
+      "source_location": "L62",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_core_services_auth_service_authservice_logout",
+      "community": 3,
+      "community_name": "AuthService",
+      "norm_label": ".logout()"
     },
     {
       "label": ".restoreSession()",
@@ -1116,8 +1116,56 @@
       "_origin": "ast",
       "id": "src_app_core_services_auth_service_authservice_restoresession",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".restoresession()"
+    },
+    {
+      "label": ".clearCurrentUser()",
+      "file_type": "code",
+      "source_file": "src/app/core/services/storage.service.ts",
+      "source_location": "L43",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_core_services_storage_service_storageservice_clearcurrentuser",
+      "community": 3,
+      "community_name": "AuthService",
+      "norm_label": ".clearcurrentuser()"
+    },
+    {
+      "label": ".getCurrentUser()",
+      "file_type": "code",
+      "source_file": "src/app/core/services/storage.service.ts",
+      "source_location": "L39",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_core_services_storage_service_storageservice_getcurrentuser",
+      "community": 3,
+      "community_name": "AuthService",
+      "norm_label": ".getcurrentuser()"
+    },
+    {
+      "label": ".setCurrentUser()",
+      "file_type": "code",
+      "source_file": "src/app/core/services/storage.service.ts",
+      "source_location": "L35",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_core_services_storage_service_storageservice_setcurrentuser",
+      "community": 3,
+      "community_name": "AuthService",
+      "norm_label": ".setcurrentuser()"
+    },
+    {
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "src/app/core/services/trip.service.ts",
+      "source_location": "L14",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_core_services_trip_service_tripservice_constructor",
+      "community": 3,
+      "community_name": "AuthService",
+      "norm_label": ".constructor()"
     },
     {
       "label": "hashPin()",
@@ -1128,7 +1176,7 @@
       "_origin": "ast",
       "id": "src_app_core_utils_hash_util_hashpin",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "hashpin()"
     },
     {
@@ -1140,7 +1188,7 @@
       "_origin": "ast",
       "id": "src_app_features_auth_login_login_page_loginpage_constructor",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".constructor()"
     },
     {
@@ -1152,7 +1200,7 @@
       "_origin": "ast",
       "id": "src_app_features_auth_login_login_page_loginpage_login",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".login()"
     },
     {
@@ -1164,7 +1212,7 @@
       "_origin": "ast",
       "id": "src_app_features_auth_login_login_page_loginpage_showtoast",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".showtoast()"
     },
     {
@@ -1176,7 +1224,7 @@
       "_origin": "ast",
       "id": "src_app_features_auth_splash_splash_page_splashpage_constructor",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".constructor()"
     },
     {
@@ -1188,92 +1236,32 @@
       "_origin": "ast",
       "id": "src_app_features_auth_splash_splash_page_splashpage_ngoninit",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": ".ngoninit()"
     },
     {
       "label": ".constructor()",
       "file_type": "code",
-      "source_file": "src/app/features/trip/history/history.page.ts",
-      "source_location": "L39",
+      "source_file": "src/app/features/profile/profile.page.ts",
+      "source_location": "L48",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_app_features_trip_history_history_page_historypage_constructor",
-      "community": 30,
-      "community_name": "HistoryPage",
+      "id": "src_app_features_profile_profile_page_profilepage_constructor",
+      "community": 3,
+      "community_name": "AuthService",
       "norm_label": ".constructor()"
-    },
-    {
-      "label": ".ionViewWillEnter()",
-      "file_type": "code",
-      "source_file": "src/app/features/trip/history/history.page.ts",
-      "source_location": "L45",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_features_trip_history_history_page_historypage_ionviewwillenter",
-      "community": 30,
-      "community_name": "HistoryPage",
-      "norm_label": ".ionviewwillenter()"
-    },
-    {
-      "label": ".load()",
-      "file_type": "code",
-      "source_file": "src/app/features/trip/history/history.page.ts",
-      "source_location": "L49",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_features_trip_history_history_page_historypage_load",
-      "community": 30,
-      "community_name": "HistoryPage",
-      "norm_label": ".load()"
-    },
-    {
-      "label": ".ngOnInit()",
-      "file_type": "code",
-      "source_file": "src/app/features/trip/history/history.page.ts",
-      "source_location": "L41",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_features_trip_history_history_page_historypage_ngoninit",
-      "community": 30,
-      "community_name": "HistoryPage",
-      "norm_label": ".ngoninit()"
-    },
-    {
-      "label": ".viewDetail()",
-      "file_type": "code",
-      "source_file": "src/app/features/trip/history/history.page.ts",
-      "source_location": "L59",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_features_trip_history_history_page_historypage_viewdetail",
-      "community": 30,
-      "community_name": "HistoryPage",
-      "norm_label": ".viewdetail()"
     },
     {
       "label": ".logout()",
       "file_type": "code",
-      "source_file": "src/app/core/services/auth.service.ts",
-      "source_location": "L62",
+      "source_file": "src/app/features/profile/profile.page.ts",
+      "source_location": "L64",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_app_core_services_auth_service_authservice_logout",
-      "community": 4,
-      "community_name": "StorageService",
+      "id": "src_app_features_profile_profile_page_profilepage_logout",
+      "community": 3,
+      "community_name": "AuthService",
       "norm_label": ".logout()"
-    },
-    {
-      "label": ".clearCurrentUser()",
-      "file_type": "code",
-      "source_file": "src/app/core/services/storage.service.ts",
-      "source_location": "L43",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_core_services_storage_service_storageservice_clearcurrentuser",
-      "community": 4,
-      "community_name": "StorageService",
-      "norm_label": ".clearcurrentuser()"
     },
     {
       "label": ".constructor()",
@@ -1324,18 +1312,6 @@
       "norm_label": ".getalltrips()"
     },
     {
-      "label": ".getCurrentUser()",
-      "file_type": "code",
-      "source_file": "src/app/core/services/storage.service.ts",
-      "source_location": "L39",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_core_services_storage_service_storageservice_getcurrentuser",
-      "community": 4,
-      "community_name": "StorageService",
-      "norm_label": ".getcurrentuser()"
-    },
-    {
       "label": ".getPendingTrips()",
       "file_type": "code",
       "source_file": "src/app/core/services/storage.service.ts",
@@ -1346,18 +1322,6 @@
       "community": 4,
       "community_name": "StorageService",
       "norm_label": ".getpendingtrips()"
-    },
-    {
-      "label": ".getTariffs()",
-      "file_type": "code",
-      "source_file": "src/app/core/services/storage.service.ts",
-      "source_location": "L100",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_core_services_storage_service_storageservice_gettariffs",
-      "community": 4,
-      "community_name": "StorageService",
-      "norm_label": ".gettariffs()"
     },
     {
       "label": ".getTrip()",
@@ -1420,18 +1384,6 @@
       "norm_label": ".savetrip()"
     },
     {
-      "label": ".setCurrentUser()",
-      "file_type": "code",
-      "source_file": "src/app/core/services/storage.service.ts",
-      "source_location": "L35",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_core_services_storage_service_storageservice_setcurrentuser",
-      "community": 4,
-      "community_name": "StorageService",
-      "norm_label": ".setcurrentuser()"
-    },
-    {
       "label": ".setTariffs()",
       "file_type": "code",
       "source_file": "src/app/core/services/storage.service.ts",
@@ -1456,40 +1408,28 @@
       "norm_label": ".pendingcount()"
     },
     {
-      "label": ".startTrip()",
+      "label": ".syncTrip()",
       "file_type": "code",
-      "source_file": "src/app/core/services/trip.service.ts",
-      "source_location": "L16",
+      "source_file": "src/app/core/services/sync.service.ts",
+      "source_location": "L44",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_app_core_services_trip_service_tripservice_starttrip",
+      "id": "src_app_core_services_sync_service_syncservice_synctrip",
       "community": 4,
       "community_name": "StorageService",
-      "norm_label": ".starttrip()"
+      "norm_label": ".synctrip()"
     },
     {
       "label": ".constructor()",
       "file_type": "code",
-      "source_file": "src/app/features/profile/profile.page.ts",
-      "source_location": "L48",
+      "source_file": "src/app/core/services/tariff.service.ts",
+      "source_location": "L9",
       "_callable": true,
       "_origin": "ast",
-      "id": "src_app_features_profile_profile_page_profilepage_constructor",
+      "id": "src_app_core_services_tariff_service_tariffservice_constructor",
       "community": 4,
       "community_name": "StorageService",
       "norm_label": ".constructor()"
-    },
-    {
-      "label": ".logout()",
-      "file_type": "code",
-      "source_file": "src/app/features/profile/profile.page.ts",
-      "source_location": "L64",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "src_app_features_profile_profile_page_profilepage_logout",
-      "community": 4,
-      "community_name": "StorageService",
-      "norm_label": ".logout()"
     },
     {
       "label": ".ngOnInit()",
@@ -1502,6 +1442,66 @@
       "community": 4,
       "community_name": "StorageService",
       "norm_label": ".ngoninit()"
+    },
+    {
+      "label": ".constructor()",
+      "file_type": "code",
+      "source_file": "src/app/features/trip/history/history.page.ts",
+      "source_location": "L39",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_features_trip_history_history_page_historypage_constructor",
+      "community": 4,
+      "community_name": "StorageService",
+      "norm_label": ".constructor()"
+    },
+    {
+      "label": ".ionViewWillEnter()",
+      "file_type": "code",
+      "source_file": "src/app/features/trip/history/history.page.ts",
+      "source_location": "L45",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_features_trip_history_history_page_historypage_ionviewwillenter",
+      "community": 4,
+      "community_name": "StorageService",
+      "norm_label": ".ionviewwillenter()"
+    },
+    {
+      "label": ".load()",
+      "file_type": "code",
+      "source_file": "src/app/features/trip/history/history.page.ts",
+      "source_location": "L49",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_features_trip_history_history_page_historypage_load",
+      "community": 4,
+      "community_name": "StorageService",
+      "norm_label": ".load()"
+    },
+    {
+      "label": ".ngOnInit()",
+      "file_type": "code",
+      "source_file": "src/app/features/trip/history/history.page.ts",
+      "source_location": "L41",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_features_trip_history_history_page_historypage_ngoninit",
+      "community": 4,
+      "community_name": "StorageService",
+      "norm_label": ".ngoninit()"
+    },
+    {
+      "label": ".viewDetail()",
+      "file_type": "code",
+      "source_file": "src/app/features/trip/history/history.page.ts",
+      "source_location": "L59",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "src_app_features_trip_history_history_page_historypage_viewdetail",
+      "community": 4,
+      "community_name": "StorageService",
+      "norm_label": ".viewdetail()"
     },
     {
       "label": ".constructor()",
@@ -1586,17 +1586,6 @@
       "norm_label": "injectable"
     },
     {
-      "label": "location.service.ts",
-      "file_type": "code",
-      "source_file": "src/app/core/services/location.service.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_core_services_location_service",
-      "community": 0,
-      "community_name": "input-vehicle.page.ts",
-      "norm_label": "location.service.ts"
-    },
-    {
       "label": "Injectable",
       "file_type": "code",
       "source_file": "",
@@ -1674,17 +1663,6 @@
       "norm_label": "trip-number.util.ts"
     },
     {
-      "label": "region.model.ts",
-      "file_type": "code",
-      "source_file": "src/app/data/models/region.model.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_data_models_region_model",
-      "community": 0,
-      "community_name": "input-vehicle.page.ts",
-      "norm_label": "region.model.ts"
-    },
-    {
       "label": "tariff.model.ts",
       "file_type": "code",
       "source_file": "src/app/data/models/tariff.model.ts",
@@ -1694,6 +1672,17 @@
       "community": 0,
       "community_name": "input-vehicle.page.ts",
       "norm_label": "tariff.model.ts"
+    },
+    {
+      "label": "trip.model.ts",
+      "file_type": "code",
+      "source_file": "src/app/data/models/trip.model.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_data_models_trip_model",
+      "community": 0,
+      "community_name": "input-vehicle.page.ts",
+      "norm_label": "trip.model.ts"
     },
     {
       "label": "vehicle.model.ts",
@@ -2889,6 +2878,83 @@
       "norm_label": "config"
     },
     {
+      "label": "app.component.ts",
+      "file_type": "code",
+      "source_file": "src/app/app.component.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_app_component",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "app.component.ts"
+    },
+    {
+      "label": "Component",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "src_app_app_component_ts_component",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "component"
+    },
+    {
+      "label": "routes",
+      "file_type": "code",
+      "source_file": "src/app/app-routing.module.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "src_app_app_routing_module_routes",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "routes"
+    },
+    {
+      "label": "app.constants.ts",
+      "file_type": "code",
+      "source_file": "src/app/core/constants/app.constants.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_core_constants_app_constants",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "app.constants.ts"
+    },
+    {
+      "label": "API_BASE_URL",
+      "file_type": "code",
+      "source_file": "src/app/core/constants/app.constants.ts",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "src_app_core_constants_app_constants_api_base_url",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "api_base_url"
+    },
+    {
+      "label": "APP_CONSTANTS",
+      "file_type": "code",
+      "source_file": "src/app/core/constants/app.constants.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_core_constants_app_constants_app_constants",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "app_constants"
+    },
+    {
+      "label": "api.service.ts",
+      "file_type": "code",
+      "source_file": "src/app/core/services/api.service.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_core_services_api_service",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "api.service.ts"
+    },
+    {
       "label": "Injectable",
       "file_type": "code",
       "source_file": "",
@@ -2896,8 +2962,30 @@
       "_origin": "ast",
       "id": "src_app_core_services_api_service_ts_injectable",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": "injectable"
+    },
+    {
+      "label": "location.service.ts",
+      "file_type": "code",
+      "source_file": "src/app/core/services/location.service.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_core_services_location_service",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "location.service.ts"
+    },
+    {
+      "label": "network.service.ts",
+      "file_type": "code",
+      "source_file": "src/app/core/services/network.service.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_core_services_network_service",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "network.service.ts"
     },
     {
       "label": "Injectable",
@@ -2907,8 +2995,19 @@
       "_origin": "ast",
       "id": "src_app_core_services_network_service_ts_injectable",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": "injectable"
+    },
+    {
+      "label": "sync.service.ts",
+      "file_type": "code",
+      "source_file": "src/app/core/services/sync.service.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_core_services_sync_service",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "sync.service.ts"
     },
     {
       "label": "Injectable",
@@ -2918,8 +3017,30 @@
       "_origin": "ast",
       "id": "src_app_core_services_sync_service_ts_injectable",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": "injectable"
+    },
+    {
+      "label": "region.model.ts",
+      "file_type": "code",
+      "source_file": "src/app/data/models/region.model.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_data_models_region_model",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "region.model.ts"
+    },
+    {
+      "label": "home.page.ts",
+      "file_type": "code",
+      "source_file": "src/app/features/home/home.page.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_features_home_home_page",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "home.page.ts"
     },
     {
       "label": "Component",
@@ -2929,8 +3050,19 @@
       "_origin": "ast",
       "id": "src_app_features_home_home_page_ts_component",
       "community": 2,
-      "community_name": "ApiService",
+      "community_name": "sync.service.ts",
       "norm_label": "component"
+    },
+    {
+      "label": "main.ts",
+      "file_type": "code",
+      "source_file": "src/main.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_main",
+      "community": 2,
+      "community_name": "sync.service.ts",
+      "norm_label": "main.ts"
     },
     {
       "label": "environment.ts",
@@ -3054,193 +3186,6 @@
       "norm_label": "test-setup.ts"
     },
     {
-      "label": "README.md",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "readme",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "readme.md"
-    },
-    {
-      "label": "Android",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L105",
-      "_origin": "ast",
-      "id": "readme_android",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "android"
-    },
-    {
-      "label": "Application Flow",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L150",
-      "_origin": "ast",
-      "id": "readme_application_flow",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "application flow"
-    },
-    {
-      "label": "Build",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L95",
-      "_origin": "ast",
-      "id": "readme_build",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "build"
-    },
-    {
-      "label": "Configuration Files",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L169",
-      "_origin": "ast",
-      "id": "readme_configuration_files",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "configuration files"
-    },
-    {
-      "label": "Development",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L81",
-      "_origin": "ast",
-      "id": "readme_development",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "development"
-    },
-    {
-      "label": "Features",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "readme_features",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "features"
-    },
-    {
-      "label": "Installation",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L65",
-      "_origin": "ast",
-      "id": "readme_installation",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "installation"
-    },
-    {
-      "label": "License",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L179",
-      "_origin": "ast",
-      "id": "readme_license",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "license"
-    },
-    {
-      "label": "Local Data",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L159",
-      "_origin": "ast",
-      "id": "readme_local_data",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "local data"
-    },
-    {
-      "label": "Project Structure",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L29",
-      "_origin": "ast",
-      "id": "readme_project_structure",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "project structure"
-    },
-    {
-      "label": "Requirements",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L54",
-      "_origin": "ast",
-      "id": "readme_requirements",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "requirements"
-    },
-    {
-      "label": "Technology Stack",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L18",
-      "_origin": "ast",
-      "id": "readme_technology_stack",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "technology stack"
-    },
-    {
-      "label": "Trip Angkutan",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "readme_trip_angkutan",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "trip angkutan"
-    },
-    {
-      "label": "Validation",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L130",
-      "_origin": "ast",
-      "id": "readme_validation",
-      "community": 29,
-      "community_name": "Trip Angkutan",
-      "norm_label": "validation"
-    },
-    {
-      "label": "app.component.ts",
-      "file_type": "code",
-      "source_file": "src/app/app.component.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_app_component",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "app.component.ts"
-    },
-    {
-      "label": "Component",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "_origin": "ast",
-      "id": "src_app_app_component_ts_component",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "component"
-    },
-    {
       "label": "app-routing.module.ts",
       "file_type": "code",
       "source_file": "src/app/app-routing.module.ts",
@@ -3248,52 +3193,8 @@
       "_origin": "ast",
       "id": "src_app_app_routing_module",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "app-routing.module.ts"
-    },
-    {
-      "label": "routes",
-      "file_type": "code",
-      "source_file": "src/app/app-routing.module.ts",
-      "source_location": "L4",
-      "_origin": "ast",
-      "id": "src_app_app_routing_module_routes",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "routes"
-    },
-    {
-      "label": "app.constants.ts",
-      "file_type": "code",
-      "source_file": "src/app/core/constants/app.constants.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_core_constants_app_constants",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "app.constants.ts"
-    },
-    {
-      "label": "API_BASE_URL",
-      "file_type": "code",
-      "source_file": "src/app/core/constants/app.constants.ts",
-      "source_location": "L11",
-      "_origin": "ast",
-      "id": "src_app_core_constants_app_constants_api_base_url",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "api_base_url"
-    },
-    {
-      "label": "APP_CONSTANTS",
-      "file_type": "code",
-      "source_file": "src/app/core/constants/app.constants.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_core_constants_app_constants_app_constants",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "app_constants"
     },
     {
       "label": "auth.guard.ts",
@@ -3303,7 +3204,7 @@
       "_origin": "ast",
       "id": "src_app_core_guards_auth_guard",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "auth.guard.ts"
     },
     {
@@ -3314,19 +3215,8 @@
       "_origin": "ast",
       "id": "src_app_core_guards_auth_guard_ts_injectable",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "injectable"
-    },
-    {
-      "label": "api.service.ts",
-      "file_type": "code",
-      "source_file": "src/app/core/services/api.service.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_core_services_api_service",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "api.service.ts"
     },
     {
       "label": "auth.service.ts",
@@ -3336,7 +3226,7 @@
       "_origin": "ast",
       "id": "src_app_core_services_auth_service",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "auth.service.ts"
     },
     {
@@ -3347,19 +3237,8 @@
       "_origin": "ast",
       "id": "src_app_core_services_auth_service_ts_injectable",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "injectable"
-    },
-    {
-      "label": "network.service.ts",
-      "file_type": "code",
-      "source_file": "src/app/core/services/network.service.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_core_services_network_service",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "network.service.ts"
     },
     {
       "label": "storage.service.ts",
@@ -3369,19 +3248,8 @@
       "_origin": "ast",
       "id": "src_app_core_services_storage_service",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "storage.service.ts"
-    },
-    {
-      "label": "sync.service.ts",
-      "file_type": "code",
-      "source_file": "src/app/core/services/sync.service.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_core_services_sync_service",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "sync.service.ts"
     },
     {
       "label": "hash.util.ts",
@@ -3391,19 +3259,8 @@
       "_origin": "ast",
       "id": "src_app_core_utils_hash_util",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "hash.util.ts"
-    },
-    {
-      "label": "trip.model.ts",
-      "file_type": "code",
-      "source_file": "src/app/data/models/trip.model.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_data_models_trip_model",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "trip.model.ts"
     },
     {
       "label": "user.model.ts",
@@ -3413,7 +3270,7 @@
       "_origin": "ast",
       "id": "src_app_data_models_user_model",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "user.model.ts"
     },
     {
@@ -3424,7 +3281,7 @@
       "_origin": "ast",
       "id": "src_app_features_auth_login_login_page",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "login.page.ts"
     },
     {
@@ -3435,7 +3292,7 @@
       "_origin": "ast",
       "id": "src_app_features_auth_login_login_page_ts_component",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "component"
     },
     {
@@ -3446,7 +3303,7 @@
       "_origin": "ast",
       "id": "src_app_features_auth_splash_splash_page",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "splash.page.ts"
     },
     {
@@ -3457,19 +3314,8 @@
       "_origin": "ast",
       "id": "src_app_features_auth_splash_splash_page_ts_component",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "component"
-    },
-    {
-      "label": "home.page.ts",
-      "file_type": "code",
-      "source_file": "src/app/features/home/home.page.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_features_home_home_page",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "home.page.ts"
     },
     {
       "label": "profile.page.ts",
@@ -3479,8 +3325,19 @@
       "_origin": "ast",
       "id": "src_app_features_profile_profile_page",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "profile.page.ts"
+    },
+    {
+      "label": "Component",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "src_app_features_profile_profile_page_ts_component",
+      "community": 3,
+      "community_name": "AuthService",
+      "norm_label": "component"
     },
     {
       "label": "tabs.page.ts",
@@ -3490,7 +3347,7 @@
       "_origin": "ast",
       "id": "src_app_features_tabs_tabs_page",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "tabs.page.ts"
     },
     {
@@ -3501,129 +3358,8 @@
       "_origin": "ast",
       "id": "src_app_features_tabs_tabs_page_ts_component",
       "community": 3,
-      "community_name": "TripModel",
+      "community_name": "AuthService",
       "norm_label": "component"
-    },
-    {
-      "label": "history.page.ts",
-      "file_type": "code",
-      "source_file": "src/app/features/trip/history/history.page.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_features_trip_history_history_page",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "history.page.ts"
-    },
-    {
-      "label": "success-dialog.page.ts",
-      "file_type": "code",
-      "source_file": "src/app/features/trip/success-dialog/success-dialog.page.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_features_trip_success_dialog_success_dialog_page",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "success-dialog.page.ts"
-    },
-    {
-      "label": "trip-detail.page.ts",
-      "file_type": "code",
-      "source_file": "src/app/features/trip/trip-detail/trip-detail.page.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_app_features_trip_trip_detail_trip_detail_page",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "trip-detail.page.ts"
-    },
-    {
-      "label": "main.ts",
-      "file_type": "code",
-      "source_file": "src/main.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_main",
-      "community": 3,
-      "community_name": "TripModel",
-      "norm_label": "main.ts"
-    },
-    {
-      "label": "Component",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "_origin": "ast",
-      "id": "src_app_features_trip_history_history_page_ts_component",
-      "community": 30,
-      "community_name": "HistoryPage",
-      "norm_label": "component"
-    },
-    {
-      "label": "prefix",
-      "file_type": "code",
-      "source_file": "angular.json",
-      "source_location": "L11",
-      "_origin": "ast",
-      "id": "angular_app_prefix",
-      "community": 31,
-      "community_name": "app",
-      "norm_label": "prefix"
-    },
-    {
-      "label": "projectType",
-      "file_type": "code",
-      "source_file": "angular.json",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "angular_app_projecttype",
-      "community": 31,
-      "community_name": "app",
-      "norm_label": "projecttype"
-    },
-    {
-      "label": "root",
-      "file_type": "code",
-      "source_file": "angular.json",
-      "source_location": "L9",
-      "_origin": "ast",
-      "id": "angular_app_root",
-      "community": 31,
-      "community_name": "app",
-      "norm_label": "root"
-    },
-    {
-      "label": "schematics",
-      "file_type": "code",
-      "source_file": "angular.json",
-      "source_location": "L8",
-      "_origin": "ast",
-      "id": "angular_app_schematics",
-      "community": 31,
-      "community_name": "app",
-      "norm_label": "schematics"
-    },
-    {
-      "label": "sourceRoot",
-      "file_type": "code",
-      "source_file": "angular.json",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "angular_app_sourceroot",
-      "community": 31,
-      "community_name": "app",
-      "norm_label": "sourceroot"
-    },
-    {
-      "label": "app",
-      "file_type": "code",
-      "source_file": "angular.json",
-      "source_location": "L6",
-      "_origin": "ast",
-      "id": "angular_projects_app",
-      "community": 31,
-      "community_name": "app",
-      "norm_label": "app"
     },
     {
       "label": "Injectable",
@@ -3637,15 +3373,37 @@
       "norm_label": "injectable"
     },
     {
+      "label": "history.page.ts",
+      "file_type": "code",
+      "source_file": "src/app/features/trip/history/history.page.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_features_trip_history_history_page",
+      "community": 4,
+      "community_name": "StorageService",
+      "norm_label": "history.page.ts"
+    },
+    {
       "label": "Component",
       "file_type": "code",
       "source_file": "",
       "source_location": "",
       "_origin": "ast",
-      "id": "src_app_features_profile_profile_page_ts_component",
+      "id": "src_app_features_trip_history_history_page_ts_component",
       "community": 4,
       "community_name": "StorageService",
       "norm_label": "component"
+    },
+    {
+      "label": "success-dialog.page.ts",
+      "file_type": "code",
+      "source_file": "src/app/features/trip/success-dialog/success-dialog.page.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_features_trip_success_dialog_success_dialog_page",
+      "community": 4,
+      "community_name": "StorageService",
+      "norm_label": "success-dialog.page.ts"
     },
     {
       "label": "Component",
@@ -3657,6 +3415,17 @@
       "community": 4,
       "community_name": "StorageService",
       "norm_label": "component"
+    },
+    {
+      "label": "trip-detail.page.ts",
+      "file_type": "code",
+      "source_file": "src/app/features/trip/trip-detail/trip-detail.page.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_app_features_trip_trip_detail_trip_detail_page",
+      "community": 4,
+      "community_name": "StorageService",
+      "norm_label": "trip-detail.page.ts"
     },
     {
       "label": "Component",
@@ -3952,8 +3721,63 @@
       "_origin": "ast",
       "id": "angular",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "angular.json"
+    },
+    {
+      "label": "prefix",
+      "file_type": "code",
+      "source_file": "angular.json",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "angular_app_prefix",
+      "community": 6,
+      "community_name": "app",
+      "norm_label": "prefix"
+    },
+    {
+      "label": "projectType",
+      "file_type": "code",
+      "source_file": "angular.json",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "angular_app_projecttype",
+      "community": 6,
+      "community_name": "app",
+      "norm_label": "projecttype"
+    },
+    {
+      "label": "root",
+      "file_type": "code",
+      "source_file": "angular.json",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "angular_app_root",
+      "community": 6,
+      "community_name": "app",
+      "norm_label": "root"
+    },
+    {
+      "label": "schematics",
+      "file_type": "code",
+      "source_file": "angular.json",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "angular_app_schematics",
+      "community": 6,
+      "community_name": "app",
+      "norm_label": "schematics"
+    },
+    {
+      "label": "sourceRoot",
+      "file_type": "code",
+      "source_file": "angular.json",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "angular_app_sourceroot",
+      "community": 6,
+      "community_name": "app",
+      "norm_label": "sourceroot"
     },
     {
       "label": "analytics",
@@ -3963,7 +3787,7 @@
       "_origin": "ast",
       "id": "angular_cli_analytics",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "analytics"
     },
     {
@@ -3974,7 +3798,7 @@
       "_origin": "ast",
       "id": "angular_cli_schematiccollections",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "schematiccollections"
     },
     {
@@ -3985,7 +3809,7 @@
       "_origin": "ast",
       "id": "angular_ionic_angular_toolkit_component_standalone",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "standalone"
     },
     {
@@ -3996,7 +3820,7 @@
       "_origin": "ast",
       "id": "angular_ionic_angular_toolkit_component_styleext",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "styleext"
     },
     {
@@ -4007,7 +3831,7 @@
       "_origin": "ast",
       "id": "angular_ionic_angular_toolkit_page_standalone",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "standalone"
     },
     {
@@ -4018,7 +3842,7 @@
       "_origin": "ast",
       "id": "angular_ionic_angular_toolkit_page_styleext",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "styleext"
     },
     {
@@ -4029,7 +3853,7 @@
       "_origin": "ast",
       "id": "angular_json_angular_cli",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "cli"
     },
     {
@@ -4040,7 +3864,7 @@
       "_origin": "ast",
       "id": "angular_newprojectroot",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "newprojectroot"
     },
     {
@@ -4051,8 +3875,19 @@
       "_origin": "ast",
       "id": "angular_projects",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "projects"
+    },
+    {
+      "label": "app",
+      "file_type": "code",
+      "source_file": "angular.json",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "angular_projects_app",
+      "community": 6,
+      "community_name": "app",
+      "norm_label": "app"
     },
     {
       "label": "$schema",
@@ -4062,7 +3897,7 @@
       "_origin": "ast",
       "id": "angular_schema",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "$schema"
     },
     {
@@ -4073,7 +3908,7 @@
       "_origin": "ast",
       "id": "angular_schematics",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "schematics"
     },
     {
@@ -4084,7 +3919,7 @@
       "_origin": "ast",
       "id": "angular_schematics_ionic_angular_toolkit_component",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "@ionic/angular-toolkit:component"
     },
     {
@@ -4095,7 +3930,7 @@
       "_origin": "ast",
       "id": "angular_schematics_ionic_angular_toolkit_page",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "@ionic/angular-toolkit:page"
     },
     {
@@ -4106,7 +3941,7 @@
       "_origin": "ast",
       "id": "angular_version",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "version"
     },
     {
@@ -4117,7 +3952,7 @@
       "_origin": "ast",
       "id": "ref_ionic_angular_toolkit",
       "community": 6,
-      "community_name": "angular.json",
+      "community_name": "app",
       "norm_label": "@ionic/angular-toolkit"
     },
     {
@@ -4407,7 +4242,7 @@
       "norm_label": "version"
     },
     {
-      "label": "android/README.md",
+      "label": "README.md",
       "file_type": "document",
       "source_file": "android/README.md",
       "source_location": "L1",
@@ -4415,13 +4250,13 @@
       "id": "android_readme",
       "community": 9,
       "community_name": "Trip Angkutan Android",
-      "norm_label": "android/readme.md"
+      "norm_label": "readme.md"
     },
     {
       "label": "Backend integration",
       "file_type": "document",
       "source_file": "android/README.md",
-      "source_location": "L131",
+      "source_location": "L132",
       "_origin": "ast",
       "id": "android_readme_backend_integration",
       "community": 9,
@@ -4432,7 +4267,7 @@
       "label": "Configuration",
       "file_type": "document",
       "source_file": "android/README.md",
-      "source_location": "L122",
+      "source_location": "L123",
       "_origin": "ast",
       "id": "android_readme_configuration",
       "community": 9,
@@ -4443,7 +4278,7 @@
       "label": "Development workflow",
       "file_type": "document",
       "source_file": "android/README.md",
-      "source_location": "L61",
+      "source_location": "L62",
       "_origin": "ast",
       "id": "android_readme_development_workflow",
       "community": 9,
@@ -4465,7 +4300,7 @@
       "label": "Prerequisites",
       "file_type": "document",
       "source_file": "android/README.md",
-      "source_location": "L53",
+      "source_location": "L54",
       "_origin": "ast",
       "id": "android_readme_prerequisites",
       "community": 9,
@@ -4476,7 +4311,7 @@
       "label": "Project structure",
       "file_type": "document",
       "source_file": "android/README.md",
-      "source_location": "L27",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "android_readme_project_structure",
       "community": 9,
@@ -4487,7 +4322,7 @@
       "label": "Release builds",
       "file_type": "document",
       "source_file": "android/README.md",
-      "source_location": "L137",
+      "source_location": "L138",
       "_origin": "ast",
       "id": "android_readme_release_builds",
       "community": 9,
@@ -4498,7 +4333,7 @@
       "label": "Running and debugging",
       "file_type": "document",
       "source_file": "android/README.md",
-      "source_location": "L91",
+      "source_location": "L92",
       "_origin": "ast",
       "id": "android_readme_running_and_debugging",
       "community": 9,
@@ -4520,7 +4355,7 @@
       "label": "Tests",
       "file_type": "document",
       "source_file": "android/README.md",
-      "source_location": "L101",
+      "source_location": "L102",
       "_origin": "ast",
       "id": "android_readme_tests",
       "community": 9,
@@ -8199,7 +8034,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "android/README.md",
-      "source_location": "L101",
+      "source_location": "L102",
       "weight": 1.0,
       "_origin": "ast",
       "source": "android_readme_trip_angkutan_android",
@@ -8210,7 +8045,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "android/README.md",
-      "source_location": "L122",
+      "source_location": "L123",
       "weight": 1.0,
       "_origin": "ast",
       "source": "android_readme_trip_angkutan_android",
@@ -8221,7 +8056,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "android/README.md",
-      "source_location": "L131",
+      "source_location": "L132",
       "weight": 1.0,
       "_origin": "ast",
       "source": "android_readme_trip_angkutan_android",
@@ -8232,7 +8067,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "android/README.md",
-      "source_location": "L137",
+      "source_location": "L138",
       "weight": 1.0,
       "_origin": "ast",
       "source": "android_readme_trip_angkutan_android",
@@ -8254,7 +8089,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "android/README.md",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "android_readme_trip_angkutan_android",
@@ -8276,7 +8111,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "android/README.md",
-      "source_location": "L53",
+      "source_location": "L54",
       "weight": 1.0,
       "_origin": "ast",
       "source": "android_readme_trip_angkutan_android",
@@ -8287,7 +8122,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "android/README.md",
-      "source_location": "L61",
+      "source_location": "L62",
       "weight": 1.0,
       "_origin": "ast",
       "source": "android_readme_trip_angkutan_android",
@@ -8298,7 +8133,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "android/README.md",
-      "source_location": "L91",
+      "source_location": "L92",
       "weight": 1.0,
       "_origin": "ast",
       "source": "android_readme_trip_angkutan_android",
@@ -9689,160 +9524,6 @@
       "_origin": "ast",
       "source": "package_scripts",
       "target": "package_scripts_build",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme",
-      "target": "readme_trip_angkutan",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L105",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_android",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L130",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_validation",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L150",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_application_flow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L159",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_local_data",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L169",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_configuration_files",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L179",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_license",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L18",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_technology_stack",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L29",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_project_structure",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L5",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_features",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L54",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_requirements",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L65",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_installation",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L81",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_development",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L95",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "readme_trip_angkutan",
-      "target": "readme_build",
       "confidence_score": 1.0
     },
     {
@@ -11845,5 +11526,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "823f9eb68ee4e24cf2cec93c13c456e90ab0f4e7"
+  "built_at_commit": "78a25203135ec89106a2cad648e5c93ab8236783"
 }

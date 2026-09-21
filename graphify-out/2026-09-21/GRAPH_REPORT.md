@@ -1,27 +1,27 @@
 # Graph Report - Aplikasi-Trip-Ionic  (2026-09-21)
 
 ## Corpus Check
-- 58 files · ~17,213 words
+- 57 files · ~16,399 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 396 nodes · 635 edges · 32 communities (26 shown, 6 thin omitted)
+- 381 nodes · 621 edges · 29 communities (24 shown, 5 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 38 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `823f9eb6`
+- Built from commit: `78a25203`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - input-vehicle.page.ts
 - dependencies
-- ApiService
-- TripModel
+- sync.service.ts
+- AuthService
 - StorageService
 - devDependencies
-- angular.json
+- app
 - options
 - package.json
 - Trip Angkutan Android
@@ -37,66 +37,63 @@
 - capacitor.config.ts
 - environment.ts
 - environment.prod.ts
-- Trip Angkutan
-- HistoryPage
-- app
 
 ## God Nodes (most connected - your core abstractions)
 1. `StorageService` - 35 edges
 2. `TripModel` - 22 edges
 3. `AuthService` - 21 edges
 4. `InputVehiclePage` - 14 edges
-5. `Trip Angkutan` - 14 edges
-6. `ApiService` - 13 edges
-7. `SyncService` - 13 edges
-8. `TripService` - 11 edges
-9. `Trip Angkutan Android` - 11 edges
-10. `options` - 10 edges
+5. `ApiService` - 13 edges
+6. `SyncService` - 13 edges
+7. `TripService` - 11 edges
+8. `Trip Angkutan Android` - 11 edges
+9. `options` - 10 edges
+10. `VehicleModel` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `TripService` --references--> `TripModel`  [EXTRACTED]
   src/app/core/services/trip.service.ts → src/app/data/models/trip.model.ts
 - `TripModel` --references--> `VehicleModel`  [EXTRACTED]
   src/app/data/models/trip.model.ts → src/app/data/models/vehicle.model.ts
-- `HistoryPage` --references--> `TripModel`  [EXTRACTED]
-  src/app/features/trip/history/history.page.ts → src/app/data/models/trip.model.ts
-- `SuccessDialogPage` --references--> `TripModel`  [EXTRACTED]
-  src/app/features/trip/success-dialog/success-dialog.page.ts → src/app/data/models/trip.model.ts
-- `TripDetailPage` --references--> `TripModel`  [EXTRACTED]
-  src/app/features/trip/trip-detail/trip-detail.page.ts → src/app/data/models/trip.model.ts
+- `AuthService` --references--> `UserModel`  [EXTRACTED]
+  src/app/core/services/auth.service.ts → src/app/data/models/user.model.ts
+- `VehicleModel` --references--> `Golongan`  [EXTRACTED]
+  src/app/data/models/vehicle.model.ts → src/app/data/models/tariff.model.ts
+- `InputVehiclePage` --references--> `Golongan`  [EXTRACTED]
+  src/app/features/trip/input-vehicle/input-vehicle.page.ts → src/app/data/models/tariff.model.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (32 total, 6 thin omitted)
+## Communities (29 total, 5 thin omitted)
 
 ### Community 0 - "input-vehicle.page.ts"
-Cohesion: 0.08
-Nodes (22): CameraService, Injectable, GpsResult, LocationService, Injectable, TariffService, Injectable, TripService (+14 more)
+Cohesion: 0.09
+Nodes (21): CameraService, Injectable, LocationService, Injectable, TariffService, Injectable, TripService, Injectable (+13 more)
 
 ### Community 1 - "dependencies"
 Cohesion: 0.04
 Nodes (47): @angular/common, @angular/compiler, @angular/core, @angular/forms, @angular/platform-browser, @angular/platform-browser-dynamic, @angular/router, @capacitor/android (+39 more)
 
-### Community 2 - "ApiService"
-Cohesion: 0.10
-Nodes (8): ApiService, Injectable, NetworkService, Injectable, SyncService, Injectable, HomePage, Component
+### Community 2 - "sync.service.ts"
+Cohesion: 0.07
+Nodes (17): AppComponent, Component, routes, API_BASE_URL, APP_CONSTANTS, ApiResponse, ApiService, Injectable (+9 more)
 
-### Community 3 - "TripModel"
+### Community 3 - "AuthService"
 Cohesion: 0.08
-Nodes (20): AppComponent, Component, routes, API_BASE_URL, APP_CONSTANTS, AuthGuard, Injectable, ApiResponse (+12 more)
+Nodes (14): AuthGuard, Injectable, AuthService, Injectable, hashPin(), UserModel, LoginPage, Component (+6 more)
 
 ### Community 4 - "StorageService"
 Cohesion: 0.10
-Nodes (9): StorageService, Injectable, TariffModel, ProfilePage, Component, SuccessDialogPage, Component, TripDetailPage (+1 more)
+Nodes (9): StorageService, Injectable, TripModel, HistoryPage, Component, SuccessDialogPage, Component, TripDetailPage (+1 more)
 
 ### Community 5 - "devDependencies"
 Cohesion: 0.08
 Nodes (25): @angular/build, @angular/compiler-cli, angular-eslint, @angular/language-service, @capacitor/cli, eslint, @ionic/angular-toolkit, jsdom (+17 more)
 
-### Community 6 - "angular.json"
-Cohesion: 0.12
-Nodes (15): analytics, schematicCollections, standalone, styleext, standalone, styleext, cli, newProjectRoot (+7 more)
+### Community 6 - "app"
+Cohesion: 0.09
+Nodes (21): prefix, projectType, root, schematics, sourceRoot, analytics, schematicCollections, standalone (+13 more)
 
 ### Community 7 - "options"
 Cohesion: 0.15
@@ -138,33 +135,25 @@ Nodes (6): development, buildTarget, extractLicenses, namedChunks, optimization,
 Cohesion: 0.83
 Nodes (3): gradlew script, die(), warn()
 
-### Community 29 - "Trip Angkutan"
-Cohesion: 0.13
-Nodes (14): Android, Application Flow, Build, Configuration Files, Development, Features, Installation, License (+6 more)
-
-### Community 31 - "app"
-Cohesion: 0.33
-Nodes (6): prefix, projectType, root, schematics, sourceRoot, app
-
 ## Knowledge Gaps
-- **122 isolated node(s):** `$schema`, `version`, `newProjectRoot`, `projectType`, `schematics` (+117 more)
+- **109 isolated node(s):** `$schema`, `version`, `newProjectRoot`, `projectType`, `schematics` (+104 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `StorageService` connect `StorageService` to `input-vehicle.page.ts`, `ApiService`, `TripModel`, `HistoryPage`?**
-  _High betweenness centrality (0.044) - this node is a cross-community bridge._
+- **Why does `StorageService` connect `StorageService` to `input-vehicle.page.ts`, `sync.service.ts`, `AuthService`?**
+  _High betweenness centrality (0.048) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `dependencies` to `package.json`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
-- **Why does `TripModel` connect `TripModel` to `input-vehicle.page.ts`, `ApiService`, `StorageService`, `HistoryPage`?**
-  _High betweenness centrality (0.029) - this node is a cross-community bridge._
+  _High betweenness centrality (0.038) - this node is a cross-community bridge._
+- **Why does `TripModel` connect `StorageService` to `input-vehicle.page.ts`, `sync.service.ts`, `AuthService`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
 - **What connects `$schema`, `version`, `newProjectRoot` to the rest of the system?**
-  _122 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _109 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `input-vehicle.page.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08013468013468013 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09049773755656108 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.0425531914893617 - nodes in this community are weakly interconnected._
-- **Should `ApiService` be split into smaller, more focused modules?**
-  _Cohesion score 0.10317460317460317 - nodes in this community are weakly interconnected._
+- **Should `sync.service.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.07149758454106281 - nodes in this community are weakly interconnected._

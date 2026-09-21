@@ -1,11 +1,11 @@
 {
   "0": "input-vehicle.page.ts",
   "1": "dependencies",
-  "2": "ApiService",
-  "3": "TripModel",
+  "2": "sync.service.ts",
+  "3": "AuthService",
   "4": "StorageService",
   "5": "devDependencies",
-  "6": "angular.json",
+  "6": "app",
   "7": "options",
   "8": "package.json",
   "9": "Trip Angkutan Android",
@@ -27,8 +27,5 @@
   "25": "capacitor.settings.gradle",
   "26": "settings.gradle",
   "27": "variables.gradle",
-  "28": "test-setup.ts",
-  "29": "Trip Angkutan",
-  "30": "HistoryPage",
-  "31": "app"
+  "28": "test-setup.ts"
 }
