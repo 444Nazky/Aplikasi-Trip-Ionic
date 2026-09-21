@@ -32,3 +32,5 @@ export class LocationService {
     return isInsideRegion(lat, lng, region);
   }
 }
+
+
