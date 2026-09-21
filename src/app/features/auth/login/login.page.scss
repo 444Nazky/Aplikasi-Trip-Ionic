@@ -1,48 +1,47 @@
 // ═══════════════════════════════════════════════════════════
-// Login Page — Zero Shadow-DOM Conflict Architecture
+// Login Page — Modern Clean Light Theme (Field-Ready)
 // ═══════════════════════════════════════════════════════════
 
 .login-ion-content {
-  --background: #0f172a;
-  --color: #ffffff;
+  --background: #f8fafc;
+  --color: #0f172a;
 }
 
 .login-container {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #0f172a;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  background-color: #f8fafc;
+  padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
 }
 
 // ── Hero Section ──
 .hero-section {
-  padding: 44px 20px 24px;
+  padding: 28px 16px 16px;
   text-align: center;
-  background: linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
 }
 
 .hero-icon-badge {
-  width: 64px;
-  height: 64px;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 18px;
+  width: 60px;
+  height: 60px;
+  background: #0f172a;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 12px;
+  margin: 0 auto 14px;
+  box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.25);
 
   ion-icon {
-    font-size: 32px;
-    color: #34d399;
+    font-size: 30px;
+    color: #38bdf8;
   }
 }
 
 .hero-title {
   font-size: 24px;
   font-weight: 800;
-  color: #ffffff;
+  color: #0f172a;
   margin: 0 0 4px;
   letter-spacing: -0.02em;
 }
@@ -50,95 +49,98 @@
 .hero-subtitle {
   font-size: 13px;
   font-weight: 500;
-  color: #94a3b8;
+  color: #64748b;
   margin: 0;
 }
 
-// ── Device Region Lock Card ──
+// ── Device Region Lock Badge ──
 .region-badge-card {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-  background-color: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 16px;
-  padding: 12px 16px;
-  margin: 8px 16px 12px;
+  justify-content: center;
+  gap: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  margin: 10px auto 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .region-icon-wrapper {
-  width: 40px;
-  height: 40px;
-  background-color: rgba(16, 185, 129, 0.2);
-  border-radius: 12px;
+  width: 22px;
+  height: 22px;
+  background-color: #ecfdf5;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
   ion-icon {
-    font-size: 22px;
+    font-size: 14px;
     color: #10b981;
   }
 }
 
 .region-text-group {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 .region-label {
   font-size: 11px;
   font-weight: 600;
-  color: #94a3b8;
+  color: #64748b;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .region-value {
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 800;
-  color: #f8fafc;
+  color: #2563eb;
   letter-spacing: 0.02em;
 }
 
-// ── Main Card ──
+// ── Main Content Card (White Container) ──
 .main-card {
   flex: 1;
-  background-color: #1e293b;
-  border: 1px solid #334155;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 24px;
-  padding: 20px 16px;
-  margin: 0 16px 16px;
+  padding: 20px 18px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.06);
 }
 
 // ── Officer Profile Card ──
 .officer-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  background-color: #0f172a;
-  border: 1px solid #334155;
+  gap: 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
-  padding: 12px 14px;
+  padding: 10px 14px;
   margin-bottom: 20px;
 }
 
 .officer-avatar {
-  width: 48px;
-  height: 48px;
-  background-color: #2563eb;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: #ffffff;
-  font-size: 16px;
-  font-weight: 700;
-  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
 }
 
 .officer-meta {
@@ -149,77 +151,80 @@
 }
 
 .officer-id {
-  font-size: 11px;
-  font-weight: 600;
-  color: #60a5fa;
-  letter-spacing: 0.03em;
+  font-size: 10px;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .officer-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
-  color: #f8fafc;
+  color: #0f172a;
 }
 
 .officer-role {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 // ── PIN Display Section ──
 .pin-display-wrapper {
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   position: relative;
 }
 
 .pin-label {
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: #64748b;
   margin-bottom: 12px;
+  text-transform: uppercase;
 }
 
 .pin-dots-container {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: 14px;
+  margin-bottom: 8px;
 }
 
 .pin-dot {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background-color: #334155;
-  border: 2px solid #475569;
-  transition: all 0.15s ease;
+  background-color: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.filled {
     background-color: #10b981;
-    border-color: #34d399;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+    border-color: #059669;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
     transform: scale(1.15);
   }
 
   &.error {
     background-color: #ef4444;
-    border-color: #f87171;
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+    border-color: #dc2626;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+    animation: shake 0.3s ease-in-out;
   }
 }
 
 .pin-status-text {
   font-size: 12px;
   font-weight: 500;
-  color: #94a3b8;
+  color: #64748b;
   margin: 0;
 
   &.error-text {
-    color: #f87171;
+    color: #ef4444;
     font-weight: 600;
   }
 }
@@ -232,78 +237,83 @@
   pointer-events: none;
 }
 
-// ── Numpad ──
+// ── Numpad Grid (Clean Round Pill Buttons) ──
 .numpad-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 12px;
   max-width: 270px;
   width: 100%;
-  margin: 0 auto 20px;
+  margin: 0 auto 16px;
 }
 
 .numpad-btn {
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  background-color: #0f172a;
-  border: 1px solid #334155;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   font-size: 22px;
-  font-weight: 600;
-  color: #f8fafc;
+  font-weight: 700;
+  color: #0f172a;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   justify-self: center;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
   transition: all 0.12s ease;
   user-select: none;
 
   &:active {
-    background-color: #10b981;
-    border-color: #10b981;
+    background-color: #2563eb;
+    border-color: #2563eb;
     color: #ffffff;
-    transform: scale(0.94);
+    transform: scale(0.93);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
   }
 
   &.backspace-btn {
-    background-color: transparent;
-    border-color: transparent;
-    color: #94a3b8;
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    color: #64748b;
+    box-shadow: none;
 
     ion-icon {
-      font-size: 24px;
+      font-size: 22px;
     }
 
     &:active {
       color: #ef4444;
-      background-color: rgba(239, 68, 68, 0.1);
-      border-color: transparent;
+      background-color: #fee2e2;
+      border-color: #fca5a5;
     }
   }
 }
 
 .numpad-placeholder {
-  width: 62px;
-  height: 62px;
+  width: 64px;
+  height: 64px;
 }
 
 // ── Submit Button ──
 .submit-login-btn {
-  --background: #10b981;
-  --background-hover: #059669;
-  --background-activated: #047857;
+  --background: #2563eb;
+  --background-hover: #1d4ed8;
+  --background-activated: #1e40af;
   --color: #ffffff;
-  --border-radius: 14px;
+  --border-radius: 16px;
   height: 50px;
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   margin-top: auto;
+  --box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
 
   &:disabled {
-    --background: #334155;
-    --color: #64748b;
+    --background: #e2e8f0;
+    --color: #94a3b8;
+    --box-shadow: none;
     opacity: 0.8;
   }
 }
@@ -318,6 +328,12 @@
   text-align: center;
   font-size: 11px;
   font-weight: 500;
-  color: #64748b;
-  margin: 8px 0 0;
+  color: #94a3b8;
+  margin: 12px 0 0;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
 }

@@ -7,6 +7,11 @@ import {
   IonTitle,
   IonContent,
   IonIcon,
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonChip,
+  IonBadge,
 } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 import { NetworkService } from '../../core/services/network.service';
@@ -25,6 +30,11 @@ import { TripModel } from '../../data/models/trip.model';
     IonTitle,
     IonContent,
     IonIcon,
+    IonButton,
+    IonCard,
+    IonCardContent,
+    IonChip,
+    IonBadge,
   ],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
