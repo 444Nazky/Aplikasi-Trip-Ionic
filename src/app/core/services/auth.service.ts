@@ -4,6 +4,7 @@ import { StorageService } from './storage.service';
 import { ApiService } from './api.service';
 import { NetworkService } from './network.service';
 import { hashPin } from '../utils/hash.util';
+import { generateId } from '../utils/id.util';
 import { UserModel } from '../../data/models/user.model';
 
 const DEVICE_ID_KEY = 'device_id';
@@ -22,7 +23,9 @@ export class AuthService {
   async getDeviceId(): Promise<string> {
     const existing = await Preferences.get({ key: DEVICE_ID_KEY });
     if (existing.value) return existing.value;
-    const id = crypto.randomUUID();
+    const id = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+      ? crypto.randomUUID()
+      : generateId();
     await Preferences.set({ key: DEVICE_ID_KEY, value: id });
     return id;
   }
