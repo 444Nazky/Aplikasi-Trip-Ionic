@@ -1,72 +1,112 @@
 // ═══════════════════════════════════════════════════════════
-// Aplikasi Trip Angkutan - Modern Light Theme
-// Design System based on UI Spec
+// Aplikasi Trip Angkutan - Plantation Modern Theme
+// Design System v2.0
 // ═══════════════════════════════════════════════════════════
 
 :root {
+  // ── Primary Colors (Plantation Green) ──
+  --primary-50: #ECFDF5;
+  --primary-100: #D1FAE5;
+  --primary-200: #A7F3D0;
+  --primary-300: #6EE7B7;
+  --primary-400: #34D399;
+  --primary-500: #10B981;
+  --primary-600: #059669;
+  --primary-700: #047857;
+  --primary-800: #065F46;
+  --primary-900: #064E3B;
+  --primary-glow: rgba(16, 185, 129, 0.3);
+
+  // Forest Green (for emphasis)
+  --forest-500: #0F5132;
+  --forest-600: #0A3D26;
+  --forest-700: #082B1A;
+
+  // ── Secondary/Accent Colors (Warm Amber) ──
+  --amber-50: #FFFBEB;
+  --amber-100: #FEF3C7;
+  --amber-200: #FDE68A;
+  --amber-300: #FCD34D;
+  --amber-400: #FBBF24;
+  --amber-500: #F59E0B;
+  --amber-600: #D97706;
+  --amber-700: #B45309;
+  --amber-glow: rgba(245, 158, 11, 0.3);
+
   // ── Background Colors ──
-  --bg-base: #F8F9FA;
+  --bg-base: #F8FAFC;
   --bg-surface: #FFFFFF;
-  --bg-card: #F1F5F9;
-  --bg-card-hover: #E2E8F0;
-  --bg-dark-accent: #0F172A;
+  --bg-card: #F8FAFC;
+  --bg-card-hover: #F1F5F9;
+  --bg-dark: #0F172A;
+  --bg-dark-secondary: #1E293B;
 
   // ── Text Colors ──
   --text-primary: #0F172A;
   --text-secondary: #475569;
   --text-muted: #94A3B8;
   --text-inverse: #FFFFFF;
+  --text-primary-dark: #F8FAFC;
 
-  // ── Accent Colors ──
-  --accent-blue: #3B82F6;
-  --accent-blue-light: #DBEAFE;
-  --accent-blue-dark: #2563EB;
-  --accent-green: #10B981;
-  --accent-green-light: #D1FAE5;
-  --accent-amber: #F59E0B;
-  --accent-amber-light: #FEF3C7;
-  --accent-red: #EF4444;
-  --accent-red-light: #FEE2E2;
+  // ── Status Colors ──
+  --status-success: #10B981;
+  --status-success-bg: #D1FAE5;
+  --status-warning: #F59E0B;
+  --status-warning-bg: #FEF3C7;
+  --status-danger: #EF4444;
+  --status-danger-bg: #FEE2E2;
+  --status-info: #3B82F6;
+  --status-info-bg: #DBEAFE;
 
   // ── Border Colors ──
   --border-light: #E2E8F0;
   --border-medium: #CBD5E1;
-  --border-focus: #3B82F6;
+  --border-focus: #10B981;
 
   // ── Shadows ──
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
   --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.12);
   --shadow-xl: 0 12px 32px rgba(15, 23, 42, 0.16);
+  --shadow-green: 0 4px 16px rgba(16, 185, 129, 0.25);
+  --shadow-amber: 0 4px 16px rgba(245, 158, 11, 0.25);
 
-  // ── Spacing ──
+  // ── Radius ──
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  // ── Ionic Colors Override (Light Theme) ──
-  --ion-background-color: #F8F9FA;
+  // ── Typography ──
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  // ── Ionic Colors Override ──
+  --ion-background-color: #F8FAFC;
   --ion-text-color: #0F172A;
   --ion-toolbar-background: #FFFFFF;
   --ion-tab-bar-background: #FFFFFF;
   --ion-item-background: #FFFFFF;
   --ion-card-background: #FFFFFF;
 
-  --ion-color-primary: #3B82F6;
-  --ion-color-primary-rgb: 59, 130, 246;
+  --ion-color-primary: #10B981;
+  --ion-color-primary-rgb: 16, 185, 129;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #2563EB;
-  --ion-color-primary-tint: #60A5FA;
+  --ion-color-primary-shade: #0EA472;
+  --ion-color-primary-tint: #28C497;
 
-  --ion-color-secondary: #0F172A;
-  --ion-color-secondary-rgb: 15, 23, 42;
+  --ion-color-secondary: #F59E0B;
+  --ion-color-secondary-rgb: 245, 158, 11;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #0C1425;
-  --ion-color-secondary-tint: #272E3E;
+  --ion-color-secondary-shade: #D98F0A;
+  --ion-color-secondary-tint: #F6A72D;
 
   --ion-color-success: #10B981;
   --ion-color-success-rgb: 16, 185, 129;
@@ -77,8 +117,8 @@
 
   --ion-color-warning: #F59E0B;
   --ion-color-warning-rgb: 245, 158, 11;
-  --ion-color-warning-contrast: #0F172A;
-  --ion-color-warning-contrast-rgb: 15, 23, 42;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
   --ion-color-warning-shade: #D98F0A;
   --ion-color-warning-tint: #F6A72D;
 
@@ -96,18 +136,27 @@
   --ion-color-medium-shade: #58667A;
   --ion-color-medium-tint: #74859A;
 
-  --ion-color-light: #F1F5F9;
-  --ion-color-light-rgb: 241, 245, 249;
+  --ion-color-light: #F8FAFC;
+  --ion-color-light-rgb: 248, 250, 252;
   --ion-color-light-contrast: #0F172A;
   --ion-color-light-contrast-rgb: 15, 23, 42;
-  --ion-color-light-shade: #D4D9E0;
-  --ion-color-light-tint: #F2F6FA;
-
-  // ── Typography ──
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ion-color-light-shade: #DEE2E7;
+  --ion-color-light-tint: #F9FAFB;
 
   // ── Transition ──
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
   --transition-slow: 350ms ease;
+}
+
+// Dark mode support (optional)
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-base: #0F172A;
+    --bg-surface: #1E293B;
+    --bg-card: #1E293B;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --border-light: #334155;
+  }
 }
