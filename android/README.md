@@ -1,6 +1,6 @@
 # Trip Angkutan Android
 
-Native Android wrapper for the Trip Angkutan mobile application. The user interface and business logic are implemented with Ionic and Angular in the parent project; this directory contains the Capacitor Android shell, native configuration, and Gradle build setup.
+Native Android wrapper for the Trip Angkutan mobile application. The user interface and business logic are implemented with HTML and TypeScript in the parent project; this directory contains the Capacitor Android shell, native configuration, and Gradle build setup.
 
 ## Features
 
@@ -21,8 +21,7 @@ Native Android wrapper for the Trip Angkutan mobile application. The user interf
 - Java `21`
 - Android `minSdkVersion 24`, `compileSdkVersion 36`, `targetSdkVersion 36`
 - Capacitor Android `7.6.9`
-- Ionic Angular `9.x`
-- Angular `22.1.7`
+- HTML and TypeScript
 - AndroidX, JUnit, and Espresso
 
 ## Project structure
@@ -56,7 +55,7 @@ The Android source is a thin native host. `MainActivity` extends Capacitor's `Br
 - Android Studio or a compatible Android SDK installation
 - JDK 21
 - Android SDK API 36
-- Node.js and npm for building the Ionic web app
+- Node.js and npm for building the HTML/TypeScript web app
 - An Android device or emulator for installation and instrumentation tests
 
 ## Development workflow
