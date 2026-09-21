@@ -1,99 +1,114 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar>
+  <ion-toolbar class="form-toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+      <ion-back-button defaultHref="/tabs/home" class="btn-custom-back"></ion-back-button>
     </ion-buttons>
-    <ion-title>Buat Trip</ion-title>
+    <ion-title class="form-title">Buat Trip Baru</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="form-page">
-    <!-- Step Indicator -->
-    <div class="step-bar">
-      <div class="step active">
-        <div class="step-dot">1</div>
+<ion-content class="form-content-body">
+  <div class="form-container">
+    <!-- Step Indicator Progress -->
+    <div class="stepper-bar">
+      <div class="step-item active">
+        <div class="step-circle">1</div>
         <span class="step-label">Status Muatan</span>
       </div>
-      <div class="step-line active-line"></div>
-      <div class="step">
-        <div class="step-dot">2</div>
-        <span class="step-label">Input Kendaraan</span>
+      <div class="step-line active"></div>
+      <div class="step-item">
+        <div class="step-circle">2</div>
+        <span class="step-label">Input Armada</span>
       </div>
     </div>
 
-    <!-- Muatan Segmented Cards -->
-    <div class="form-section">
-      <h3 class="section-title">Kondisi Angkutan</h3>
-      <div class="segment-grid">
-        <button
-          class="segment-card"
+    <!-- Section: Kondisi Angkutan -->
+    <div class="form-card-group">
+      <h3 class="section-label">Kondisi Muatan Awal</h3>
+      <p class="section-subtext">Pilih apakah perjalanan dimulai dengan muatan logistik atau armada kosong</p>
+
+      <div class="muatan-grid">
+        <div
+          class="muatan-card-btn"
           [class.active]="statusMuatan === 'Ada Muatan'"
           (click)="statusMuatan = 'Ada Muatan'"
         >
-          <div class="segment-icon-wrap loaded">
+          <div class="muatan-icon-circle loaded">
             <ion-icon name="cube"></ion-icon>
           </div>
-          <div class="segment-text">
-            <span class="segment-name">Ada Muatan</span>
-            <span class="segment-desc">Angkutan dengan muatan</span>
+          <div class="muatan-info">
+            <span class="muatan-name">Ada Muatan</span>
+            <span class="muatan-desc">Membawa kelapa sawit / logistik</span>
           </div>
-        </button>
-        <button
-          class="segment-card"
+          <div class="selection-indicator">
+            <div class="indicator-dot" *ngIf="statusMuatan === 'Ada Muatan'"></div>
+          </div>
+        </div>
+
+        <div
+          class="muatan-card-btn"
           [class.active]="statusMuatan === 'Kosong'"
           (click)="statusMuatan = 'Kosong'"
         >
-          <div class="segment-icon-wrap empty">
+          <div class="muatan-icon-circle empty">
             <ion-icon name="cube-outline"></ion-icon>
           </div>
-          <div class="segment-text">
-            <span class="segment-name">Kosong</span>
-            <span class="segment-desc">Angkutan tanpa muatan</span>
+          <div class="muatan-info">
+            <span class="muatan-name">Kosong</span>
+            <span class="muatan-desc">Perjalanan tanpa muatan logistik</span>
           </div>
-        </button>
+          <div class="selection-indicator">
+            <div class="indicator-dot" *ngIf="statusMuatan === 'Kosong'"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Empty trip details -->
-    <div *ngIf="statusMuatan === 'Kosong'" class="form-section fade-in">
-      <div class="field-header">
-        <h3 class="section-title">Keterangan</h3>
-        <span class="field-required">Wajib</span>
+    <!-- Empty Trip Additional Fields (Wajib bila Kosong) -->
+    <div *ngIf="statusMuatan === 'Kosong'" class="empty-detail-group">
+      <div class="field-title-row">
+        <label class="field-label">Keterangan Kondisi</label>
+        <ion-badge color="danger" class="required-badge">Wajib</ion-badge>
       </div>
 
-      <div class="input-card">
+      <ion-card class="input-container-card">
         <ion-input
           [(ngModel)]="keterangan"
-          placeholder="Tulis keterangan kondisi kendaraan..."
-          class="styled-input"
+          placeholder="Contoh: Menuju pabrik penjemputan / armada kosong..."
+          class="styled-text-input"
         ></ion-input>
-      </div>
+      </ion-card>
 
-      <div class="photo-upload" (click)="capturePhoto()">
-        <div *ngIf="!fotoKosongPath" class="upload-placeholder">
-          <ion-icon name="camera-outline"></ion-icon>
-          <span>Ambil Foto Kondisi</span>
+      <!-- Dashed Camera Upload Box -->
+      <div class="dashed-camera-box" (click)="capturePhoto()">
+        <div *ngIf="!fotoKosongPath" class="camera-empty-state">
+          <div class="camera-icon-circle">
+            <ion-icon name="camera-outline"></ion-icon>
+          </div>
+          <span class="camera-main-prompt">Ambil Foto Kondisi Kendaraan</span>
+          <span class="camera-sub-prompt">Pastikan plat & bak kendaraan terlihat jelas</span>
         </div>
-        <div *ngIf="fotoKosongPath" class="upload-done">
-          <img [src]="fotoKosongPath" class="photo-thumb" />
-          <div class="photo-check">
-            <ion-icon name="checkmark"></ion-icon>
+
+        <div *ngIf="fotoKosongPath" class="camera-preview-state">
+          <img [src]="fotoKosongPath" class="photo-preview-image" alt="Foto Kondisi" />
+          <div class="photo-success-overlay">
+            <ion-icon name="checkmark-circle"></ion-icon>
+            <span>Foto Berhasil Diambil</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Submit -->
-    <div class="form-actions">
+    <!-- Bottom Submit Button -->
+    <div class="bottom-action-wrap">
       <ion-button
         expand="block"
         [disabled]="!canSubmit || saving"
         (click)="submit()"
-        class="submit-btn"
+        class="btn-submit-action"
       >
-        <ion-spinner *ngIf="saving" name="dots" class="btn-spinner"></ion-spinner>
-        <span *ngIf="!saving">Mulai Input Kendaraan</span>
+        <ion-spinner *ngIf="saving" name="crescent" class="btn-spinner"></ion-spinner>
+        <span *ngIf="!saving">Lanjut ke Input Kendaraan</span>
         <ion-icon *ngIf="!saving" name="arrow-forward" slot="end"></ion-icon>
       </ion-button>
     </div>

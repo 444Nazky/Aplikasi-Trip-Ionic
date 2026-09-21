@@ -1,53 +1,68 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-title>Riwayat Trip</ion-title>
+  <ion-toolbar class="history-toolbar">
+    <ion-title class="history-title">Riwayat Trip</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <!-- Empty State -->
-  <div *ngIf="!trips.length" class="empty-state">
-    <div class="empty-icon-wrap">
-      <ion-icon name="document-text-outline"></ion-icon>
-    </div>
-    <h3 class="empty-title">Belum ada trip</h3>
-    <p class="empty-desc">Riwayat perjalanan Anda akan muncul di sini.</p>
-  </div>
+<ion-content class="history-content-body">
+  <div class="history-container">
+    <!-- Empty State -->
+    <ion-card *ngIf="!trips.length" class="empty-state-card">
+      <ion-card-content class="empty-state-content">
+        <div class="empty-icon-wrap">
+          <ion-icon name="document-text-outline"></ion-icon>
+        </div>
+        <h3 class="empty-title">Belum ada trip</h3>
+        <p class="empty-desc">Riwayat perjalanan dan logistik Anda akan muncul di sini.</p>
+      </ion-card-content>
+    </ion-card>
 
-  <!-- Trip List -->
-  <div class="trip-list" *ngIf="trips.length">
-    <div
-      *ngFor="let trip of trips"
-      class="trip-card"
-      (click)="viewDetail(trip)"
-    >
-      <div class="trip-top">
-        <div class="trip-no-wrap">
-          <span class="trip-no">{{ trip.noTrip }}</span>
-          <span *ngIf="!trip.isSynced" class="sync-pill pending">Pending</span>
-          <span *ngIf="trip.isSynced" class="sync-pill synced">Synced</span>
-        </div>
-        <span class="trip-total">{{ trip.total | currency: 'IDR' }}</span>
-      </div>
+    <!-- Trip List Cards -->
+    <div class="trips-list" *ngIf="trips.length">
+      <ion-card
+        *ngFor="let trip of trips"
+        class="history-trip-card"
+        (click)="viewDetail(trip)"
+      >
+        <ion-card-content class="history-trip-content">
+          <div class="history-card-top">
+            <span class="trip-id-code">{{ trip.noTrip }}</span>
+            <ion-badge
+              class="sync-status-badge"
+              [class.synced]="trip.isSynced"
+              [class.pending]="!trip.isSynced"
+            >
+              {{ trip.isSynced ? 'Synced' : 'Pending' }}
+            </ion-badge>
+          </div>
 
-      <div class="trip-body">
-        <div class="trip-chip">
-          <ion-icon name="cube-outline"></ion-icon>
-          <span>{{ trip.statusMuatan }}</span>
-        </div>
-        <div class="trip-chip">
-          <ion-icon name="car-sport-outline"></ion-icon>
-          <span>{{ trip.vehicles.length }} kendaraan</span>
-        </div>
-      </div>
+          <div class="trip-route-display">
+            <span class="route-point">{{ trip.rute ? (trip.rute.split('→')[0] | uppercase) : 'BADAU' }}</span>
+            <ion-icon name="arrow-forward" class="route-arrow"></ion-icon>
+            <span class="route-point">{{ trip.rute ? (trip.rute.split('→')[1] | uppercase) : 'PONTIANAK' }}</span>
+          </div>
 
-      <div class="trip-bottom">
-        <div class="trip-time">
-          <ion-icon name="time-outline"></ion-icon>
-          <span>{{ trip.createdAt | date: 'dd MMM yyyy, HH:mm' }}</span>
-        </div>
-        <ion-icon name="chevron-forward" class="trip-arrow"></ion-icon>
-      </div>
+          <div class="card-divider"></div>
+
+          <div class="history-card-bottom">
+            <div class="meta-tags-row">
+              <span class="meta-tag">
+                <ion-icon name="car-outline"></ion-icon>
+                {{ trip.vehicles.length }} armada
+              </span>
+              <span class="meta-tag">
+                <ion-icon name="cube-outline"></ion-icon>
+                {{ trip.statusMuatan }}
+              </span>
+              <span class="meta-date">{{ trip.createdAt | date: 'dd MMM yyyy, HH:mm' }}</span>
+            </div>
+            <div class="trip-total-price">
+              <span>{{ trip.total | currency: 'IDR' : 'symbol' : '1.0-0' }}</span>
+              <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
     </div>
   </div>
 </ion-content>

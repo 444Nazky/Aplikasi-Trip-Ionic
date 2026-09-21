@@ -33,13 +33,13 @@ import {
   `,
   styles: [`
     .pill-tab-bar {
-      --background: var(--color-surface);
+      --background: #ffffff;
       --border: none;
-      height: 72px;
-      padding: 8px 16px;
-      padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.05);
-      border-top: 1px solid var(--color-border-light);
+      height: 68px;
+      padding: 6px 16px;
+      padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.05);
+      border-top: 1px solid #e2e8f0;
 
       &::before {
         display: none;
@@ -47,16 +47,15 @@ import {
     }
 
     .pill-tab {
-      --color: var(--color-text-muted);
-      --color-selected: var(--ion-color-primary);
+      --color: #64748b;
+      --color-selected: #2563eb;
       --indicator-color: transparent;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.02em;
-      max-width: 80px;
-      border-radius: 12px;
-      padding: 4px 0;
-      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+      border-radius: 14px;
+      padding: 4px 8px;
+      transition: all 0.18s ease;
 
       ion-icon {
         font-size: 22px;
@@ -64,7 +63,9 @@ import {
       }
 
       &[aria-selected="true"] {
-        background: rgba(var(--ion-color-primary-rgb), 0.08);
+        background: #eff6ff;
+        color: #2563eb;
+        font-weight: 700;
       }
     }
   `],

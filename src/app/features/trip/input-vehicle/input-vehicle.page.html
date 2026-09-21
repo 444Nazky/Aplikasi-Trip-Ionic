@@ -1,153 +1,154 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar>
+  <ion-toolbar class="form-toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/create-trip"></ion-back-button>
+      <ion-back-button defaultHref="/create-trip" class="btn-custom-back"></ion-back-button>
     </ion-buttons>
-    <ion-title>Input Kendaraan</ion-title>
+    <ion-title class="form-title">Input Kendaraan</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="form-page">
-    <!-- Trip Info Bar -->
-    <div class="info-bar">
-      <div class="info-item">
-        <ion-icon name="document-text-outline"></ion-icon>
-        <span>{{ noTrip }}</span>
+<ion-content class="form-content-body">
+  <div class="form-container">
+    <!-- Top Trip Code & Vehicle Counter Badge -->
+    <div class="trip-counter-banner">
+      <div class="trip-code-wrap">
+        <span class="trip-code-label">KODE TRIP AKTIF</span>
+        <h2 class="trip-code-val">{{ noTrip || 'TRIP-2026' }}</h2>
       </div>
-      <div class="info-divider"></div>
-      <div class="info-item">
-        <ion-icon name="car-sport-outline"></ion-icon>
-        <span>Kendaraan #{{ vehicleCount }}</span>
-      </div>
+      <ion-badge class="vehicle-pill-badge">
+        Kendaraan #{{ vehicleCount }}
+      </ion-badge>
     </div>
 
-    <!-- License Plate -->
-    <div class="form-section">
-      <label class="field-label">Plat Nomor</label>
-      <div class="plate-input-card">
-        <div class="plate-icon">
-          <ion-icon name="ellipse"></ion-icon>
+    <!-- 1. Plat Nomor Kendaraan -->
+    <div class="field-card-group">
+      <label class="field-label-text">Nomor Polisi (Plat Kendaraan)</label>
+      <ion-card class="white-input-card">
+        <div class="plate-prefix-icon">
+          <ion-icon name="car-outline"></ion-icon>
         </div>
         <ion-input
           [(ngModel)]="noPolisi"
-          placeholder="B 1234 ABC"
-          class="plate-input"
+          placeholder="Contoh: KB 9831 DA"
           [maxlength]="20"
+          class="custom-plate-input"
         ></ion-input>
-      </div>
+      </ion-card>
     </div>
 
-    <!-- Vehicle Category -->
-    <div class="form-section">
-      <label class="field-label">Kategori Kendaraan</label>
-      <div class="category-grid">
-        <button
-          class="category-card"
+    <!-- 2. Kategori Kendaraan (Eksternal vs Internal) -->
+    <div class="field-card-group">
+      <label class="field-label-text">Kategori Armada</label>
+      <div class="segment-pill-grid col-2">
+        <div
+          class="segment-pill-btn"
           [class.active]="golongan === 'Eksternal'"
           (click)="golongan = 'Eksternal'"
         >
-          <div class="cat-icon">
-            <ion-icon name="car-outline"></ion-icon>
-          </div>
-          <div class="cat-info">
-            <span class="cat-name">Eksternal</span>
-            <span class="cat-desc">Dengan Tarif</span>
-          </div>
-        </button>
-        <button
-          class="category-card"
+          <ion-icon name="wallet-outline"></ion-icon>
+          <span>Eksternal (Tarif)</span>
+        </div>
+        <div
+          class="segment-pill-btn"
           [class.active]="golongan === 'Internal'"
           (click)="golongan = 'Internal'"
         >
-          <div class="cat-icon internal">
-            <ion-icon name="business-outline"></ion-icon>
-          </div>
-          <div class="cat-info">
-            <span class="cat-name">Internal</span>
-            <span class="cat-desc">Tanpa Tarif</span>
-          </div>
-        </button>
+          <ion-icon name="business-outline"></ion-icon>
+          <span>Internal (Perusahaan)</span>
+        </div>
       </div>
     </div>
 
-    <!-- Vehicle Type -->
-    <div class="form-section">
-      <label class="field-label">Jenis Kendaraan</label>
-      <div class="type-row">
-        <button
+    <!-- 3. Jenis Angkutan (Truk / Mobil / Motor) -->
+    <div class="field-card-group">
+      <label class="field-label-text">Jenis Angkutan</label>
+      <div class="segment-pill-grid col-3">
+        <div
           *ngFor="let t of vehicleTypes"
-          class="type-chip"
+          class="segment-pill-btn"
           [class.active]="jenis === t.value"
           (click)="jenis = t.value"
         >
           <ion-icon [name]="t.icon"></ion-icon>
           <span>{{ t.label }}</span>
-        </button>
+        </div>
       </div>
     </div>
 
-    <!-- Load Status -->
-    <div class="form-section">
-      <label class="field-label">Status Muatan</label>
-      <div class="load-toggle">
-        <button
-          class="load-btn"
+    <!-- 4. Kondisi / Status Muatan -->
+    <div class="field-card-group">
+      <label class="field-label-text">Status Muatan Kendaraan</label>
+      <div class="segment-pill-grid col-2">
+        <div
+          class="segment-pill-btn"
           [class.active]="muatan === 'Dengan Muatan'"
-          [class.loaded]="muatan === 'Dengan Muatan'"
           (click)="muatan = 'Dengan Muatan'"
         >
           <ion-icon name="cube"></ion-icon>
-          <span>Berat</span>
-        </button>
-        <button
-          class="load-btn"
+          <span>Dengan Muatan</span>
+        </div>
+        <div
+          class="segment-pill-btn"
           [class.active]="muatan === 'Tanpa Muatan'"
-          [class.empty]="muatan === 'Tanpa Muatan'"
           (click)="muatan = 'Tanpa Muatan'"
         >
           <ion-icon name="cube-outline"></ion-icon>
-          <span>Kosong</span>
-        </button>
+          <span>Tanpa Muatan</span>
+        </div>
       </div>
     </div>
 
-    <!-- Photo & GPS -->
-    <div class="form-section">
-      <label class="field-label">Foto Selfie & Lokasi GPS</label>
-      <div class="capture-card" (click)="capturePhoto()">
-        <div *ngIf="!fotoPath" class="capture-empty">
-          <div class="capture-icon-wrap">
-            <ion-icon name="camera"></ion-icon>
-          </div>
-          <span class="capture-text">Ketuk untuk ambil foto</span>
-          <span class="capture-sub">Selfie dengan kendaraan & muatan</span>
+    <!-- 5. Widget GPS Otomatis (Soft Green #ECFDF5) -->
+    <div class="field-card-group">
+      <label class="field-label-text">Lokasi GPS Koordinat</label>
+      <div class="gps-soft-box">
+        <div class="gps-icon-circle">
+          <ion-icon name="navigate-circle"></ion-icon>
         </div>
-        <div *ngIf="fotoPath" class="capture-done">
-          <img [src]="fotoPath" class="capture-preview" />
-          <div class="capture-badge">
-            <ion-icon name="checkmark"></ion-icon>
-            Foto & GPS tercatat
-          </div>
+        <div class="gps-info-text">
+          <span class="gps-title-text">GPS Terdeteksi Otomatis</span>
+          <span class="gps-coord-text">
+            {{ gpsText ? ('Koordinat: ' + gpsText) : 'Ambil foto di bawah untuk mencatat koordinat GPS' }}
+          </span>
         </div>
-      </div>
-
-      <div *ngIf="gpsText" class="gps-info">
-        <ion-icon name="location"></ion-icon>
-        <span>{{ gpsText }}</span>
+        <div class="gps-status-indicator" [class.locked]="!!gpsText">
+          <ion-icon [name]="gpsText ? 'checkmark-circle' : 'time-outline'"></ion-icon>
+        </div>
       </div>
     </div>
 
-    <!-- Submit -->
-    <div class="form-actions">
+    <!-- 6. Box Upload/Kamera Dashed Border -->
+    <div class="field-card-group">
+      <label class="field-label-text">Dokumentasi Foto Armada & Selfie</label>
+      <div class="dashed-camera-box" (click)="capturePhoto()">
+        <div *ngIf="!fotoPath" class="camera-empty-state">
+          <div class="camera-icon-circle">
+            <ion-icon name="camera-outline"></ion-icon>
+          </div>
+          <span class="camera-main-prompt">Ambil Foto Muatan / Selfie</span>
+          <span class="camera-sub-prompt">Tekan untuk membuka kamera & merekam lokasi GPS</span>
+        </div>
+
+        <div *ngIf="fotoPath" class="camera-preview-state">
+          <img [src]="fotoPath" class="photo-preview-image" alt="Foto Armada" />
+          <div class="photo-success-overlay">
+            <ion-icon name="checkmark-circle"></ion-icon>
+            <span>Foto & Koordinat GPS Tercatat</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Action Button: Simpan Data -->
+    <div class="bottom-action-wrap">
       <ion-button
         expand="block"
         [disabled]="!isValid || saving"
         (click)="submit()"
-        class="submit-btn"
+        class="btn-submit-action"
       >
-        <ion-spinner *ngIf="saving" name="dots" class="btn-spinner"></ion-spinner>
-        <span *ngIf="!saving">Simpan Data</span>
+        <ion-spinner *ngIf="saving" name="crescent" class="btn-spinner"></ion-spinner>
+        <span *ngIf="!saving">Simpan Data Kendaraan</span>
         <ion-icon *ngIf="!saving" name="checkmark-circle" slot="end"></ion-icon>
       </ion-button>
     </div>

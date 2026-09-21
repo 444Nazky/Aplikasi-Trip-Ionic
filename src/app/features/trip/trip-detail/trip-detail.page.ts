@@ -8,6 +8,10 @@ import {
   IonTitle,
   IonContent,
   IonIcon,
+  IonCard,
+  IonCardContent,
+  IonBadge,
+  IonButton,
 } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { StorageService } from '../../../core/services/storage.service';
@@ -25,6 +29,10 @@ import { TripModel } from '../../../data/models/trip.model';
     IonTitle,
     IonContent,
     IonIcon,
+    IonCard,
+    IonCardContent,
+    IonBadge,
+    IonButton,
   ],
   templateUrl: './trip-detail.page.html',
   styleUrls: ['./trip-detail.page.scss'],

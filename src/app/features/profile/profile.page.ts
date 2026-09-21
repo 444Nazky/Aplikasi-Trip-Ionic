@@ -7,7 +7,8 @@ import {
   IonTitle,
   IonContent,
   IonIcon,
-  IonButton,
+  IonCard,
+  IonCardContent,
 } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -24,7 +25,8 @@ import { SyncService } from '../../core/services/sync.service';
     IonTitle,
     IonContent,
     IonIcon,
-    IonButton,
+    IonCard,
+    IonCardContent,
   ],
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],

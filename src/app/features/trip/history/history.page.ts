@@ -6,6 +6,9 @@ import {
   IonTitle,
   IonContent,
   IonIcon,
+  IonCard,
+  IonCardContent,
+  IonBadge,
 } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { StorageService } from '../../../core/services/storage.service';
@@ -21,6 +24,9 @@ import { TripModel } from '../../../data/models/trip.model';
     IonTitle,
     IonContent,
     IonIcon,
+    IonCard,
+    IonCardContent,
+    IonBadge,
   ],
   templateUrl: './history.page.html',
   styleUrls: ['./history.page.scss'],

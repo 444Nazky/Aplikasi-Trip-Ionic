@@ -1,11 +1,10 @@
 // ═══════════════════════════════════════════════════════════
-// Home Page — Modern Clean Logistics Theme (Field-Ready)
+// Home Page — Modern Light Mode Theme (Field-Ready)
 // ═══════════════════════════════════════════════════════════
 
 .home-toolbar {
   --background: #ffffff;
   --color: #0f172a;
-  --border-width: 0;
   border-bottom: 1px solid #e2e8f0;
   padding: 8px 16px 4px;
 }
@@ -99,14 +98,14 @@
   padding: 16px 16px 32px;
 }
 
-// ── Hero Navy Card (#0F172A) ──
+// ── Dark Navy Profile Card (#0F172A) ──
 .hero-navy-card {
   --background: #0f172a;
   background: #0f172a;
   color: #ffffff;
   border-radius: 24px;
   border: 1px solid #1e293b;
-  margin: 0 0 20px 0;
+  margin: 0 0 16px 0;
   box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.35);
   overflow: hidden;
   position: relative;
@@ -125,36 +124,152 @@
 }
 
 .hero-navy-content {
-  padding: 24px 20px;
+  padding: 20px 18px;
 }
 
-.hero-main-title {
-  font-size: 22px;
+.profile-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-left-col {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.driver-avatar-lg {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+  flex-shrink: 0;
+}
+
+.driver-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.driver-name-lg {
+  font-size: 17px;
   font-weight: 800;
   color: #ffffff;
-  margin: 0 0 8px 0;
-  letter-spacing: -0.02em;
-  line-height: 1.25;
+  margin: 0;
+  letter-spacing: -0.01em;
 }
 
-.hero-main-desc {
-  font-size: 13px;
-  color: #94a3b8;
-  line-height: 1.5;
+.region-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #34d399;
+}
+
+.online-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+}
+
+.btn-ganti-petugas {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 8px 14px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 16px;
+  }
+
+  &:active {
+    background: rgba(255, 255, 255, 0.22);
+    transform: scale(0.96);
+  }
+}
+
+// ── Royal Blue Hero CTA Card (#2563EB) ──
+.hero-blue-cta {
+  --background: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 22px;
+  border: 1px solid #1d4ed8;
   margin: 0 0 20px 0;
+  box-shadow: 0 10px 24px -4px rgba(37, 99, 235, 0.35);
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    right: -30px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+.hero-blue-content {
+  padding: 22px 20px;
+}
+
+.cta-text-col {
+  margin-bottom: 16px;
+}
+
+.cta-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.01em;
+}
+
+.cta-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.5;
+  margin: 0;
 }
 
 .btn-start-trip {
-  --background: #2563eb;
-  --background-hover: #1d4ed8;
-  --background-activated: #1e40af;
-  --color: #ffffff;
+  --background: #ffffff;
+  --background-hover: #f1f5f9;
+  --background-activated: #e2e8f0;
+  --color: #2563eb;
   --border-radius: 14px;
   font-size: 15px;
   font-weight: 700;
-  height: 48px;
+  height: 46px;
   margin: 0;
-  --box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   ion-icon {
     font-size: 20px;
@@ -207,12 +322,6 @@
   margin-top: 4px;
 }
 
-.metric-subtext {
-  font-size: 10px;
-  color: #94a3b8;
-  margin-top: 2px;
-}
-
 .sync-indicator-row {
   display: flex;
   align-items: center;
@@ -229,6 +338,10 @@
     background-color: #10b981;
     box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
   }
+}
+
+.sync-text {
+  font-size: 14px;
 }
 
 // ── Section Title Row ──

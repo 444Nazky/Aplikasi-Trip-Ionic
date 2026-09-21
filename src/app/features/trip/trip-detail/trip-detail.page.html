@@ -1,62 +1,170 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar>
+  <ion-toolbar class="detail-toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/history"></ion-back-button>
+      <ion-back-button defaultHref="/tabs/home" class="btn-custom-back"></ion-back-button>
     </ion-buttons>
-    <ion-title>Trip Detail</ion-title>
+    <ion-title class="detail-title">Pelacakan & Detail Trip</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="trip">
-  <div class="detail-page">
-    <!-- Summary Card -->
-    <div class="summary-card">
-      <div class="summary-top">
-        <h2 class="summary-no">{{ trip.noTrip }}</h2>
-        <span *ngIf="!trip.isSynced" class="sync-pill pending">Pending</span>
-        <span *ngIf="trip.isSynced" class="sync-pill synced">Synced</span>
-      </div>
-
-      <div class="summary-meta">
-        <div class="meta-chip">
-          <ion-icon name="cube-outline"></ion-icon>
-          <span>{{ trip.statusMuatan }}</span>
+<ion-content class="detail-content-body" *ngIf="trip">
+  <div class="detail-container">
+    <!-- Hero Card: Dark Navy (#0F172A) -->
+    <ion-card class="hero-navy-card">
+      <ion-card-content class="hero-navy-content">
+        <div class="hero-top-meta">
+          <span class="hero-trip-id">{{ trip.noTrip }}</span>
+          <ion-badge
+            class="hero-status-pill"
+            [class.completed]="trip.status === 'completed' || trip.isSynced"
+            [class.in-progress]="trip.status !== 'completed' && !trip.isSynced"
+          >
+            {{ (trip.status === 'completed' || trip.isSynced) ? 'Selesai' : 'Dalam Perjalanan' }}
+          </ion-badge>
         </div>
-        <div class="meta-chip">
-          <ion-icon name="car-sport-outline"></ion-icon>
-          <span>{{ trip.vehicles.length }} kendaraan</span>
-        </div>
-        <div class="meta-chip">
-          <ion-icon name="time-outline"></ion-icon>
-          <span>{{ trip.createdAt | date: 'dd MMM, HH:mm' }}</span>
-        </div>
-      </div>
 
-      <div class="summary-total">
-        <span class="total-label">Total Tarif</span>
-        <span class="total-value">{{ totalTarif | currency: 'IDR' }}</span>
-      </div>
-    </div>
+        <h1 class="hero-route-title">
+          {{ trip.rute || 'BADAU → PONTIANAK' }}
+        </h1>
 
-    <!-- Vehicle List -->
-    <h3 class="section-title">Daftar Kendaraan</h3>
-
-    <div class="vehicle-list">
-      <div *ngFor="let v of trip.vehicles; let i = index" class="vehicle-card">
-        <div class="vehicle-top">
-          <div class="vehicle-num">
-            <span class="num-badge">{{ i + 1 }}</span>
+        <div class="hero-metrics-strip">
+          <div class="strip-item">
+            <span class="strip-label">Kendaraan</span>
+            <span class="strip-value">{{ trip.vehicles[0]?.noPolisi || 'Armada 1' }}</span>
           </div>
-          <div class="vehicle-info">
-            <span class="vehicle-plate">{{ v.noPolisi }}</span>
-            <span class="vehicle-type">{{ v.jenisKendaraan }} · {{ v.golongan }}</span>
+          <div class="strip-item">
+            <span class="strip-label">Muatan</span>
+            <span class="strip-value">{{ trip.statusMuatan }}</span>
           </div>
-          <span class="vehicle-tarif">{{ v.tarif | currency: 'IDR' }}</span>
+          <div class="strip-item">
+            <span class="strip-label">Total Tarif</span>
+            <span class="strip-value highlight">{{ totalTarif | currency: 'IDR' : 'symbol' : '1.0-0' }}</span>
+          </div>
         </div>
-        <div class="vehicle-tags">
-          <span class="tag" [class.empty-tag]="v.muatan === 'Tanpa Muatan'">{{ v.muatan }}</span>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Stepper Timeline Rute Vertikal -->
+    <ion-card class="white-section-card">
+      <ion-card-content class="white-section-content">
+        <h3 class="card-section-title">Rute & Checkpoint Titik Pantau</h3>
+
+        <div class="vertical-stepper">
+          <!-- Step 1: Titik Keberangkatan (Badau) -->
+          <div class="stepper-node completed">
+            <div class="node-marker">
+              <ion-icon name="checkmark"></ion-icon>
+            </div>
+            <div class="node-line"></div>
+            <div class="node-info">
+              <div class="node-heading-row">
+                <span class="node-name">Titik Keberangkatan (Badau)</span>
+                <span class="node-time">{{ trip.createdAt | date: 'dd MMM, HH:mm' }}</span>
+              </div>
+              <p class="node-status-desc">Pemeriksaan armada awal selesai</p>
+            </div>
+          </div>
+
+          <!-- Step 2: Pos Pemeriksaan 1 (Simpang) -->
+          <div class="stepper-node completed">
+            <div class="node-marker">
+              <ion-icon name="checkmark"></ion-icon>
+            </div>
+            <div class="node-line"></div>
+            <div class="node-info">
+              <div class="node-heading-row">
+                <span class="node-name">Pos Pemeriksaan 1 (Simpang)</span>
+                <span class="node-time">Terverifikasi</span>
+              </div>
+              <p class="node-status-desc">Muatan aman, segel utuh</p>
+            </div>
+          </div>
+
+          <!-- Step 3: Pos Pemeriksaan 2 (Sanggau) -->
+          <div
+            class="stepper-node"
+            [class.active]="trip.status !== 'completed'"
+            [class.completed]="trip.status === 'completed'"
+          >
+            <div class="node-marker">
+              <ion-icon [name]="trip.status === 'completed' ? 'checkmark' : 'radio-button-on'"></ion-icon>
+            </div>
+            <div class="node-line"></div>
+            <div class="node-info">
+              <div class="node-heading-row">
+                <span class="node-name">Pos Pemeriksaan 2 (Sanggau)</span>
+                <span class="node-time" *ngIf="trip.status === 'completed'">Selesai</span>
+                <span class="node-time current-pill" *ngIf="trip.status !== 'completed'">Pos Aktif</span>
+              </div>
+              <p class="node-status-desc">
+                {{ trip.status === 'completed' ? 'Pemeriksaan pos tuntas' : 'Silakan lapor checkpoint sekarang' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 4: Titik Tujuan (Pontianak Port) -->
+          <div class="stepper-node" [class.completed]="trip.status === 'completed'">
+            <div class="node-marker end-point">
+              <ion-icon [name]="trip.status === 'completed' ? 'checkmark' : 'ellipse'"></ion-icon>
+            </div>
+            <div class="node-info">
+              <div class="node-heading-row">
+                <span class="node-name">Titik Tujuan Akhir</span>
+                <span class="node-time" *ngIf="trip.status === 'completed'">Tiba</span>
+                <span class="node-time pending" *ngIf="trip.status !== 'completed'">Belum dicapai</span>
+              </div>
+              <p class="node-status-desc">
+                {{ trip.status === 'completed' ? 'Bongkar muat & berkas ditandatangani' : 'Tujuan akhir bongkar muatan' }}
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Daftar Kendaraan / Armada -->
+    <ion-card class="white-section-card">
+      <ion-card-content class="white-section-content">
+        <h3 class="card-section-title">Daftar Kendaraan Terdaftar ({{ trip.vehicles.length }})</h3>
+
+        <div class="vehicles-list-wrap">
+          <div *ngFor="let v of trip.vehicles; let idx = index" class="vehicle-item-row">
+            <div class="vehicle-idx-badge">{{ idx + 1 }}</div>
+            <div class="vehicle-detail-col">
+              <span class="vehicle-plate-text">{{ v.noPolisi }}</span>
+              <span class="vehicle-type-text">{{ v.jenisKendaraan }} · {{ v.golongan }}</span>
+            </div>
+            <div class="vehicle-cost-col">
+              <span class="vehicle-cost-amount">{{ v.tarif | currency: 'IDR' : 'symbol' : '1.0-0' }}</span>
+              <span class="vehicle-muatan-tag" [class.empty-tag]="v.muatan === 'Tanpa Muatan'">
+                {{ v.muatan }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Dokumentasi & Tanda Tangan Konfirmasi -->
+    <ion-card class="white-section-card">
+      <ion-card-content class="white-section-content">
+        <h3 class="card-section-title">Konfirmasi & Tanda Tangan Petugas</h3>
+        <div class="signature-box-container">
+          <div class="signature-sketch-icon">
+            <ion-icon name="create-outline"></ion-icon>
+          </div>
+          <span class="signature-officer-name">Petugas Lapangan Terverifikasi</span>
+          <span class="signature-officer-sub">Wilayah Operasional BADAU</span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Bottom Actions -->
+    <div class="bottom-action-buttons">
+      <ion-button expand="block" class="btn-dark-navy-action">
+        <ion-icon name="document-text-outline" slot="start"></ion-icon>
+        <span>Unduh Laporan Perjalanan (PDF)</span>
+      </ion-button>
     </div>
   </div>
 </ion-content>

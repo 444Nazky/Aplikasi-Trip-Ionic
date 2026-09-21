@@ -7,7 +7,7 @@
         </div>
         <div class="driver-meta">
           <span class="greeting-sub">Selamat Bertugas,</span>
-          <h2 class="driver-name">{{ userName || 'Petugas Lapangan' }}</h2>
+          <h2 class="driver-name">{{ userName || 'Budi Santoso' }}</h2>
         </div>
       </div>
       <ion-badge class="region-locked-pill">
@@ -26,22 +26,40 @@
   </div>
 
   <div class="home-container">
-    <!-- Hero Card: Dark Navy (#0F172A) -->
+    <!-- Dark Navy Profile Card (#0F172A) with Ganti Petugas button -->
     <ion-card class="hero-navy-card">
       <ion-card-content class="hero-navy-content">
-        <div class="hero-text-wrap">
-          <h1 class="hero-main-title">Siap untuk trip hari ini?</h1>
-          <p class="hero-main-desc">
-            Pastikan muatan, dokumen, dan kendaraan sudah lengkap sebelum memulai perjalanan logistik Anda.
-          </p>
+        <div class="profile-top-row">
+          <div class="profile-left-col">
+            <div class="driver-avatar-lg">
+              <span>{{ getInitials(userName) }}</span>
+            </div>
+            <div class="driver-info-col">
+              <h1 class="driver-name-lg">{{ userName || 'Budi Santoso' }}</h1>
+              <div class="region-chip">
+                <span class="online-dot"></span>
+                <span>{{ regionName || 'BADAU' }} · Aktif</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-ganti-petugas" (click)="openGantiPetugas()">
+            <ion-icon name="swap-horizontal-outline"></ion-icon>
+            <span>Ganti Petugas</span>
+          </button>
         </div>
-        <ion-button
-          expand="block"
-          routerLink="/create-trip"
-          class="btn-start-trip"
-        >
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Royal Blue Hero CTA Card (#2563EB) -->
+    <ion-card class="hero-blue-cta">
+      <ion-card-content class="hero-blue-content">
+        <div class="cta-text-col">
+          <h2 class="cta-title">Mulai Trip Baru Sekarang</h2>
+          <p class="cta-desc">Pastikan muatan, dokumen, dan kendaraan sudah lengkap sebelum memulai perjalanan.</p>
+        </div>
+        <ion-button expand="block" routerLink="/create-trip" class="btn-start-trip">
           <ion-icon name="add-outline" slot="start"></ion-icon>
-          <span>Mulai Trip Baru</span>
+          <span>Mulai Trip</span>
         </ion-button>
       </ion-card-content>
     </ion-card>
@@ -52,7 +70,6 @@
         <ion-card-content class="metric-card-content">
           <span class="metric-number">{{ tripCount }}</span>
           <span class="metric-label">Trip Hari Ini</span>
-          <span class="metric-subtext">+1 baru</span>
         </ion-card-content>
       </ion-card>
 
@@ -60,18 +77,16 @@
         <ion-card-content class="metric-card-content">
           <span class="metric-number">{{ vehicleCount }}</span>
           <span class="metric-label">Kendaraan</span>
-          <span class="metric-subtext">Aktif</span>
         </ion-card-content>
       </ion-card>
 
       <ion-card class="metric-card" (click)="manualSync()" [class.clickable]="isOnline">
         <ion-card-content class="metric-card-content">
           <div class="sync-indicator-row">
-            <span class="metric-number sync-dot" [class.online]="isOnline"></span>
-            <span class="metric-number">{{ isOnline ? 'Online' : 'Offline' }}</span>
+            <span class="sync-dot" [class.online]="isOnline"></span>
+            <span class="metric-number sync-text">{{ isOnline ? 'Online' : 'Offline' }}</span>
           </div>
           <span class="metric-label">Status Sync</span>
-          <span class="metric-subtext">{{ isOnline ? 'Ketuk Sinkron' : 'Menunggu Sinyal' }}</span>
         </ion-card-content>
       </ion-card>
     </div>
@@ -93,7 +108,6 @@
         routerLink="/trip-detail/{{ trip.id }}"
       >
         <ion-card-content class="trip-entry-content">
-          <!-- Card Header Row -->
           <div class="trip-card-header">
             <span class="trip-id-text">{{ trip.noTrip }}</span>
             <ion-badge
@@ -105,7 +119,6 @@
             </ion-badge>
           </div>
 
-          <!-- Route Row -->
           <div class="trip-route-row">
             <span class="route-origin">{{ trip.rute ? (trip.rute.split('→')[0] | uppercase) : 'BADAU' }}</span>
             <ion-icon name="arrow-forward" class="route-arrow"></ion-icon>
@@ -114,7 +127,6 @@
 
           <div class="card-divider"></div>
 
-          <!-- Metadata Footer Row -->
           <div class="trip-card-footer">
             <div class="meta-item">
               <ion-icon name="car-outline"></ion-icon>
@@ -139,7 +151,7 @@
           <ion-icon name="document-text-outline"></ion-icon>
         </div>
         <h4 class="empty-title">Belum ada trip hari ini</h4>
-        <p class="empty-desc">Tekan tombol Mulai Trip Baru di atas untuk mencatat logistik.</p>
+        <p class="empty-desc">Tekan tombol Mulai Trip di atas untuk mencatat logistik.</p>
       </ion-card-content>
     </ion-card>
   </div>

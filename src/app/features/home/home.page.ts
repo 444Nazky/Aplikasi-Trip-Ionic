@@ -12,12 +12,15 @@ import {
   IonCardContent,
   IonChip,
   IonBadge,
+  ModalController,
 } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 import { NetworkService } from '../../core/services/network.service';
 import { StorageService } from '../../core/services/storage.service';
 import { SyncService } from '../../core/services/sync.service';
 import { TripModel } from '../../data/models/trip.model';
+import { PinVerifyModal } from './pin-verify.modal';
+import { OfficerSelectModal } from './officer-select.modal';
 
 @Component({
   selector: 'app-home',
@@ -51,7 +54,8 @@ export class HomePage implements OnInit {
     private auth: AuthService,
     private network: NetworkService,
     private storage: StorageService,
-    private sync: SyncService
+    private sync: SyncService,
+    private modalCtrl: ModalController
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -98,5 +102,35 @@ export class HomePage implements OnInit {
     if (!this.isOnline) return;
     await this.sync.processQueue();
     await this.refreshData();
+  }
+
+  // ── Ganti Petugas Flow ──
+  async openGantiPetugas(): Promise<void> {
+    const pinModal = await this.modalCtrl.create({
+      component: PinVerifyModal,
+      cssClass: 'pin-verify-modal',
+      showBackdrop: true,
+      backdropDismiss: true,
+    });
+    await pinModal.present();
+
+    const { data, role } = await pinModal.onWillDismiss();
+    if (role === 'verified' && data?.verified) {
+      const officerModal = await this.modalCtrl.create({
+        component: OfficerSelectModal,
+        cssClass: 'officer-select-modal',
+        showBackdrop: true,
+        backdropDismiss: true,
+      });
+      await officerModal.present();
+
+      const officerResult = await officerModal.onWillDismiss();
+      if (officerResult.role === 'selected' && officerResult.data?.officer) {
+        // Petugas selected — refresh user data from auth
+        const selected = officerResult.data.officer;
+        this.userName = selected.nama;
+        this.regionName = selected.region;
+      }
+    }
   }
 }
