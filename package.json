@@ -35,6 +35,7 @@
     "@ionic/react": "^9.0.4",
     "@ionic/react-router": "^9.0.4",
     "@ionic/storage-angular": "^4.0.0",
+    "@tailwindcss/vite": "^4.3.3",
     "ionicons": "^8.1.0",
     "lucide-react": "^1.47.0",
     "react": "^19.3.0",
@@ -42,6 +43,7 @@
     "react-router": "^8.4.0",
     "react-router-dom": "^7.18.4",
     "rxjs": "~7.8.0",
+    "tailwindcss": "^4.3.3",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
