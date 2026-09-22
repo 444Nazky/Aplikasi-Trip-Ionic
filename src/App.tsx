@@ -27,7 +27,7 @@ const App: React.FC = () => {
           <IonRouterOutlet>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
+              <Route path="*" element={<Navigate to="r/login" replace />} />
             </Routes>
           </IonRouterOutlet>
         ) : (
