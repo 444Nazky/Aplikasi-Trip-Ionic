@@ -1,12 +1,12 @@
 {
   "android/app/build.gradle": {
-    "mtime": 1789968485.5649292,
-    "ast_hash": "c58fda4f126f35a6798f93473c91e48a",
+    "mtime": 1790043467.5816393,
+    "ast_hash": "a61470d489bd67b53ea3ea3064e6934d",
     "semantic_hash": ""
   },
   "android/app/capacitor.build.gradle": {
-    "mtime": 1789973177.756237,
-    "ast_hash": "d190f80efd6e057269a662fe1feb272b",
+    "mtime": 1790043207.1517744,
+    "ast_hash": "8071d4d9e4fd8fac49dff1ed69d6b21e",
     "semantic_hash": ""
   },
   "android/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java": {
@@ -30,7 +30,7 @@
     "semantic_hash": ""
   },
   "android/capacitor.settings.gradle": {
-    "mtime": 1789973177.756237,
+    "mtime": 1790043207.1507742,
     "ast_hash": "3fb6e481fdf2ed9d7d7c7b07e1cc16cf",
     "semantic_hash": ""
   },
@@ -65,13 +65,13 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1789973267.7813792,
-    "ast_hash": "7f0ee392f1b20ec81fcf5dd20a2ab8f8",
+    "mtime": 1790043603.2083647,
+    "ast_hash": "89b7d6ddd13c4ee20c848abe46cdbade",
     "semantic_hash": ""
   },
   "src/app/app-routing.module.ts": {
-    "mtime": 1789961723.6611567,
-    "ast_hash": "79b802d4722ba818463c1ded73805f99",
+    "mtime": 1790043632.637299,
+    "ast_hash": "ff4bb397cf22ec4a139e7b19971815ba",
     "semantic_hash": ""
   },
   "src/app/app.component.ts": {
@@ -95,8 +95,8 @@
     "semantic_hash": ""
   },
   "src/app/core/services/auth.service.ts": {
-    "mtime": 1789974157.2498527,
-    "ast_hash": "60367368dc41dd7e0a1a1b329a98d5b4",
+    "mtime": 1789981692.8046358,
+    "ast_hash": "fe588d0fc414a8d2b6dd07aee98748a7",
     "semantic_hash": ""
   },
   "src/app/core/services/camera.service.ts": {
@@ -174,54 +174,14 @@
     "ast_hash": "32d37712adbe851b767f79c00bdeacaa",
     "semantic_hash": ""
   },
-  "src/app/features/auth/login/login.page.ts": {
-    "mtime": 1789970752.0646932,
-    "ast_hash": "fd33e688cf65c5fa4a415d23cf1150d4",
-    "semantic_hash": ""
-  },
   "src/app/features/auth/splash/splash.page.ts": {
     "mtime": 1789971168.666167,
     "ast_hash": "30ca9256b1621ef4ed2b749c857e5229",
     "semantic_hash": ""
   },
-  "src/app/features/home/home.page.ts": {
-    "mtime": 1789970726.832133,
-    "ast_hash": "9a6b64d4ae40b67f161689f1704b6b19",
-    "semantic_hash": ""
-  },
-  "src/app/features/profile/profile.page.ts": {
-    "mtime": 1789970398.8684967,
-    "ast_hash": "3d44d35dc5e10c2dddfc50036941443e",
-    "semantic_hash": ""
-  },
   "src/app/features/tabs/tabs.page.ts": {
-    "mtime": 1789971238.2523038,
-    "ast_hash": "c9f03fdc69bb1c1807d1633830d227b4",
-    "semantic_hash": ""
-  },
-  "src/app/features/trip/create-trip/create-trip.page.ts": {
-    "mtime": 1789970494.044,
-    "ast_hash": "f2922446e800406103d14e9ebd7271ea",
-    "semantic_hash": ""
-  },
-  "src/app/features/trip/history/history.page.ts": {
-    "mtime": 1789970469.9821253,
-    "ast_hash": "e465851c7ccad459e6a0a99abfa323d3",
-    "semantic_hash": ""
-  },
-  "src/app/features/trip/input-vehicle/input-vehicle.page.ts": {
-    "mtime": 1789970837.5434794,
-    "ast_hash": "232e44af003db5c47bfe32de1d5a853a",
-    "semantic_hash": ""
-  },
-  "src/app/features/trip/success-dialog/success-dialog.page.ts": {
-    "mtime": 1789970477.3597698,
-    "ast_hash": "59e68f3623a495bb587c8f37844b3fe6",
-    "semantic_hash": ""
-  },
-  "src/app/features/trip/trip-detail/trip-detail.page.ts": {
-    "mtime": 1789970364.2581313,
-    "ast_hash": "91871c586d33b16143133a0c99c25e0a",
+    "mtime": 1789982940.176842,
+    "ast_hash": "9c30211bc4ec831ea578ab7da07e4f1a",
     "semantic_hash": ""
   },
   "src/environments/environment.prod.ts": {
@@ -252,46 +212,6 @@
   "src/app/app.component.html": {
     "mtime": 1789763387.0,
     "ast_hash": "ec4d9b62e08469c15ccc114353b3385f",
-    "semantic_hash": ""
-  },
-  "src/app/features/auth/login/login.page.html": {
-    "mtime": 1789971178.3961318,
-    "ast_hash": "95289d0983c87d6208d19b04f08f2217",
-    "semantic_hash": ""
-  },
-  "src/app/features/home/home.page.html": {
-    "mtime": 1789971207.5060327,
-    "ast_hash": "0174891dc86da9e75466eb98cb4045c3",
-    "semantic_hash": ""
-  },
-  "src/app/features/profile/profile.page.html": {
-    "mtime": 1789971386.1045897,
-    "ast_hash": "9f66e2d5db93bd1f014031d3325fdb9e",
-    "semantic_hash": ""
-  },
-  "src/app/features/trip/create-trip/create-trip.page.html": {
-    "mtime": 1789971247.94291,
-    "ast_hash": "25a70a8fadae194567f2cf1b62565867",
-    "semantic_hash": ""
-  },
-  "src/app/features/trip/history/history.page.html": {
-    "mtime": 1789971307.4997554,
-    "ast_hash": "469d920559ba26b3d77dad7ede6d784a",
-    "semantic_hash": ""
-  },
-  "src/app/features/trip/input-vehicle/input-vehicle.page.html": {
-    "mtime": 1789971282.1378179,
-    "ast_hash": "a2a27b09617cc12940f88c04a24cf464",
-    "semantic_hash": ""
-  },
-  "src/app/features/trip/success-dialog/success-dialog.page.html": {
-    "mtime": 1789971356.5365653,
-    "ast_hash": "ea497d93e0065dfd891a61f7ca7d80dc",
-    "semantic_hash": ""
-  },
-  "src/app/features/trip/trip-detail/trip-detail.page.html": {
-    "mtime": 1789971328.9777062,
-    "ast_hash": "4c74ab8b050d36fb5cf64afb12b9ee98",
     "semantic_hash": ""
   },
   "src/index.html": {
@@ -505,8 +425,8 @@
     "semantic_hash": ""
   },
   "src/App.tsx": {
-    "mtime": 1789971508.817729,
-    "ast_hash": "1ed745f0931632be15ae699bb5486316",
+    "mtime": 1790043358.903999,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
     "semantic_hash": ""
   },
   "src/app/core/constants/api.constants.ts": {
@@ -524,24 +444,14 @@
     "ast_hash": "501dc8681edf67c994d1d39a20b3c4ce",
     "semantic_hash": ""
   },
-  "src/app/features/auth/login.page.ts": {
-    "mtime": 1789972771.3238978,
-    "ast_hash": "8fbf841f845d4ed0ec88a6ccdbd2e7d9",
-    "semantic_hash": ""
-  },
-  "src/app/features/history/history.page.ts": {
-    "mtime": 1789973110.2672598,
-    "ast_hash": "71880d0643c07767f0fecf6cc4199d08",
-    "semantic_hash": ""
-  },
   "src/app/features/profile.page.ts": {
-    "mtime": 1789973110.3202643,
-    "ast_hash": "d8158ae7b4e104fdcdb6c1bb70e19946",
+    "mtime": 1790043356.0858283,
+    "ast_hash": "aa1303a084e813bec48279c177c480c5",
     "semantic_hash": ""
   },
   "src/app/features/tabs/tabs.routes.ts": {
-    "mtime": 1789973110.166251,
-    "ast_hash": "027e52e212b698d34e3d86ea6610781a",
+    "mtime": 1790043628.970983,
+    "ast_hash": "67f10b3913c5964f4be0c46837a0fa53",
     "semantic_hash": ""
   },
   "admin/src/index.html": {
@@ -552,16 +462,6 @@
   "resources/README.md": {
     "mtime": 1789973284.27663,
     "ast_hash": "940f3e5bcfa0d184d30cd65b7b705fc1",
-    "semantic_hash": ""
-  },
-  "src/app/features/auth/login.page.html": {
-    "mtime": 1789972569.1984537,
-    "ast_hash": "7dcce1c843668ce4e2b230e8f119fc59",
-    "semantic_hash": ""
-  },
-  "src/app/features/history/history.page.html": {
-    "mtime": 1789973110.2309172,
-    "ast_hash": "c52ace8c879e74941667960598d03ed0",
     "semantic_hash": ""
   },
   "resources/android/icon/drawable-hdpi-icon.png": {
@@ -887,6 +787,81 @@
   "resources/splash.png": {
     "mtime": 1789973284.2563803,
     "ast_hash": "2412a8324a656ec5993eb50b3b293c69",
+    "semantic_hash": ""
+  },
+  "src/app/features/auth/login.page.tsx": {
+    "mtime": 1790043165.06871,
+    "ast_hash": "68bb5abca4cfd5d46998d763246c8d43",
+    "semantic_hash": ""
+  },
+  "src/app/features/auth/login/login.page.tsx": {
+    "mtime": 1790043160.7598994,
+    "ast_hash": "bab506ccab7e59ab798935f490a037fb",
+    "semantic_hash": ""
+  },
+  "src/app/features/history/history.page.tsx": {
+    "mtime": 1790043188.96099,
+    "ast_hash": "9b96c9c6bba6eaa475b129fa8cd56543",
+    "semantic_hash": ""
+  },
+  "src/app/features/home/home.page.tsx": {
+    "mtime": 1790043177.6742635,
+    "ast_hash": "33664f97036a85841c6bae98c735fee6",
+    "semantic_hash": ""
+  },
+  "src/app/features/home/officer-select.modal.ts": {
+    "mtime": 1789983415.8189616,
+    "ast_hash": "ee9fbe097c59d6c4bae134b87cc2eae2",
+    "semantic_hash": ""
+  },
+  "src/app/features/home/pin-verify.modal.ts": {
+    "mtime": 1789983392.6334112,
+    "ast_hash": "24c61fb8f9b068c94916f878d6c3c0f4",
+    "semantic_hash": ""
+  },
+  "src/app/features/profile/profile.page.tsx": {
+    "mtime": 1790043186.6390371,
+    "ast_hash": "d098f85f931bd40fe29390efb19b4278",
+    "semantic_hash": ""
+  },
+  "src/app/features/trip/create-trip/create-trip.page.tsx": {
+    "mtime": 1790043210.223763,
+    "ast_hash": "d1b029e81829e509c0044052a1aaf923",
+    "semantic_hash": ""
+  },
+  "src/app/features/trip/history/history.page.tsx": {
+    "mtime": 1790043273.4568357,
+    "ast_hash": "52d194994f38256838fcedd2c9aab52b",
+    "semantic_hash": ""
+  },
+  "src/app/features/trip/input-vehicle/input-vehicle.page.tsx": {
+    "mtime": 1790043224.6371284,
+    "ast_hash": "fd9f25fb1b6992e3bc701cea835cb9b4",
+    "semantic_hash": ""
+  },
+  "src/app/features/trip/success-dialog/success-dialog.page.tsx": {
+    "mtime": 1790043229.6558435,
+    "ast_hash": "c115f83623b88cbfa941025e3a5e9dbe",
+    "semantic_hash": ""
+  },
+  "src/app/features/trip/trip-detail/trip-detail.page.tsx": {
+    "mtime": 1790043242.6620307,
+    "ast_hash": "1a78297fa9a4ec2b82a078d748c9e489",
+    "semantic_hash": ""
+  },
+  ".kilo/skills/angular-component/SKILL.md": {
+    "mtime": 1782466383.0,
+    "ast_hash": "52edbca03df9a9c2d91d2816fd1cdacf",
+    "semantic_hash": ""
+  },
+  ".kilo/skills/angular-component/references/component-patterns.md": {
+    "mtime": 1782466383.0,
+    "ast_hash": "b3a9212bde3233fdc1672c8609fdadb8",
+    "semantic_hash": ""
+  },
+  "Assets/guest-profile.jpeg": {
+    "mtime": 1789982387.4341478,
+    "ast_hash": "cbec492d4782f13b244c119b8fecaee1",
     "semantic_hash": ""
   }
 }
