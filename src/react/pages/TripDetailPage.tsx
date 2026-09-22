@@ -12,6 +12,7 @@ import {
   IonBadge,
   IonButton,
 } from '@ionic/react';
+import { useNavigate } from 'react-router-dom';
 import { checkmark, radioButtonOn, ellipse, createOutline, documentTextOutline } from 'ionicons/icons';
 
 interface Vehicle {
@@ -35,13 +36,19 @@ interface Trip {
 }
 
 interface TripDetailPageProps {
-  trip?: Trip | null;
-  onDownloadPdf?: () => void;
+  trip?: Trip;
 }
 
-export const TripDetailPage: React.FC<TripDetailPageProps> = ({ trip, onDownloadPdf }) => {
+export const TripDetailPage: React.FC<TripDetailPageProps> = ({ trip }) => {
+  const navigate = useNavigate();
+
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
   const formatDate = (dateStr: string) => {
@@ -134,7 +141,9 @@ export const TripDetailPage: React.FC<TripDetailPageProps> = ({ trip, onDownload
                       <span className="node-name">Pos Pemeriksaan 2 (Sanggau)</span>
                       {isCompleted ? <span className="node-time">Selesai</span> : <span className="node-time current-pill">Pos Aktif</span>}
                     </div>
-                    <p className="node-status-desc">{isCompleted ? 'Pemeriksaan pos tuntas' : 'Silakan lapor checkpoint sekarang'}</p>
+                    <p className="node-status-desc">
+                      {isCompleted ? 'Pemeriksaan pos tuntas' : 'Silakan lapor checkpoint sekarang'}
+                    </p>
                   </div>
                 </div>
                 <div className={`stepper-node ${isCompleted ? 'completed' : ''}`}>
@@ -144,7 +153,9 @@ export const TripDetailPage: React.FC<TripDetailPageProps> = ({ trip, onDownload
                       <span className="node-name">Titik Tujuan Akhir</span>
                       {isCompleted ? <span className="node-time">Tiba</span> : <span className="node-time pending">Belum dicapai</span>}
                     </div>
-                    <p className="node-status-desc">{isCompleted ? 'Bongkar muat & berkas ditandatangani' : 'Tujuan akhir bongkar muatan'}</p>
+                    <p className="node-status-desc">
+                      {isCompleted ? 'Bongkar muat & berkas ditandatangani' : 'Tujuan akhir bongkar muatan'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -184,7 +195,7 @@ export const TripDetailPage: React.FC<TripDetailPageProps> = ({ trip, onDownload
           </IonCard>
 
           <div className="bottom-action-buttons">
-            <IonButton expand="block" className="btn-dark-navy-action" onClick={onDownloadPdf}>
+            <IonButton expand="block" className="btn-dark-navy-action">
               <IonIcon icon={documentTextOutline} slot="start" />
               <span>Unduh Laporan Perjalanan (PDF)</span>
             </IonButton>
@@ -194,3 +205,5 @@ export const TripDetailPage: React.FC<TripDetailPageProps> = ({ trip, onDownload
     </>
   );
 };
+
+export default TripDetailPage;

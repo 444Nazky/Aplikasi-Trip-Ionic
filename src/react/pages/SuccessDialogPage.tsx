@@ -7,6 +7,7 @@ import {
   IonIcon,
   IonButton,
 } from '@ionic/react';
+import { useNavigate } from 'react-router-dom';
 import { checkmark, cloudUploadOutline, arrowForward } from 'ionicons/icons';
 
 interface Vehicle {
@@ -23,19 +24,32 @@ interface Trip {
 }
 
 interface SuccessDialogPageProps {
-  trip?: Trip | null;
-  onDone?: () => void;
+  trip?: Trip;
 }
 
-export const SuccessDialogPage: React.FC<SuccessDialogPageProps> = ({ trip, onDone }) => {
+export const SuccessDialogPage: React.FC<SuccessDialogPageProps> = ({ trip }) => {
+  const navigate = useNavigate();
   const total = trip?.vehicles.reduce((s, v) => s + (v.tarif || 0), 0) ?? 0;
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const handleDone = () => {
+    navigate('/tabs/home');
   };
 
   if (!trip) {
-    return <IonContent><div className="success-page"><p>Loading...</p></div></IonContent>;
+    return (
+      <IonContent>
+        <div className="success-page"><p>Loading...</p></div>
+      </IonContent>
+    );
   }
 
   return (
@@ -80,7 +94,7 @@ export const SuccessDialogPage: React.FC<SuccessDialogPageProps> = ({ trip, onDo
           )}
 
           <div className="success-actions">
-            <IonButton expand="block" onClick={onDone} className="done-btn">
+            <IonButton expand="block" onClick={handleDone} className="done-btn">
               Selesai
               <IonIcon icon={arrowForward} slot="end" />
             </IonButton>
@@ -90,3 +104,5 @@ export const SuccessDialogPage: React.FC<SuccessDialogPageProps> = ({ trip, onDo
     </>
   );
 };
+
+export default SuccessDialogPage;

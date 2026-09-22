@@ -1,0 +1,9 @@
+export { LoginPage } from './LoginPage';
+export { SimpleLoginPage } from './SimpleLoginPage';
+export { HomePage } from './HomePage';
+export { ProfilePage } from './ProfilePage';
+export { HistoryPage } from './HistoryPage';
+export { CreateTripPage } from './CreateTripPage';
+export { InputVehiclePage } from './InputVehiclePage';
+export { SuccessDialogPage } from './SuccessDialogPage';
+export { TripDetailPage } from './TripDetailPage';
