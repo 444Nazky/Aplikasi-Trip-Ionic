@@ -1,62 +1,37 @@
-import React from 'react';
-import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonIcon,
-} from '@ionic/react';
-import { checkmarkCircle, documentTextOutline } from 'ionicons/icons';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { IonContent, IonList, IonItem, IonLabel, IonNote, IonIcon } from '@ionic/angular';
+import { StorageService } from '../../core/services/storage.service';
 
-interface Trip {
-  id: string;
-  noTrip: string;
-  rute?: string;
-  vehicleCount: number;
-  time: string;
-  isSynced?: boolean;
+@Component({
+  selector: 'app-history',
+  standalone: true,
+  imports: [CommonModule, IonContent, IonList, IonItem, IonLabel, IonNote, IonIcon],
+  templateUrl: './history.page.html',
+  styleUrls: ['./history.page.scss'],
+})
+export class HistoryPage implements OnInit {
+  private router = inject(Router);
+  private storage = inject(StorageService);
+
+  trips: any[] = [];
+
+  async ngOnInit(): Promise<void> {
+    const allTrips = await this.storage.getAllTrips();
+    this.trips = allTrips
+      .map((t) => ({
+        id: t.id,
+        noTrip: t.noTrip,
+        rute: t.rute || '-',
+        vehicleCount: t.vehicles.length,
+        time: new Date(t.createdAt).toLocaleString('id-ID'),
+        isSynced: t.isSynced,
+      }))
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+  }
+
+  viewTrip(id: string): void {
+    this.router.navigate(['/trip', id]);
+  }
 }
-
-interface HistoryPageProps {
-  trips?: Trip[];
-  onViewTrip?: (id: string) => void;
-}
-
-export const HistoryPage: React.FC<HistoryPageProps> = ({ trips = [], onViewTrip }) => {
-  return (
-    <IonPage>
-      <IonHeader className="ion-no-border">
-        <IonToolbar><IonTitle>Riwayat Trip</IonTitle></IonToolbar>
-      </IonHeader>
-
-      <IonContent className="ion-padding">
-        {trips.length > 0 ? (
-          <IonList>
-            {trips.map((trip) => (
-              <IonItem key={trip.id} button onClick={() => onViewTrip?.(trip.id)} lines="none">
-                <IonLabel>
-                  <h3>{trip.noTrip}</h3>
-                  <p>{trip.rute || '-'} - {trip.vehicleCount} kendaraan</p>
-                  <p className="time">{trip.time}</p>
-                </IonLabel>
-                <IonNote slot="end" color="success">
-                  <IonIcon icon={checkmarkCircle} /> Synced
-                </IonNote>
-              </IonItem>
-            ))}
-          </IonList>
-        ) : (
-          <div className="empty">
-            <IonIcon icon={documentTextOutline} />
-            <p>Belum ada trip</p>
-          </div>
-        )}
-      </IonContent>
-    </IonPage>
-  );
-};

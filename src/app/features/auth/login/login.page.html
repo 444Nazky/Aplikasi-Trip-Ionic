@@ -1,0 +1,70 @@
+<ion-content [fullscreen]="true" class="login-ion-content">
+  <div class="login-container">
+    <div class="hero-section">
+      <div class="hero-icon-badge">
+        <ion-icon name="bus"></ion-icon>
+      </div>
+      <h1 class="hero-title">Trip Angkutan</h1>
+      <p class="hero-subtitle">Sistem Pencatatan Angkutan Perkebunan</p>
+    </div>
+
+    <div class="region-badge-card">
+      <div class="region-icon-wrapper">
+        <ion-icon name="shield-checkmark"></ion-icon>
+      </div>
+      <div class="region-text-group">
+        <span class="region-label">Device Region Locked</span>
+        <span class="region-value">BADAU</span>
+      </div>
+    </div>
+
+    <div class="main-card">
+      <div class="officer-card">
+        <div class="officer-avatar">BS</div>
+        <div class="officer-meta">
+          <span class="officer-id">ID: usr-001</span>
+          <span class="officer-name">Budi Santoso</span>
+          <span class="officer-role">Petugas Lapangan</span>
+        </div>
+      </div>
+
+      <div class="pin-display-wrapper">
+        <span class="pin-label">PIN AKSES</span>
+        <div class="pin-dots-container">
+          @for (dot of [0, 1, 2, 3, 4, 5]; track dot) {
+            <div class="pin-dot" [class.filled]="pin.length > dot" [class.error]="error"></div>
+          }
+        </div>
+        <p class="pin-status-text" [class.error-text]="error">
+          @if (error) {
+            {{ errorMessage || 'PIN tidak valid. Coba lagi.' }}
+          } @else {
+            Masukkan 6 digit PIN Anda
+          }
+        </p>
+        <input type="password" inputmode="numeric" maxlength="6" [(ngModel)]="pin" class="hidden-pin-input" (keyup.enter)="login()" />
+      </div>
+
+      <div class="numpad-grid">
+        @for (num of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track num) {
+          <button type="button" class="numpad-btn" (click)="pressKey(num.toString())">{{ num }}</button>
+        }
+        <div class="numpad-placeholder"></div>
+        <button type="button" class="numpad-btn" (click)="pressKey('0')">0</button>
+        <button type="button" class="numpad-btn backspace-btn" (click)="pressBackspace()" aria-label="Hapus digit">
+          <ion-icon name="backspace-outline"></ion-icon>
+        </button>
+      </div>
+
+      <ion-button expand="block" class="submit-login-btn" [disabled]="loading || pin.length !== 6" (click)="login()">
+        @if (loading) {
+          <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+        } @else {
+          <span>Masuk</span>
+        }
+      </ion-button>
+    </div>
+
+    <p class="app-version-footer">Trip Angkutan v1.0</p>
+  </div>
+</ion-content>

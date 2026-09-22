@@ -1,0 +1,143 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="home-toolbar">
+    <div class="user-header-row">
+      <div class="avatar-info-wrap">
+        <div class="driver-avatar">
+          <span>{{ getInitials(userName) }}</span>
+        </div>
+        <div class="driver-meta">
+          <span class="greeting-sub">Selamat Bertugas,</span>
+          <h2 class="driver-name">{{ userName || 'Budi Santoso' }}</h2>
+        </div>
+      </div>
+      <ion-badge class="region-locked-pill">
+        <ion-icon name="globe-outline"></ion-icon>
+        <span>Region: {{ regionName || 'BADAU' }}</span>
+      </ion-badge>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="home-content-body">
+  <div *ngIf="!isOnline" class="offline-banner">
+    <ion-icon name="cloud-offline-outline"></ion-icon>
+    <span>Mode Offline — Data tersimpan lokal & akan disinkronkan</span>
+  </div>
+
+  <div class="home-container">
+    <ion-card class="hero-navy-card">
+      <ion-card-content class="hero-navy-content">
+        <div class="profile-top-row">
+          <div class="profile-left-col">
+            <div class="driver-avatar-lg">
+              <span>{{ getInitials(userName) }}</span>
+            </div>
+            <div class="driver-info-col">
+              <h1 class="driver-name-lg">{{ userName || 'Budi Santoso' }}</h1>
+              <div class="region-chip">
+                <span class="online-dot"></span>
+                <span>{{ regionName || 'BADAU' }} · Aktif</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-ganti-petugas" (click)="openGantiPetugas()">
+            <ion-icon name="swap-horizontal-outline"></ion-icon>
+            <span>Ganti Petugas</span>
+          </button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="hero-blue-cta">
+      <ion-card-content class="hero-blue-content">
+        <div class="cta-text-col">
+          <h2 class="cta-title">Mulai Trip Baru Sekarang</h2>
+          <p class="cta-desc">Pastikan muatan, dokumen, dan kendaraan sudah lengkap sebelum memulai perjalanan.</p>
+        </div>
+        <ion-button expand="block" routerLink="/create-trip" class="btn-start-trip">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          <span>Mulai Trip</span>
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="metrics-grid">
+      <ion-card class="metric-card">
+        <ion-card-content class="metric-card-content">
+          <span class="metric-number">{{ tripCount }}</span>
+          <span class="metric-label">Trip Hari Ini</span>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="metric-card">
+        <ion-card-content class="metric-card-content">
+          <span class="metric-number">{{ vehicleCount }}</span>
+          <span class="metric-label">Kendaraan</span>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="metric-card" (click)="manualSync()" [class.clickable]="isOnline">
+        <ion-card-content class="metric-card-content">
+          <div class="sync-indicator-row">
+            <span class="sync-dot" [class.online]="isOnline"></span>
+            <span class="metric-number sync-text">{{ isOnline ? 'Online' : 'Offline' }}</span>
+          </div>
+          <span class="metric-label">Status Sync</span>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div class="section-title-row">
+      <h3 class="section-heading">Trip Terbaru</h3>
+      <a routerLink="/tabs/history" class="link-see-all">
+        <span>Lihat Semua</span>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </a>
+    </div>
+
+    <div class="trips-card-list" *ngIf="recentTrips.length">
+      <ion-card *ngFor="let trip of recentTrips" class="trip-entry-card" routerLink="/trip-detail/{{ trip.id }}">
+        <ion-card-content class="trip-entry-content">
+          <div class="trip-card-header">
+            <span class="trip-id-text">{{ trip.noTrip }}</span>
+            <ion-badge class="trip-status-badge" [class.completed]="trip.status === 'completed' || trip.isSynced" [class.in-progress]="trip.status !== 'completed' && !trip.isSynced">
+              {{ (trip.status === 'completed' || trip.isSynced) ? 'Selesai' : 'Dalam Perjalanan' }}
+            </ion-badge>
+          </div>
+
+          <div class="trip-route-row">
+            <span class="route-origin">{{ trip.rute ? (trip.rute.split('→')[0] | uppercase) : 'BADAU' }}</span>
+            <ion-icon name="arrow-forward" class="route-arrow"></ion-icon>
+            <span class="route-dest">{{ trip.rute ? (trip.rute.split('→')[1] | uppercase) : 'PONTIANAK' }}</span>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <div class="trip-card-footer">
+            <div class="meta-item">
+              <ion-icon name="car-outline"></ion-icon>
+              <span>{{ trip.vehicles[0]?.noPolisi || 'KB 9831 DA' }}</span>
+            </div>
+            <div class="meta-item">
+              <ion-icon name="cube-outline"></ion-icon>
+              <span>{{ trip.statusMuatan }}</span>
+            </div>
+            <div class="meta-item time">
+              <span>{{ trip.createdAt | date: 'dd MMM, HH:mm' }}</span>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <ion-card class="empty-state-card" *ngIf="!recentTrips.length">
+      <ion-card-content class="empty-state-content">
+        <div class="empty-icon-wrap">
+          <ion-icon name="document-text-outline"></ion-icon>
+        </div>
+        <h4 class="empty-title">Belum ada trip hari ini</h4>
+        <p class="empty-desc">Tekan tombol Mulai Trip di atas untuk mencatat logistik.</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

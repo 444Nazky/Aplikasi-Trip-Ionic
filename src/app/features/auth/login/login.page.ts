@@ -1,145 +1,78 @@
-import React, { useState } from 'react';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
+  ToastController,
   IonContent,
   IonButton,
   IonSpinner,
   IonIcon,
-} from '@ionic/react';
-import { backspaceOutline, bus, shieldCheckmark } from 'ionicons/icons';
+} from '@ionic/angular';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
-interface LoginPageProps {
-  onLogin?: (pin: string) => Promise<{ success: boolean; message?: string }>;
-  userName?: string;
-  userId?: string;
-  userRole?: string;
-  regionName?: string;
-}
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonContent, IonButton, IonSpinner, IonIcon],
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
+})
+export class LoginPage {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private toast = inject(ToastController);
 
-export const LoginPage: React.FC<LoginPageProps> = ({
-  onLogin,
-  userName = 'Budi Santoso',
-  userId = 'usr-001',
-  userRole = 'Petugas Lapangan',
-  regionName = 'BADAU',
-}) => {
-  const [pin, setPin] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  pin = '';
+  loading = false;
+  error = false;
+  errorMessage = '';
 
-  const getInitials = (name: string) => {
+  getInitials(name: string): string {
+    if (!name) return '?';
     return name.split(' ').slice(0, 2).map((w) => w.charAt(0).toUpperCase()).join('');
-  };
+  }
 
-  const pressKey = (key: string) => {
-    setError(false);
-    if (pin.length < 6) {
-      const newPin = pin + key;
-      setPin(newPin);
-      if (newPin.length === 6) handleLogin(newPin);
-    }
-  };
-
-  const pressBackspace = () => {
-    setError(false);
-    setPin((prev) => prev.slice(0, -1));
-  };
-
-  const handleLogin = async (pinToLogin: string) => {
-    if (pinToLogin.length !== 6) return;
-    setLoading(true);
-    setError(false);
-    if (onLogin) {
-      const result = await onLogin(pinToLogin);
-      setLoading(false);
-      if (!result.success) {
-        setError(true);
-        setErrorMessage(result.message || 'PIN tidak valid. Coba lagi.');
-        setPin('');
+  pressKey(key: string): void {
+    this.error = false;
+    if (this.pin.length < 6) {
+      this.pin += key;
+      if (this.pin.length === 6) {
+        this.login();
       }
-    } else {
-      setLoading(false);
-      setError(true);
-      setErrorMessage('Demo mode');
-      setPin('');
     }
-  };
+  }
 
-  return (
-    <IonContent fullscreen className="login-ion-content">
-      <div className="login-container">
-        <div className="hero-section">
-          <div className="hero-icon-badge">
-            <IonIcon icon={bus} />
-          </div>
-          <h1 className="hero-title">Trip Angkutan</h1>
-          <p className="hero-subtitle">Sistem Pencatatan Angkutan Perkebunan</p>
-        </div>
+  pressBackspace(): void {
+    this.error = false;
+    this.pin = this.pin.slice(0, -1);
+  }
 
-        <div className="region-badge-card">
-          <div className="region-icon-wrapper">
-            <IonIcon icon={shieldCheckmark} />
-          </div>
-          <div className="region-text-group">
-            <span className="region-label">Device Region Locked</span>
-            <span className="region-value">{regionName}</span>
-          </div>
-        </div>
+  async login(): Promise<void> {
+    if (this.pin.length !== 6) {
+      await this.showToast('Masukkan PIN 6 digit');
+      return;
+    }
+    this.loading = true;
+    this.error = false;
+    const result = await this.auth.login(this.pin);
+    this.loading = false;
+    if (result.success) {
+      this.router.navigate(['/tabs/home'], { replaceUrl: true });
+    } else {
+      this.error = true;
+      this.errorMessage = result.message ?? 'PIN tidak valid. Coba lagi.';
+      await this.showToast(this.errorMessage);
+      this.pin = '';
+    }
+  }
 
-        <div className="main-card">
-          <div className="officer-card">
-            <div className="officer-avatar">{getInitials(userName)}</div>
-            <div className="officer-meta">
-              <span className="officer-id">ID: {userId}</span>
-              <span className="officer-name">{userName}</span>
-              <span className="officer-role">{userRole}</span>
-            </div>
-          </div>
-
-          <div className="pin-display-wrapper">
-            <span className="pin-label">PIN AKSES</span>
-            <div className="pin-dots-container">
-              {[0, 1, 2, 3, 4, 5].map((dot) => (
-                <div key={dot} className={`pin-dot ${pin.length > dot ? 'filled' : ''} ${error ? 'error' : ''}`} />
-              ))}
-            </div>
-            <p className={`pin-status-text ${error ? 'error-text' : ''}`}>
-              {error ? errorMessage || 'PIN tidak valid. Coba lagi.' : 'Masukkan 6 digit PIN Anda'}
-            </p>
-            <input
-              type="password"
-              inputMode="numeric"
-              maxLength={6}
-              value={pin}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                setPin(value);
-                if (value.length === 6) handleLogin(value);
-              }}
-              className="hidden-pin-input"
-            />
-          </div>
-
-          <div className="numpad-grid">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-              <button key={num} type="button" className="numpad-btn" onClick={() => pressKey(num.toString())}>
-                {num}
-              </button>
-            ))}
-            <div className="numpad-placeholder" />
-            <button type="button" className="numpad-btn" onClick={() => pressKey('0')}>0</button>
-            <button type="button" className="numpad-btn backspace-btn" onClick={pressBackspace} aria-label="Hapus digit">
-              <IonIcon icon={backspaceOutline} />
-            </button>
-          </div>
-
-          <IonButton expand="block" className="submit-login-btn" disabled={loading || pin.length !== 6} onClick={() => handleLogin(pin)}>
-            {loading ? <IonSpinner name="crescent" className="btn-spinner" /> : <span>Masuk</span>}
-          </IonButton>
-        </div>
-
-        <p className="app-version-footer">Trip Angkutan v1.0</p>
-      </div>
-    </IonContent>
-  );
-};
+  private async showToast(message: string): Promise<void> {
+    const t = await this.toast.create({
+      message,
+      duration: 2500,
+      color: 'danger',
+    });
+    await t.present();
+  }
+}

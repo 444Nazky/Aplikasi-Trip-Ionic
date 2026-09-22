@@ -9,7 +9,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () => import('./features/auth/login/login.page').then((m) => m.LoginPage),
+    loadComponent: () => import('./features/auth/login/login.page.tsx').then((m) => m.LoginPage),
   },
   {
     path: 'tabs',
@@ -18,16 +18,15 @@ export const routes: Routes = [
     children: [
       {
         path: 'home',
-        loadComponent: () => import('./features/home/home.page').then((m) => m.HomePage),
+        loadComponent: () => import('./features/home/home.page.tsx').then((m) => m.HomePage),
       },
       {
         path: 'history',
-        loadComponent: () =>
-          import('./features/trip/history/history.page').then((m) => m.HistoryPage),
+        loadComponent: () => import('./features/history/history.page.tsx').then((m) => m.HistoryPage),
       },
       {
         path: 'profile',
-        loadComponent: () => import('./features/profile/profile.page').then((m) => m.ProfilePage),
+        loadComponent: () => import('./features/profile/profile.page.tsx').then((m) => m.ProfilePage),
       },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
@@ -35,30 +34,22 @@ export const routes: Routes = [
   {
     path: 'create-trip',
     canActivate: [AuthGuard],
-    loadComponent: () =>
-      import('./features/trip/create-trip/create-trip.page').then((m) => m.CreateTripPage),
+    loadComponent: () => import('./features/trip/create-trip/create-trip.page.tsx').then((m) => m.CreateTripPage),
   },
   {
     path: 'input-vehicle',
     canActivate: [AuthGuard],
-    loadComponent: () =>
-      import('./features/trip/input-vehicle/input-vehicle.page').then(
-        (m) => m.InputVehiclePage
-      ),
+    loadComponent: () => import('./features/trip/input-vehicle/input-vehicle.page.tsx').then((m) => m.InputVehiclePage),
   },
   {
     path: 'success/:id',
     canActivate: [AuthGuard],
-    loadComponent: () =>
-      import('./features/trip/success-dialog/success-dialog.page').then(
-        (m) => m.SuccessDialogPage
-      ),
+    loadComponent: () => import('./features/trip/success-dialog/success-dialog.page.tsx').then((m) => m.SuccessDialogPage),
   },
   {
     path: 'trip-detail/:id',
     canActivate: [AuthGuard],
-    loadComponent: () =>
-      import('./features/trip/trip-detail/trip-detail.page').then((m) => m.TripDetailPage),
+    loadComponent: () => import('./features/trip/trip-detail/trip-detail.page.tsx').then((m) => m.TripDetailPage),
   },
   { path: '**', redirectTo: 'splash' },
 ];
