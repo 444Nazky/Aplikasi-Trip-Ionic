@@ -8,8 +8,16 @@ import {
   IonCard,
   IonCardContent,
   IonButton,
+  IonAlert,
 } from '@ionic/react';
-import { mapOutline, gitNetworkOutline, shieldCheckmarkOutline, settingsOutline, logOutOutline, chevronForward } from 'ionicons/icons';
+import {
+  mapOutline,
+  gitNetworkOutline,
+  shieldCheckmarkOutline,
+  settingsOutline,
+  logOutOutline,
+  chevronForward,
+} from 'ionicons/icons';
 
 interface ProfilePageProps {
   userName?: string;
@@ -32,7 +40,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 }) => {
   const getInitials = (name: string) => {
     if (!name) return '?';
-    return name.split(' ').slice(0, 2).map((w) => w.charAt(0).toUpperCase()).join('');
+    return name
+      .split(' ')
+      .slice(0, 2)
+      .map((w) => w.charAt(0).toUpperCase())
+      .join('');
+  };
+
+  const handleLogout = () => {
+    // Show confirmation alert
+    const confirmed = window.confirm('Yakin ingin keluar?');
+    if (confirmed && onLogout) {
+      onLogout();
+    }
   };
 
   return (
@@ -45,13 +65,18 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
       <IonContent className="profile-content-body">
         <div className="profile-container">
+          {/* Hero Profile Card */}
           <IonCard className="hero-profile-card">
             <IonCardContent className="hero-profile-content">
               <div className="hero-profile-row">
-                <div className="hero-avatar"><span>{getInitials(userName)}</span></div>
+                <div className="hero-avatar">
+                  <span>{getInitials(userName)}</span>
+                </div>
                 <div className="hero-profile-info">
                   <h2 className="hero-profile-name">{userName}</h2>
-                  <p className="hero-profile-role">Petugas Lapangan · ID: {userId}</p>
+                  <p className="hero-profile-role">
+                    Petugas Lapangan · ID: {userId}
+                  </p>
                   <div className="hero-region-tag">
                     <span className="online-indicator-dot" />
                     <span>{regionName} · Aktif</span>
@@ -61,6 +86,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </IonCardContent>
           </IonCard>
 
+          {/* 3 Metrics Grid */}
           <div className="profile-metrics-grid">
             <IonCard className="pmetric-card">
               <IonCardContent className="pmetric-card-content">
@@ -68,12 +94,16 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 <span className="pmetric-lbl">Total Trip</span>
               </IonCardContent>
             </IonCard>
+
             <IonCard className="pmetric-card">
               <IonCardContent className="pmetric-card-content">
-                <span className={`pmetric-num ${pendingSync > 0 ? 'warning' : ''}`}>{pendingSync}</span>
+                <span className={`pmetric-num ${pendingSync > 0 ? 'warning' : ''}`}>
+                  {pendingSync}
+                </span>
                 <span className="pmetric-lbl">Pending Sync</span>
               </IonCardContent>
             </IonCard>
+
             <IonCard className="pmetric-card">
               <IonCardContent className="pmetric-card-content">
                 <span className="pmetric-num rating-star">{rating} ★</span>
@@ -82,37 +112,56 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </IonCard>
           </div>
 
+          {/* Grouped Menu List */}
           <IonCard className="menu-group-card">
             <IonCardContent className="menu-group-content">
+              {/* Menu 1: Riwayat Trip */}
               <div className="menu-item-row">
-                <div className="menu-icon-wrap blue"><IonIcon icon={mapOutline} /></div>
+                <div className="menu-icon-wrap blue">
+                  <IonIcon icon={mapOutline} />
+                </div>
                 <div className="menu-text-col">
                   <span className="menu-main-label">Riwayat Trip</span>
                   <span className="menu-sub-label">Waktu teraktual & logistik</span>
                 </div>
                 <IonIcon icon={chevronForward} className="menu-chevron" />
               </div>
+
               <div className="menu-divider" />
+
+              {/* Menu 2: Rute & Checkpoint */}
               <div className="menu-item-row">
-                <div className="menu-icon-wrap green"><IonIcon icon={gitNetworkOutline} /></div>
+                <div className="menu-icon-wrap green">
+                  <IonIcon icon={gitNetworkOutline} />
+                </div>
                 <div className="menu-text-col">
                   <span className="menu-main-label">Rute Aktif & Checkpoint</span>
                   <span className="menu-sub-label">Jadwal pos pemeriksaan</span>
                 </div>
                 <IonIcon icon={chevronForward} className="menu-chevron" />
               </div>
+
               <div className="menu-divider" />
+
+              {/* Menu 3: Keamanan & PIN */}
               <div className="menu-item-row">
-                <div className="menu-icon-wrap amber"><IonIcon icon={shieldCheckmarkOutline} /></div>
+                <div className="menu-icon-wrap amber">
+                  <IonIcon icon={shieldCheckmarkOutline} />
+                </div>
                 <div className="menu-text-col">
                   <span className="menu-main-label">Keamanan & PIN</span>
                   <span className="menu-sub-label">Perangkat terotentikasi</span>
                 </div>
                 <IonIcon icon={chevronForward} className="menu-chevron" />
               </div>
+
               <div className="menu-divider" />
+
+              {/* Menu 4: Pengaturan */}
               <div className="menu-item-row">
-                <div className="menu-icon-wrap slate"><IonIcon icon={settingsOutline} /></div>
+                <div className="menu-icon-wrap slate">
+                  <IonIcon icon={settingsOutline} />
+                </div>
                 <div className="menu-text-col">
                   <span className="menu-main-label">Pengaturan</span>
                   <span className="menu-sub-label">Notifikasi & sinkronisasi</span>
@@ -122,8 +171,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </IonCardContent>
           </IonCard>
 
+          {/* Logout Button */}
           <div className="logout-action-wrap">
-            <button type="button" className="btn-outline-danger" onClick={onLogout}>
+            <button
+              type="button"
+              className="btn-outline-danger"
+              onClick={handleLogout}
+            >
               <IonIcon icon={logOutOutline} />
               <span>Ganti Petugas / Keluar</span>
             </button>
@@ -135,3 +189,5 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     </>
   );
 };
+
+export default ProfilePage;
