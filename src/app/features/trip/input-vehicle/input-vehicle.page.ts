@@ -1,196 +1,167 @@
-import React, { useState } from 'react';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
+  ToastController,
+  AlertController,
   IonHeader,
   IonToolbar,
-  IonButtons,
-  IonBackButton,
   IonTitle,
   IonContent,
   IonInput,
   IonButton,
-  IonSpinner,
   IonIcon,
+  IonSpinner,
+  IonButtons,
+  IonBackButton,
   IonCard,
   IonBadge,
-} from '@ionic/react';
-import { carOutline, walletOutline, businessOutline, carSportOutline, bicycleOutline, cube, cubeOutline, navigateCircle, cameraOutline, checkmarkCircle, timeOutline } from 'ionicons/icons';
+} from '@ionic/angular';
+import { Router } from '@angular/router';
+import { LocationService } from '../../../core/services/location.service';
+import { CameraService } from '../../../core/services/camera.service';
+import { TariffService } from '../../../core/services/tariff.service';
+import { TripService } from '../../../core/services/trip.service';
+import { generateId } from '../../../core/utils/id.util';
+import { Golongan, JenisKendaraan } from '../../../data/models/tariff.model';
+import { StatusMuatanVehicle, VehicleModel } from '../../../data/models/vehicle.model';
 
-type Golongan = 'Eksternal' | 'Internal';
-type JenisKendaraan = 'Truk' | 'Mobil' | 'Motor';
-type StatusMuatanVehicle = 'Dengan Muatan' | 'Tanpa Muatan';
+@Component({
+  selector: 'app-input-vehicle',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonInput,
+    IonButton,
+    IonIcon,
+    IonSpinner,
+    IonButtons,
+    IonBackButton,
+    IonCard,
+    IonBadge,
+  ],
+  templateUrl: './input-vehicle.page.html',
+  styleUrls: ['./input-vehicle.page.scss'],
+})
+export class InputVehiclePage implements OnInit {
+  private location = inject(LocationService);
+  private camera = inject(CameraService);
+  private tariffService = inject(TariffService);
+  private tripService = inject(TripService);
+  private toast = inject(ToastController);
+  private alertCtrl = inject(AlertController);
+  private router = inject(Router);
 
-interface InputVehiclePageProps {
-  noTrip?: string;
-  vehicleCount?: number;
-  onCapturePhoto?: () => Promise<{ fotoPath: string; gpsText: string }>;
-  onSubmit?: (data: { noPolisi: string; golongan: Golongan; jenis: JenisKendaraan; muatan: StatusMuatanVehicle; fotoPath: string; gpsText: string }) => Promise<void>;
-}
+  noTrip = '';
+  vehicleCount = 1;
+  noPolisi = '';
+  golongan: Golongan = 'Eksternal';
+  jenis: JenisKendaraan = 'Truk';
+  muatan: StatusMuatanVehicle = 'Dengan Muatan';
+  fotoPath = '';
+  gpsText = '';
+  saving = false;
 
-export const InputVehiclePage: React.FC<InputVehiclePageProps> = ({
-  noTrip = 'TRIP-2026',
-  vehicleCount = 1,
-  onCapturePhoto,
-  onSubmit,
-}) => {
-  const [noPolisi, setNoPolisi] = useState('');
-  const [golongan, setGolongan] = useState<Golongan>('Eksternal');
-  const [jenis, setJenis] = useState<JenisKendaraan>('Truk');
-  const [muatan, setMuatan] = useState<StatusMuatanVehicle>('Dengan Muatan');
-  const [fotoPath, setFotoPath] = useState('');
-  const [gpsText, setGpsText] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  const vehicleTypes = [
-    { value: 'Truk' as JenisKendaraan, label: 'Truk', icon: carSportOutline },
-    { value: 'Mobil' as JenisKendaraan, label: 'Mobil', icon: carOutline },
-    { value: 'Motor' as JenisKendaraan, label: 'Motor', icon: bicycleOutline },
+  vehicleTypes = [
+    { value: 'Truk' as JenisKendaraan, label: 'Truk', icon: 'car-sport-outline' },
+    { value: 'Mobil' as JenisKendaraan, label: 'Mobil', icon: 'car-outline' },
+    { value: 'Motor' as JenisKendaraan, label: 'Motor', icon: 'bicycle-outline' },
   ];
 
-  const isValid = !!noPolisi && !!fotoPath && !!gpsText;
+  private lastGps?: { lat: number; lng: number; accuracy: number };
 
-  const handleCapturePhoto = async () => {
-    if (onCapturePhoto) {
-      try {
-        const result = await onCapturePhoto();
-        setFotoPath(result.fotoPath);
-        setGpsText(result.gpsText);
-      } catch { /* handle error */ }
+  ngOnInit(): void {
+    const trip = this.tripService.activeTrip;
+    if (!trip) {
+      this.router.navigateByUrl('/tabs/home', { replaceUrl: true });
+      return;
     }
-  };
+    this.noTrip = trip.noTrip;
+    this.vehicleCount = trip.vehicles.length + 1;
+  }
 
-  const handleSubmit = async () => {
-    if (!isValid) return;
-    setSaving(true);
+  get isValid(): boolean {
+    return !!this.noPolisi && !!this.fotoPath && !!this.lastGps;
+  }
+
+  async capturePhoto(): Promise<void> {
     try {
-      if (onSubmit) {
-        await onSubmit({ noPolisi, golongan, jenis, muatan, fotoPath, gpsText });
+      this.fotoPath = await this.camera.capturePhoto();
+      const gps = await this.location.getCurrentPosition();
+      this.lastGps = gps;
+      this.gpsText = `${gps.lat.toFixed(5)}, ${gps.lng.toFixed(5)}`;
+      if (!gps.isAccurate) {
+        await this.showToast('Akurasi GPS rendah (>50m), data akan ditandai anomali.');
       }
-    } finally {
-      setSaving(false);
+    } catch {
+      await this.showToast('Gagal mengambil foto atau lokasi. Silakan coba lagi.');
     }
-  };
+  }
 
-  return (
-    <>
-      <IonHeader className="ion-no-border">
-        <IonToolbar className="form-toolbar">
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/create-trip" className="btn-custom-back" />
-          </IonButtons>
-          <IonTitle className="form-title">Input Kendaraan</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+  async submit(): Promise<void> {
+    if (!this.isValid || !this.lastGps) return;
+    this.saving = true;
+    try {
+      const tarif = await this.tariffService.calculate(this.golongan, this.jenis, this.muatan);
+      const vehicle: VehicleModel = {
+        id: generateId(),
+        tripId: this.tripService.activeTrip!.id,
+        kendaraanKe: this.vehicleCount,
+        noPolisi: this.noPolisi,
+        golongan: this.golongan,
+        jenisKendaraan: this.jenis,
+        muatan: this.muatan,
+        fotoSelfiePath: this.fotoPath,
+        tarif,
+        lat: this.lastGps.lat,
+        lng: this.lastGps.lng,
+        gpsAccuracy: this.lastGps.accuracy,
+        createdAt: new Date().toISOString(),
+      };
+      await this.tripService.addVehicle(vehicle);
+      await this.promptNextOrFinish();
+    } finally {
+      this.saving = false;
+    }
+  }
 
-      <IonContent className="form-content-body">
-        <div className="form-container">
-          <div className="trip-counter-banner">
-            <div className="trip-code-wrap">
-              <span className="trip-code-label">KODE TRIP AKTIF</span>
-              <h2 className="trip-code-val">{noTrip}</h2>
-            </div>
-            <IonBadge className="vehicle-pill-badge">Kendaraan #{vehicleCount}</IonBadge>
-          </div>
+  private async promptNextOrFinish(): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: 'Data Tersimpan',
+      message: `Kendaraan ke-${this.vehicleCount} berhasil disimpan.`,
+      buttons: [
+        { text: 'Selesai Trip', handler: () => this.finishTrip() },
+        { text: 'Tambah Kendaraan', handler: () => this.resetForm() },
+      ],
+    });
+    await alert.present();
+  }
 
-          <div className="field-card-group">
-            <label className="field-label-text">Nomor Polisi (Plat Kendaraan)</label>
-            <IonCard className="white-input-card">
-              <div className="plate-prefix-icon"><IonIcon icon={carOutline} /></div>
-              <IonInput
-                value={noPolisi}
-                onIonInput={(e) => setNoPolisi(e.detail.value || '')}
-                placeholder="Contoh: KB 9831 DA"
-                maxlength={20}
-                className="custom-plate-input"
-              />
-            </IonCard>
-          </div>
+  private resetForm(): void {
+    this.vehicleCount += 1;
+    this.noPolisi = '';
+    this.fotoPath = '';
+    this.gpsText = '';
+    this.lastGps = undefined;
+  }
 
-          <div className="field-card-group">
-            <label className="field-label-text">Kategori Armada</label>
-            <div className="segment-pill-grid col-2">
-              <div className={`segment-pill-btn ${golongan === 'Eksternal' ? 'active' : ''}`} onClick={() => setGolongan('Eksternal')}>
-                <IonIcon icon={walletOutline} /><span>Eksternal (Tarif)</span>
-              </div>
-              <div className={`segment-pill-btn ${golongan === 'Internal' ? 'active' : ''}`} onClick={() => setGolongan('Internal')}>
-                <IonIcon icon={businessOutline} /><span>Internal (Perusahaan)</span>
-              </div>
-            </div>
-          </div>
+  private async finishTrip(): Promise<void> {
+    try {
+      const gps = await this.location.getCurrentPosition();
+      const trip = await this.tripService.completeTrip(gps.lat, gps.lng);
+      this.router.navigate(['/success', trip.id], { replaceUrl: true });
+    } catch (e: any) {
+      await this.showToast(e?.message ?? 'Gagal menyelesaikan trip.');
+    }
+  }
 
-          <div className="field-card-group">
-            <label className="field-label-text">Jenis Angkutan</label>
-            <div className="segment-pill-grid col-3">
-              {vehicleTypes.map((t) => (
-                <div key={t.value} className={`segment-pill-btn ${jenis === t.value ? 'active' : ''}`} onClick={() => setJenis(t.value)}>
-                  <IonIcon icon={t.icon} /><span>{t.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="field-card-group">
-            <label className="field-label-text">Status Muatan Kendaraan</label>
-            <div className="segment-pill-grid col-2">
-              <div className={`segment-pill-btn ${muatan === 'Dengan Muatan' ? 'active' : ''}`} onClick={() => setMuatan('Dengan Muatan')}>
-                <IonIcon icon={cube} /><span>Dengan Muatan</span>
-              </div>
-              <div className={`segment-pill-btn ${muatan === 'Tanpa Muatan' ? 'active' : ''}`} onClick={() => setMuatan('Tanpa Muatan')}>
-                <IonIcon icon={cubeOutline} /><span>Tanpa Muatan</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="field-card-group">
-            <label className="field-label-text">Lokasi GPS Koordinat</label>
-            <div className="gps-soft-box">
-              <div className="gps-icon-circle"><IonIcon icon={navigateCircle} /></div>
-              <div className="gps-info-text">
-                <span className="gps-title-text">GPS Terdeteksi Otomatis</span>
-                <span className="gps-coord-text">
-                  {gpsText ? `Koordinat: ${gpsText}` : 'Ambil foto di bawah untuk mencatat koordinat GPS'}
-                </span>
-              </div>
-              <div className={`gps-status-indicator ${gpsText ? 'locked' : ''}`}>
-                <IonIcon icon={gpsText ? checkmarkCircle : timeOutline} />
-              </div>
-            </div>
-          </div>
-
-          <div className="field-card-group">
-            <label className="field-label-text">Dokumentasi Foto Armada & Selfie</label>
-            <div className="dashed-camera-box" onClick={handleCapturePhoto}>
-              {!fotoPath ? (
-                <div className="camera-empty-state">
-                  <div className="camera-icon-circle"><IonIcon icon={cameraOutline} /></div>
-                  <span className="camera-main-prompt">Ambil Foto Muatan / Selfie</span>
-                  <span className="camera-sub-prompt">Tekan untuk membuka kamera & merekam lokasi GPS</span>
-                </div>
-              ) : (
-                <div className="camera-preview-state">
-                  <img src={fotoPath} className="photo-preview-image" alt="Foto Armada" />
-                  <div className="photo-success-overlay">
-                    <IonIcon icon={checkmarkCircle} />
-                    <span>Foto & Koordinat GPS Tercatat</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="bottom-action-wrap">
-            <IonButton expand="block" disabled={!isValid || saving} onClick={handleSubmit} className="btn-submit-action">
-              {saving ? (
-                <IonSpinner name="crescent" className="btn-spinner" />
-              ) : (
-                <>
-                  <span>Simpan Data Kendaraan</span>
-                  <IonIcon icon={checkmarkCircle} slot="end" />
-                </>
-              )}
-            </IonButton>
-          </div>
-        </div>
-      </IonContent>
-    </>
-  );
-};
+  private async showToast(message: string): Promise<void> {
+    const t = await this.toast.create({ message, duration: 2500 });
+    await t.present();
+  }
+}
