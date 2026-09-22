@@ -1,0 +1,20 @@
+// ─── Shared Types ─────────────────────────────────────────────────────────────
+
+export type AppMode = 'mobile' | 'admin'
+
+export type MobileScreen =
+  | 'home'
+  | 'route-select'
+  | 'trip-condition'
+  | 'vehicle-form'
+  | 'camera'
+  | 'trip-summary'
+  | 'trip-active'
+  | 'trip-complete'
+  | 'history'
+  | 'history-detail'
+  | 'officer-switch'
+  | 'pin-verify'
+  | 'profile'
+
+export type AdminTab = 'overview' | 'tariff' | 'officers' | 'reports' | 'settings'
