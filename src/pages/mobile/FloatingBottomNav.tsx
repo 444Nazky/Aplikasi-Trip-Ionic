@@ -28,13 +28,12 @@ export default function FloatingBottomNav({ activeScreen, onNavigate }: Floating
             <button
               key={id}
               onClick={() => onNavigate(id)}
-              className={`flex flex-col items-center gap-1 px-6 py-1.5 rounded-2xl transition-all ${
-                isActive ? 'text-blue-600 font-medium' : 'text-slate-400 hover:text-slate-600'
+              className={`flex flex-col items-center gap-1 px-6 py-1.5 rounded-2xl transition-all active:scale-95 ${
+                isActive ? 'text-blue-600 font-semibold bg-blue-50' : 'text-slate-400 hover:text-slate-600'
               }`}
             >
               <Icon size={20} strokeWidth={isActive ? 2.5 : 1.8} />
               <span className="text-[10px]">{label}</span>
-              {isActive && <span className="w-1 h-1 rounded-full bg-blue-600 -mt-0.5" />}
             </button>
           )
         })}

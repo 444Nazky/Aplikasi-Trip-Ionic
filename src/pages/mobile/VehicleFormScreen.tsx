@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ChevronLeft, Check, Camera } from 'lucide-react'
+import { tariffFor, useApp } from '../store'
 import type { MobileScreen } from '../types'
 
 // ─── Vehicle Form Screen ───────────────────────────────────────────────────────
@@ -8,11 +9,20 @@ interface VehicleFormScreenProps {
 }
 
 export default function VehicleFormScreen({ go }: VehicleFormScreenProps) {
+  const { draft, patchDraft, addVehicle } = useApp()
   const [vehicleType, setVehicleType] = useState('')
   const [category, setCategory] = useState('')
   const [plate, setPlate] = useState('')
-  const [photoTaken, setPhotoTaken] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const photoTaken = draft.photo
+
+  const pushVehicle = () => {
+    addVehicle({ plate, type: vehicleType, category, tariff: tariffFor(vehicleType).loadedNum })
+    setPlate('')
+    setVehicleType('')
+    setCategory('')
+    patchDraft({ photo: false })
+  }
 
   return (
     <div className="px-4 pt-2 pb-4 animate-fade-in">
@@ -120,8 +130,8 @@ export default function VehicleFormScreen({ go }: VehicleFormScreenProps) {
               <div className="flex justify-between text-[12px]"><span className="text-slate-500">Kategori</span><span className="font-semibold text-slate-700">{category}</span></div>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => { setShowModal(false); go('trip-summary') }} className="flex-1 py-3.5 rounded-2xl border-2 border-slate-200 text-slate-700 font-semibold text-[13px] hover:bg-slate-50">Tidak, Lanjutkan</button>
-              <button onClick={() => { setShowModal(false); setPlate(''); setVehicleType(''); setCategory(''); setPhotoTaken(false) }} className="flex-1 py-3.5 rounded-2xl bg-blue-600 text-white font-bold text-[13px] hover:bg-blue-700">Ya, Tambah</button>
+              <button onClick={() => { pushVehicle(); go('trip-summary') }} className="flex-1 py-3.5 rounded-2xl border-2 border-slate-200 text-slate-700 font-semibold text-[13px] hover:bg-slate-50">Tidak, Lanjutkan</button>
+              <button onClick={() => { pushVehicle(); setShowModal(false) }} className="flex-1 py-3.5 rounded-2xl bg-blue-600 text-white font-bold text-[13px] hover:bg-blue-700">Ya, Tambah</button>
             </div>
           </div>
         </div>

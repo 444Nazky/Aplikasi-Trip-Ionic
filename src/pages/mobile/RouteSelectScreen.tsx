@@ -1,15 +1,15 @@
-import { useState } from 'react'
 import { ChevronLeft, Map, MapPin } from 'lucide-react'
 import { ROUTES } from '../data'
+import { useApp } from '../store'
 import type { MobileScreen } from '../types'
 
-// ─── Route Select Screen ───────────────────────────────────────────────────────
 interface RouteSelectScreenProps {
   go: (s: MobileScreen) => void
 }
 
 export default function RouteSelectScreen({ go }: RouteSelectScreenProps) {
-  const [selected, setSelected] = useState<string | null>(null)
+  const { draft, patchDraft, officer } = useApp()
+  const selected = draft.routeCode
 
   return (
     <div className="px-4 pt-2 pb-4 animate-fade-in">
@@ -25,7 +25,7 @@ export default function RouteSelectScreen({ go }: RouteSelectScreenProps) {
         </div>
         <div>
           <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-wide">Wilayah Aktif</p>
-          <p className="text-white font-bold text-[13px]">BADAU</p>
+          <p className="text-white font-bold text-[13px]">{officer.region}</p>
         </div>
         <Map size={16} className="text-slate-600 ml-auto" />
       </div>
@@ -34,7 +34,7 @@ export default function RouteSelectScreen({ go }: RouteSelectScreenProps) {
         {ROUTES.map(r => (
           <button
             key={r.code}
-            onClick={() => setSelected(r.code)}
+            onClick={() => patchDraft({ routeCode: r.code })}
             className={`w-full rounded-2xl p-4 text-left border-2 transition-all ${selected === r.code ? 'border-blue-500 bg-blue-50 shadow-sm' : 'border-slate-100 bg-white hover:border-slate-200'}`}
           >
             <div className="flex items-center justify-between mb-2">

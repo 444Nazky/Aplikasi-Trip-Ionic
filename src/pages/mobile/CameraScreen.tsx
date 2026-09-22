@@ -1,4 +1,5 @@
 import { ChevronLeft, RefreshCw, Camera } from 'lucide-react'
+import { useApp } from '../store'
 import type { MobileScreen } from '../types'
 
 // ─── Camera Screen ─────────────────────────────────────────────────────────────
@@ -7,6 +8,8 @@ interface CameraScreenProps {
 }
 
 export default function CameraScreen({ go }: CameraScreenProps) {
+  const { patchDraft } = useApp()
+
   return (
     <div className="flex flex-col h-full animate-fade-in">
       <div className="relative bg-slate-950 flex-1 flex items-center justify-center" style={{ minHeight: 560 }}>
@@ -50,7 +53,7 @@ export default function CameraScreen({ go }: CameraScreenProps) {
         <button className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
           <RefreshCw size={18} />
         </button>
-        <button onClick={() => go('vehicle-form')} className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center active:scale-95 transition-transform">
+        <button onClick={() => { patchDraft({ photo: true }); go('vehicle-form') }} className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center active:scale-95 transition-transform">
           <div className="w-14 h-14 rounded-full bg-white" />
         </button>
         <div className="w-10 h-10 rounded-xl bg-slate-800 overflow-hidden flex items-center justify-center">

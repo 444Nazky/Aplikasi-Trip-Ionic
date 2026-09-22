@@ -113,19 +113,41 @@
   --font-size-xl: 22px;
   --font-size-2xl: 28px;
 
-  // ── Transition ──
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 350ms ease;
-  --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+/* ── 1. Timing Functions (Easing Curves) ── */
+  /* Smooth natural decelerations (Standard UI) */
+  --ease-out-quad: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
-  // ═══════════════════════════════════════════════════════════
-  // IONIC COLOR OVERRIDE
-  // ═══════════════════════════════════════════════════════════
-  // NOTE: primary is now aligned to Plantation Green (#10B981)
-  // so buttons, ripples, focus rings, and Ionic components
-  // automatically match the design system.
+  /* Expressive Springs & Bounces */
+  --ease-spring-subtle: cubic-bezier(0.2, 1.2, 0.4, 1);   /* Snappy, slight overshoot */
+  --ease-spring-playful: cubic-bezier(0.34, 1.56, 0.64, 1); /* Pronounced bounce */
+  --ease-spring-bouncy: cubic-bezier(0.68, -0.6, 0.32, 1.6);/* Snaps back then springs forward */
 
+  /* Enter / Exit Intent Curves */
+  --ease-enter: cubic-bezier(0.0, 0.0, 0.2, 1);  /* Fast start, decelerates into place */
+  --ease-exit: cubic-bezier(0.4, 0.0, 1, 1);     /* Accelerates off-screen quickly */
+
+
+  /* ── 2. Standard Duration & Ease Tokens ── */
+  --transition-instant: 100ms var(--ease-out-quad);  /* Active states, checkboxes, toggles */
+  --transition-fast: 150ms var(--ease-out-cubic);    /* Hover states, tooltips, buttons */
+  --transition-normal: 250ms var(--ease-in-out-smooth); /* Dropdowns, accordion collapses, tabs */
+  --transition-slow: 350ms var(--ease-out-quart);   /* Modals, drawers, large panels */
+  --transition-spring: 300ms var(--ease-spring-playful); /* Badges, floating action buttons, popovers */
+
+
+  /* ── 3. Directional Intent Transitions ── */
+  --transition-enter: 220ms var(--ease-enter);      /* Elements appearing or expanding */
+  --transition-exit: 180ms var(--ease-exit);        /* Elements disappearing or collapsing */
+
+
+  /* ── 4. Hardware-Accelerated Property Composites ── */
+  /* Best practice: Animate composite properties (transform, opacity) instead of 'all' */
+  --transition-fade: opacity var(--transition-fast);
+  --transition-transform: transform var(--transition-fast);
+  --transition-composite: transform var(--transition-fast), opacity var(--transition-fast);
   --ion-background-color: #F8FAFC;
   --ion-text-color: #0F172A;
   --ion-toolbar-background: #FFFFFF;
@@ -196,14 +218,8 @@
   --ion-color-light-contrast-rgb: 15, 23, 42;
   --ion-color-light-shade: #E2E8F0;
   --ion-color-light-tint: #FFFFFF;
-
-  // ── Ionic Typography ──
   --ion-font-family: var(--font-sans);
 }
-
-// ═══════════════════════════════════════════════════════════
-// BASE RESET / GLOBAL STYLES
-// ═══════════════════════════════════════════════════════════
 
 * {
   box-sizing: border-box;

@@ -288,11 +288,11 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                         <tr key={o.id} className="hover:bg-slate-50 transition-colors">
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-[12px] ${o.status === 'Aktif' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>{o.initials}</div>
+                              <img src="/assets/guest-profile.jpeg" alt={o.name} className="w-9 h-9 rounded-xl object-cover" />
                               <div><p className="text-[13px] font-bold text-slate-800">{o.name}</p><p className="text-[10px] text-slate-400">Bergabung {o.joined}</p></div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 font-mono text-[13px] text-slate-400">{o.pin}</td>
+                          <td className="px-6 py-4 font-mono text-[13px] text-slate-400">••••••</td>
                           <td className="px-6 py-4 text-[13px] text-slate-500">{o.device}</td>
                           <td className="px-6 py-4 text-[13px] font-black text-slate-800">{o.trips}</td>
                           <td className="px-6 py-4 text-[12px] text-slate-500">{o.lastActive}</td>

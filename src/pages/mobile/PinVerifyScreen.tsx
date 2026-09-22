@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { ChevronLeft, Lock } from 'lucide-react'
+import { officerList } from '../data'
+import { useApp } from '../store'
 import type { MobileScreen } from '../types'
 
 // ─── PIN Verify Screen ─────────────────────────────────────────────────────────
@@ -8,6 +10,10 @@ interface PinVerifyScreenProps {
 }
 
 export default function PinVerifyScreen({ go }: PinVerifyScreenProps) {
+  const { officer, pendingOfficerId, verifyIntent, setOfficerId, clearVerify } = useApp()
+  const target = pendingOfficerId != null
+    ? officerList.find(o => o.id === pendingOfficerId) ?? officer
+    : officer
   const [digits, setDigits] = useState<string[]>([])
   const [error, setError] = useState(false)
 
@@ -18,13 +24,24 @@ export default function PinVerifyScreen({ go }: PinVerifyScreenProps) {
   }
 
   const confirm = () => {
-    if (digits.join('') === '123456') go('home')
-    else { setError(true); setTimeout(() => setDigits([]), 600) }
+    if (digits.join('') === target.pin) {
+      if (verifyIntent === 'switch') {
+        setOfficerId(target.id)
+        clearVerify()
+        go('profile')
+      } else {
+        clearVerify()
+        go('profile')
+      }
+    } else {
+      setError(true)
+      setTimeout(() => setDigits([]), 600)
+    }
   }
 
   return (
     <div className="px-4 pt-2 pb-4 flex flex-col items-center animate-fade-in">
-      <button onClick={() => go('officer-switch')} className="self-start flex items-center gap-1.5 text-slate-500 text-[13px] mb-8 hover:text-slate-700 font-medium">
+      <button onClick={() => go(verifyIntent === 'switch' ? 'officer-switch' : 'profile')} className="self-start flex items-center gap-1.5 text-slate-500 text-[13px] mb-8 hover:text-slate-700 font-medium">
         <ChevronLeft size={16} /> Kembali
       </button>
 
@@ -32,7 +49,9 @@ export default function PinVerifyScreen({ go }: PinVerifyScreenProps) {
         <Lock size={28} className="text-amber-400" />
       </div>
       <h2 className="font-black text-slate-900 text-[22px] mb-1">Verifikasi PIN</h2>
-      <p className="text-slate-500 text-[13px] text-center mb-1">Masukkan 6-digit PIN Anda</p>
+      <p className="text-slate-500 text-[13px] text-center mb-1">
+        {verifyIntent === 'switch' ? `Verifikasi PIN ${target.name}` : 'Masukkan 6-digit PIN Anda'}
+      </p>
       <p className="text-slate-400 text-[11px] mb-7">Demo: gunakan PIN <span className="font-mono font-black text-blue-600">123456</span></p>
 
       {/* Dot indicators */}

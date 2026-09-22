@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Truck } from 'lucide-react'
-import { allTrips } from '../data'
+import { useApp } from '../store'
 import type { MobileScreen } from '../types'
 
 // ─── History Screen ────────────────────────────────────────────────────────────
@@ -9,11 +9,12 @@ interface HistoryScreenProps {
 }
 
 export default function HistoryScreen({ go }: HistoryScreenProps) {
+  const { trips, setDetailTripId } = useApp()
   const [filter, setFilter] = useState<'all' | 'muatan' | 'kosong'>('all')
 
   const filtered = filter === 'all'
-    ? allTrips
-    : allTrips.filter(t => filter === 'muatan' ? t.load === 'Ada Muatan' : t.load === 'Kosong')
+    ? trips
+    : trips.filter(t => filter === 'muatan' ? t.load === 'Ada Muatan' : t.load === 'Kosong')
 
   return (
     <div className="px-4 pt-2 pb-4 animate-fade-in">
@@ -32,10 +33,21 @@ export default function HistoryScreen({ go }: HistoryScreenProps) {
 
       {/* List */}
       <div className="space-y-2">
+        {filtered.length === 0 && (
+          <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-3">
+              <Truck size={20} className="text-slate-400" />
+            </div>
+            <p className="text-[13px] font-bold text-slate-700 mb-1">Belum ada trip</p>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Trip dengan status "{filter === 'muatan' ? 'Ada Muatan' : 'Kosong'}" akan muncul di sini
+            </p>
+          </div>
+        )}
         {filtered.map(t => (
           <button
             key={t.id}
-            onClick={() => go('history-detail')}
+            onClick={() => { setDetailTripId(t.id); go('history-detail') }}
             className="w-full bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-start gap-3 text-left hover:shadow-md active:scale-[0.98] transition-all"
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${t.load === 'Ada Muatan' ? 'bg-blue-100' : 'bg-slate-100'}`}>

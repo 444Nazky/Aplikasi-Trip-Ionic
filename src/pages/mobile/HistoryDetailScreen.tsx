@@ -1,5 +1,5 @@
-import { ChevronLeft, Camera, Check } from 'lucide-react'
-import { allTrips } from '../data'
+import { ChevronLeft, Camera, Check, Clock3 } from 'lucide-react'
+import { useApp } from '../store'
 import type { MobileScreen } from '../types'
 
 // ─── History Detail Screen ─────────────────────────────────────────────────────
@@ -8,7 +8,12 @@ interface HistoryDetailScreenProps {
 }
 
 export default function HistoryDetailScreen({ go }: HistoryDetailScreenProps) {
-  const t = allTrips[0]
+  const { trips, detailTripId } = useApp()
+  const t = trips.find(x => x.id === detailTripId) ?? trips[0]
+  const vehicles = t.vehicles && t.vehicles.length > 0
+    ? t.vehicles
+    : [{ plate: t.vehicle, type: t.type, category: t.category, tariff: t.revenueNum }]
+  const isLocal = t.synced === false
 
   return (
     <div className="px-4 pt-2 pb-4 animate-fade-in">
@@ -35,15 +40,16 @@ export default function HistoryDetailScreen({ go }: HistoryDetailScreenProps) {
 
       {/* Kendaraan */}
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-3">
-        <p className="text-[11px] font-bold text-slate-500 mb-3 uppercase tracking-wide">Detail Kendaraan</p>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-xl">🚛</div>
-          <div className="flex-1">
-            <p className="font-mono text-[12px] font-black text-slate-900">{t.vehicle}</p>
-            <p className="text-[10px] text-slate-400">{t.type} · {t.category}</p>
+        <p className="text-[11px] font-bold text-slate-500 mb-3 uppercase tracking-wide">Detail Kendaraan ({vehicles.length})</p>
+        {vehicles.map((v, i) => (
+          <div key={`${v.plate}-${i}`} className={`flex items-center gap-3 ${i > 0 ? 'pt-3 mt-3 border-t border-slate-100' : ''}`}>
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-xl">🚛</div>
+            <div className="flex-1">
+              <p className="font-mono text-[12px] font-black text-slate-900">{v.plate}</p>
+              <p className="text-[10px] text-slate-400">{v.type} · {v.category}</p>
+            </div>
           </div>
-          <p className="text-[12px] font-bold text-emerald-700">{t.revenue}</p>
-        </div>
+        ))}
         <div className="mt-3 pt-3 border-t-2 border-dashed border-slate-200 flex justify-between items-center">
           <span className="text-[11px] font-semibold text-slate-500">Total Pendapatan</span>
           <span className="text-[16px] font-black text-slate-900">{t.revenue}</span>
@@ -61,13 +67,19 @@ export default function HistoryDetailScreen({ go }: HistoryDetailScreenProps) {
       )}
 
       {/* Sync */}
-      <div className="bg-slate-50 rounded-2xl p-4 flex items-center gap-3 border border-slate-100">
-        <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-          <Check size={16} className="text-emerald-500" strokeWidth={2.5} />
+      <div className={`rounded-2xl p-4 flex items-center gap-3 border ${isLocal ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-100'}`}>
+        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${isLocal ? 'bg-amber-100' : 'bg-emerald-100'}`}>
+          {isLocal
+            ? <Clock3 size={16} className="text-amber-500" strokeWidth={2.5} />
+            : <Check size={16} className="text-emerald-500" strokeWidth={2.5} />}
         </div>
         <div>
-          <p className="text-[12px] font-bold text-slate-700">Sudah tersinkronisasi</p>
-          <p className="text-[10px] text-slate-400">Data diterima server · {t.date}</p>
+          <p className={`text-[12px] font-bold ${isLocal ? 'text-amber-700' : 'text-slate-700'}`}>
+            {isLocal ? 'Menunggu sinkronisasi' : 'Sudah tersinkronisasi'}
+          </p>
+          <p className={`text-[10px] ${isLocal ? 'text-amber-600' : 'text-slate-400'}`}>
+            {isLocal ? 'Data aman di perangkat' : `Data diterima server · ${t.date}`}
+          </p>
         </div>
       </div>
     </div>
