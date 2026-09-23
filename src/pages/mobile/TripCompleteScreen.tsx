@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import { Check, RefreshCw } from 'lucide-react'
+import { useEffect } from 'react'
+import { Check } from 'lucide-react'
 import { useApp } from '../store'
-import { processSyncQueue, getPendingCount } from '../../services/sync'
+import { processSyncQueue } from '../../services/sync'
 import type { MobileScreen } from '../types'
 
 interface TripCompleteScreenProps {
@@ -11,26 +11,19 @@ interface TripCompleteScreenProps {
 export default function TripCompleteScreen({ go }: TripCompleteScreenProps) {
   const { trips, detailTripId } = useApp()
   const t = trips.find(x => x.id === detailTripId)
-  const [syncing, setSyncing] = useState(false)
 
   useEffect(() => {
-    if (!t) go('home')
+    if (!detailTripId) go('home')
+    // Trigger background sync after trip is committed
+    processSyncQueue()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleSync = async () => {
-    setSyncing(true)
-    try {
-      await processSyncQueue()
-    } finally {
-      setSyncing(false)
-    }
-  }
-
   if (!t) return null
 
-  const unitCount = t.vehicles && t.vehicles.length > 0 ? t.vehicles.length : (t.vehicle !== '-' ? 1 : 0)
-  const pendingCount = getPendingCount()
+  const unitCount = t.vehicles && t.vehicles.length > 0
+    ? t.vehicles.length
+    : (t.vehicle !== '-' ? 1 : 0)
 
   return (
     <div className="px-4 pt-6 pb-4 flex flex-col items-center animate-fade-in">
@@ -38,7 +31,9 @@ export default function TripCompleteScreen({ go }: TripCompleteScreenProps) {
         <Check size={38} className="text-emerald-500" strokeWidth={3} />
       </div>
       <h2 className="font-black text-slate-900 text-[24px] mb-1 text-center">Trip Selesai!</h2>
-      <p className="text-slate-500 text-[13px] text-center mb-5">Trip {t.id} berhasil dicatat dan disimpan</p>
+      <p className="text-slate-500 text-[13px] text-center mb-5">
+        Trip {t.id} berhasil dicatat dan disimpan
+      </p>
 
       <div className="w-full bg-[#0F172A] rounded-3xl p-5 mb-4">
         <div className="grid grid-cols-2 gap-4">
@@ -56,23 +51,14 @@ export default function TripCompleteScreen({ go }: TripCompleteScreenProps) {
         </div>
       </div>
 
-      <div className="w-full bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-5 flex items-center gap-3">
-        <RefreshCw size={18} className={syncing ? "text-amber-500 animate-spin" : "text-amber-500"} strokeWidth={2.5} />
-        <div className="flex-1">
-          <p className="text-[12px] font-bold text-amber-700">
-            {pendingCount > 0 ? `${pendingCount} trip menunggu sinkronisasi` : 'Menunggu sinkronisasi server'}
+      <div className="w-full bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-5 flex items-center gap-3">
+        <Check size={18} className="text-emerald-500" strokeWidth={2.5} />
+        <div>
+          <p className="text-[12px] font-bold text-emerald-700">Tersimpan di Perangkat</p>
+          <p className="text-[10px] text-emerald-600">
+            {t.date} · {t.time} · sinkronisasi berjalan di background
           </p>
-          <p className="text-[10px] text-amber-600">{t.date} · {t.time} · Data tersimpan di perangkat</p>
         </div>
-        {pendingCount > 0 && (
-          <button
-            onClick={handleSync}
-            disabled={syncing}
-            className="px-3 py-1.5 bg-amber-500 text-white text-[10px] font-bold rounded-lg disabled:opacity-50"
-          >
-            {syncing ? 'Syncing...' : 'Sync'}
-          </button>
-        )}
       </div>
 
       <div className="flex gap-3 w-full">
