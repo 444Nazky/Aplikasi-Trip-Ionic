@@ -65,3 +65,33 @@ export async function deleteTariff(row: TariffRow): Promise<boolean> {
   const res = await api.delete(`/tariffs/${row.id}`)
   return res.ok
 }
+
+// ─── Tarif Region (konfigurasi terpusat lokal/eksternal per region) ─────────
+
+export interface RegionTariffRow {
+  id: string
+  name: string
+  code: string
+  lokal_tariff: number | null
+  lokal_active: number | null
+  eksternal_tariff: number | null
+  eksternal_active: number | null
+}
+
+/** null = server tidak terjangkau. */
+export async function fetchRegionTariffs(): Promise<RegionTariffRow[] | null> {
+  const res = await api.get<RegionTariffRow[]>('/region-tariffs')
+  if (res.ok && res.data) return res.data
+  return null
+}
+
+/** Upsert satu entri konfigurasi: { regionId, jenis, nominal, aktif }. */
+export async function upsertRegionTariff(input: {
+  regionId: string
+  tariffType: 'lokal' | 'eksternal'
+  nominalTariff: number
+  isActive: boolean
+}): Promise<boolean> {
+  const res = await api.put(`/region-tariffs/${input.regionId}`, input)
+  return res.ok
+}

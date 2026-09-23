@@ -43,6 +43,7 @@
     "react-router": "^8.4.0",
     "react-router-dom": "^7.18.4",
     "rxjs": "~7.8.0",
+    "tesseract.js": "^7.0.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
