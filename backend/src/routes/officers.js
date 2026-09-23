@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const db = require('../db');
+const { db } = require('../db');
 const { authenticate } = require('../middleware/auth');
 
 // Get all officers

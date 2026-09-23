@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const db = require('./db');
+const dbModule = require('./db');
 const authRoutes = require('./routes/auth');
 const tripRoutes = require('./routes/trips');
 const vehicleRoutes = require('./routes/vehicles');
@@ -36,9 +36,22 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  db.initialize();
-});
+// Initialize database and start server
+async function start() {
+  try {
+    await dbModule.loadDb();
+    console.log('Database loaded');
+
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Health check: http://localhost:${PORT}/api/health`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+start();
 
 module.exports = app;
