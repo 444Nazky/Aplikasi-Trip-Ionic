@@ -1,6 +1,7 @@
 // ─── Shared Types ─────────────────────────────────────────────────────────────
 
 export type AppMode = 'mobile' | 'admin'
+export type UserType = 'admin' | 'member'
 
 export type MobileScreen =
   | 'home'

@@ -40,7 +40,9 @@ export type VerifyIntent = 'switch' | 'security'
 
 interface StoreValue {
   loggedIn: boolean
-  login: () => void
+  login: (userType: 'admin' | 'member') => void
+  logout: () => void
+  userType: 'admin' | 'member'
   officer: Officer
   setOfficerId: (id: number) => void
   trips: Trip[]
@@ -149,6 +151,7 @@ const seedTrips: Trip[] = allTrips.map(t => ({
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [loggedIn, setLoggedIn] = useState<boolean>(() => load(LS.session, false))
+  const [userType, setUserType] = useState<'admin' | 'member'>(() => load('trip.userType', 'member'))
   const [officerId, setOfficerIdState] = useState<number>(() => load(LS.officer, officerList[0].id))
   const [trips, setTrips] = useState<Trip[]>(() => load(LS.trips, seedTrips))
   const [draft, setDraft] = useState<Draft>(emptyDraft)
@@ -165,13 +168,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try { localStorage.setItem(LS.session, JSON.stringify(loggedIn)) } catch { /* quota */ }
   }, [loggedIn])
+  useEffect(() => {
+    try { localStorage.setItem('trip.userType', userType) } catch { /* quota */ }
+  }, [userType])
 
   const officer = useMemo(
     () => officerList.find(o => o.id === officerId) ?? officerList[0],
     [officerId],
   )
 
-  const login = useCallback(() => setLoggedIn(true), [])
+  const login = useCallback((type: 'admin' | 'member') => {
+    setUserType(type)
+    setLoggedIn(true)
+  }, [])
+  const logout = useCallback(() => {
+    setLoggedIn(false)
+    setUserType('member')
+  }, [])
   const setOfficerId = useCallback((id: number) => setOfficerIdState(id), [])
   const resetDraft = useCallback(() => setDraft(emptyDraft), [])
   const patchDraft = useCallback((p: Partial<Draft>) => setDraft(d => ({ ...d, ...p })), [])
@@ -192,13 +205,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const clearVerify = useCallback(() => setPendingOfficerId(null), [])
 
   const value = useMemo<StoreValue>(() => ({
-    loggedIn, login,
+    loggedIn, login, logout, userType,
     officer, setOfficerId,
     trips, commitTrip,
     draft, resetDraft, patchDraft, addVehicle, startTrip,
     detailTripId, setDetailTripId,
     pendingOfficerId, verifyIntent, beginVerify, clearVerify,
-  }), [loggedIn, login, officer, setOfficerId, trips, commitTrip, draft, resetDraft, patchDraft,
+  }), [loggedIn, login, logout, userType, officer, setOfficerId, trips, commitTrip, draft, resetDraft, patchDraft,
     addVehicle, startTrip, detailTripId, pendingOfficerId, verifyIntent, beginVerify, clearVerify])
 
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
