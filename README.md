@@ -182,13 +182,16 @@ Trip tersimpan lokal sampai berhasil di-sync ke server. Status: `pending`, `sync
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/auth/login` | Login dengan officer ID + PIN |
+| POST | `/auth/member-login` | Login petugas dengan username/password (budi/budi123) → JWT officer |
+| POST | `/auth/admin-login` | Login admin (admin/admin123) → JWT role admin |
 | GET | `/auth/verify` | Verify JWT token |
 | GET | `/auth/officers/:regionCode` | List officers by region |
 | GET/POST | `/trips` | CRUD trips |
 | GET | `/trips/:id` | Trip detail |
 | POST | `/trips/:tripId/vehicles` | Add vehicle to trip |
 | GET | `/vehicles` | Data kendaraan |
-| GET | `/tariffs` | Daftar tarif |
+| GET | `/tariffs` | Daftar tarif (**admin only**) |
+| POST/PUT/DELETE | `/tariffs/:id` | CRUD tarif (**admin only**) |
 | GET | `/officers` | Daftar officer |
 | GET | `/regions` | Daftar region |
 | GET | `/reports` | Laporan |
