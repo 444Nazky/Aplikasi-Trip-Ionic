@@ -6,6 +6,31 @@ const { db } = require('../db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'trip-angkut-secret-key';
 
+// Admin login (username/password) — issues a JWT with role: 'admin'
+// Credentials come from env with the same defaults as the frontend login screen
+router.post('/admin-login', (req, res) => {
+  try {
+    const { username, password } = req.body || {};
+    const adminUser = process.env.ADMIN_USERNAME || 'admin';
+    const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
+
+    if (username !== adminUser || password !== adminPass) {
+      return res.status(401).json({ error: 'Invalid admin credentials' });
+    }
+
+    const token = jwt.sign(
+      { role: 'admin', username: adminUser },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({ token, admin: { username: adminUser, role: 'admin' } });
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({ error: 'Admin login failed' });
+  }
+});
+
 // Login with PIN
 router.post('/login', (req, res) => {
   try {
@@ -32,7 +57,7 @@ router.post('/login', (req, res) => {
     }
 
     const token = jwt.sign(
-      { officerId: officer.id, regionId: officer.region_id },
+      { officerId: officer.id, regionId: officer.region_id, role: 'officer' },
       JWT_SECRET,
       { expiresIn: '24h' }
     );

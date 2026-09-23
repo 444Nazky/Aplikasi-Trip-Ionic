@@ -5,6 +5,12 @@ import { api, type LoginResponse } from './api'
 
 const OFFICER_KEY = 'trip.auth.officer.v1'
 
+// Demo PIN shared by all seeded officers (same as PinVerifyScreen demo mode)
+export const DEMO_PIN = '123456'
+
+// Officer the app *wants* to be authenticated as, even while offline
+let activeOfficerId: number | null = null
+
 export interface StoredOfficer {
   id: number
   name: string
@@ -54,4 +60,31 @@ export function logout() {
 
 export function isLoggedIn(): boolean {
   return api.isAuthenticated && !!getStoredOfficer()
+}
+
+/**
+ * Make sure we hold a valid backend JWT for the given (or last known) officer.
+ *
+ * The username/password login screen is local-only and never talks to the
+ * backend, so without this the sync queue would POST /trips with no token
+ * (401 forever). Safe to call repeatedly: it is a no-op when a token already
+ * exists, and it fails soft when the backend is unreachable.
+ */
+export async function ensureBackendSession(officerId?: number): Promise<boolean> {
+  if (officerId != null) {
+    activeOfficerId = officerId
+    // A token belonging to a different officer must not be reused
+    const stored = getStoredOfficer()
+    if (stored && Number(stored.id) !== Number(officerId)) {
+      api.setToken(null)
+    }
+  }
+
+  if (api.isAuthenticated) return true
+
+  const id = officerId ?? activeOfficerId ?? getStoredOfficer()?.id
+  if (id == null) return false
+
+  const result = await loginWithPin(Number(id), DEMO_PIN)
+  return result.success
 }

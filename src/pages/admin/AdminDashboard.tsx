@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Truck, Lock, LayoutGrid, Table2, Users, BarChart2, Settings, LogOut, Plus, Pencil, Trash2, Download, ChevronLeft, Check, X } from 'lucide-react'
-import { officerList } from '../data'
 import { useApp } from '../store'
 import type { AdminTab } from '../types'
 
@@ -12,13 +11,12 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<AdminTab>('overview')
   const [toast, setToast] = useState<Toast | null>(null)
 
-  const { trips, tariffs, saveTariffs } = useApp()
+  const { trips, tariffs, saveTariffs, officers, saveOfficers } = useApp()
   const [editTarIdx, setEditTarIdx] = useState<number | null>(null)
   const [addTar, setAddTar] = useState(false)
   const [tarForm, setTarForm] = useState({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
   const [editTar, setEditTar] = useState({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
 
-  const [officers, setOfficers] = useState<Officer[]>(officerList)
   const [addOff, setAddOff] = useState(false)
   const [editOffIdx, setEditOffIdx] = useState<number | null>(null)
   const [offForm, setOffForm] = useState({ name: '', region: 'BADAU', pin: '', device: '' })
@@ -52,6 +50,9 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const handleDelTar = (i: number) => {
     if (!confirm('Hapus?')) return
     saveTariffs(tariffs.filter((_, idx) => idx !== i))
+    // Keep the open edit form pointing at the right row after deletion
+    if (editTarIdx === i) setEditTarIdx(null)
+    else if (editTarIdx !== null && editTarIdx > i) setEditTarIdx(editTarIdx - 1)
     showToast('Tarif dihapus')
   }
 
@@ -60,7 +61,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     if (!offForm.name || !offForm.pin) return showToast('Lengkapi form!', 'error')
     const initials = offForm.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     const row: Officer = { id: Date.now(), name: offForm.name, initials, region: offForm.region, pin: offForm.pin, status: 'Aktif', device: offForm.device || '-', trips: 0, lastActive: '-', joined: new Date().toLocaleDateString('id-ID') }
-    setOfficers([...officers, row])
+    saveOfficers([...officers, row])
     setOffForm({ name: '', region: 'BADAU', pin: '', device: '' })
     setAddOff(false)
     showToast('Petugas ditambahkan')
@@ -71,7 +72,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     const initials = editOff.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     const ns = [...officers]
     if (editOffIdx !== null) ns[editOffIdx] = { ...editOff, initials }
-    setOfficers(ns)
+    saveOfficers(ns)
     setEditOffIdx(null)
     setEditOff(null)
     showToast('Petugas diupdate')
@@ -79,14 +80,17 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   const handleDelOff = (i: number) => {
     if (!confirm('Hapus?')) return
-    setOfficers(officers.filter((_, idx) => idx !== i))
+    saveOfficers(officers.filter((_, idx) => idx !== i))
+    // Keep the open edit form pointing at the right row after deletion
+    if (editOffIdx === i) { setEditOffIdx(null); setEditOff(null) }
+    else if (editOffIdx !== null && editOffIdx > i) setEditOffIdx(editOffIdx - 1)
     showToast('Petugas dihapus')
   }
 
   const toggleOffStatus = (i: number) => {
     const ns = [...officers]
     ns[i] = { ...ns[i], status: ns[i].status === 'Aktif' ? 'Nonaktif' : 'Aktif' }
-    setOfficers(ns)
+    saveOfficers(ns)
     showToast('Status diubah')
   }
 
@@ -223,7 +227,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   </thead>
                   <tbody className="divide-y">
                     {tariffs.map((t, i) => (
-                      <tr key={t.golongan} className="hover:bg-slate-50">
+                      <tr key={`${t.golongan}-${i}`} className="hover:bg-slate-50">
                         <td className="p-4 font-mono font-bold">{t.golongan}</td>
                         <td className="p-4 font-bold">{t.type}</td>
                         <td className="p-4 text-blue-700 font-bold">{t.loaded}</td>

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../db');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, requireAdmin } = require('../middleware/auth');
 
-// Get all vehicles
-router.get('/', authenticate, (req, res) => {
+// Get all vehicles — fleet database is admin-only
+router.get('/', authenticate, requireAdmin, (req, res) => {
   try {
     const vehicles = db.prepare(`
       SELECT v.*, t.no_trip

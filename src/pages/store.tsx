@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { allTrips, officerList, tariffData } from './data'
 import { addToSyncQueue } from '../services/sync'
+import { ensureBackendSession, logout as endBackendSession } from '../services/auth'
 
 export interface VehicleEntry {
   plate: string
@@ -52,6 +53,8 @@ interface StoreValue {
   commitTrip: (t: Trip) => void
   tariffs: TariffRow[]
   saveTariffs: (rows: TariffRow[]) => void
+  officers: Officer[]
+  saveOfficers: (rows: Officer[]) => void
   draft: Draft
   resetDraft: () => void
   patchDraft: (p: Partial<Draft>) => void
@@ -81,6 +84,7 @@ const LS = {
   officer: 'trip.officerId.v1',
   session: 'trip.session.v1',
   tariffs: 'trip.tariffs.v1',
+  officers: 'trip.officers.v1',
 }
 
 function load<T>(key: string, fallback: T): T {
@@ -143,8 +147,14 @@ export function fmtElapsed(totalSec: number): string {
 export function tariffFor(vehicleType: string) {
   const list = load(LS.tariffs, tariffData)
   return (
+    // Exact match against master tariff (form options are built from it)
     list.find(t => t.type === vehicleType) ??
+    // Partial match, e.g. legacy 'Truck' → 'Truck Kecil'/'Truck Sedang'/...
+    list.find(t => t.type.startsWith(vehicleType)) ??
+    list.find(t => vehicleType.startsWith(t.type)) ??
     list.find(t => t.type === 'Truck Sedang') ??
+    // Master tariff wiped by admin — fall back to shipped defaults
+    tariffData.find(t => t.type === 'Truck Sedang') ??
     tariffData[0]
   )
 }
@@ -170,6 +180,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [officerId, setOfficerIdState] = useState<number>(() => load(LS.officer, officerList[0].id))
   const [trips, setTrips] = useState<Trip[]>(() => load(LS.trips, seedTrips))
   const [tariffs, setTariffs] = useState<TariffRow[]>(() => load(LS.tariffs, tariffData))
+  const [officers, setOfficers] = useState<Officer[]>(() => load(LS.officers, officerList))
   const [draft, setDraft] = useState<Draft>(emptyDraft)
   const [detailTripId, setDetailTripId] = useState<string | null>(null)
   const [pendingOfficerId, setPendingOfficerId] = useState<number | null>(null)
@@ -182,6 +193,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try { localStorage.setItem(LS.tariffs, JSON.stringify(tariffs)) } catch { /* quota */ }
   }, [tariffs])
   useEffect(() => {
+    try { localStorage.setItem(LS.officers, JSON.stringify(officers)) } catch { /* quota */ }
+  }, [officers])
+  useEffect(() => {
     try { localStorage.setItem(LS.officer, JSON.stringify(officerId)) } catch { /* quota */ }
   }, [officerId])
   useEffect(() => {
@@ -192,19 +206,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [userType])
 
   const officer = useMemo(
-    () => officerList.find(o => o.id === officerId) ?? officerList[0],
-    [officerId],
+    () => officers.find(o => o.id === officerId) ?? officers[0] ?? officerList[0],
+    [officers, officerId],
   )
 
   const login = useCallback((type: 'admin' | 'member') => {
     setUserType(type)
     setLoggedIn(true)
-  }, [])
+    // Login screen is local-only — fetch a backend JWT so trip sync can authenticate
+    if (type === 'member') void ensureBackendSession(officerId)
+  }, [officerId])
   const logout = useCallback(() => {
     setLoggedIn(false)
     setUserType('member')
+    // Clear session-scoped state so the next login starts clean
+    setDetailTripId(null)
+    setPendingOfficerId(null)
+    setDraft(emptyDraft)
+    endBackendSession()
   }, [])
-  const setOfficerId = useCallback((id: number) => setOfficerIdState(id), [])
+  const setOfficerId = useCallback((id: number) => {
+    setOfficerIdState(id)
+    // Token must match the newly switched officer
+    void ensureBackendSession(id)
+  }, [])
   const resetDraft = useCallback(() => setDraft(emptyDraft), [])
   const patchDraft = useCallback((p: Partial<Draft>) => setDraft(d => ({ ...d, ...p })), [])
   const addVehicle = useCallback(
@@ -226,17 +251,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
   const clearVerify = useCallback(() => setPendingOfficerId(null), [])
   const saveTariffs = useCallback((rows: TariffRow[]) => setTariffs(rows), [])
+  const saveOfficers = useCallback((rows: Officer[]) => setOfficers(rows), [])
 
   const value = useMemo<StoreValue>(() => ({
     loggedIn, login, logout, userType,
     officer, setOfficerId,
     trips, commitTrip,
     tariffs, saveTariffs,
+    officers, saveOfficers,
     draft, resetDraft, patchDraft, addVehicle, startTrip,
     detailTripId, setDetailTripId,
     pendingOfficerId, verifyIntent, beginVerify, clearVerify,
-  }), [loggedIn, login, logout, userType, officer, setOfficerId, trips, commitTrip, tariffs, saveTariffs, draft, resetDraft, patchDraft,
-    addVehicle, startTrip, detailTripId, pendingOfficerId, verifyIntent, beginVerify, clearVerify])
+  }), [loggedIn, login, logout, userType, officer, setOfficerId, trips, commitTrip, tariffs, saveTariffs, officers, saveOfficers,
+    draft, resetDraft, patchDraft, addVehicle, startTrip, detailTripId, pendingOfficerId, verifyIntent, beginVerify, clearVerify])
 
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
 }

@@ -8,12 +8,28 @@ interface HistoryDetailScreenProps {
 }
 
 export default function HistoryDetailScreen({ go }: HistoryDetailScreenProps) {
-  const { trips, detailTripId } = useApp()
-  const t = trips.find(x => x.id === detailTripId) ?? trips[0]
+  const { trips, detailTripId, officer } = useApp()
+  // Scope to this officer's trips — never leak another officer's trip detail
+  const myTrips = trips.filter(x => x.officer === officer.name)
+  const t = myTrips.find(x => x.id === detailTripId) ?? myTrips[0]
   const vehicles = t.vehicles && t.vehicles.length > 0
     ? t.vehicles
     : [{ plate: t.vehicle, type: t.type, category: t.category, tariff: t.revenueNum }]
   const isLocal = t.synced === false
+
+  if (!t) {
+    return (
+      <div className="px-4 pt-2 pb-4 animate-fade-in">
+        <button onClick={() => go('history')} className="flex items-center gap-1.5 text-slate-500 text-[13px] mb-4 hover:text-slate-700 font-medium">
+          <ChevronLeft size={16} /> Riwayat
+        </button>
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 text-center">
+          <p className="text-[13px] font-bold text-slate-700">Belum ada trip</p>
+          <p className="text-[11px] text-slate-400 mt-1">Trip yang Anda catat akan muncul di sini</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="px-4 pt-2 pb-4 animate-fade-in">

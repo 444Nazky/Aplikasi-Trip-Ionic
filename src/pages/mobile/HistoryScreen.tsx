@@ -9,12 +9,14 @@ interface HistoryScreenProps {
 }
 
 export default function HistoryScreen({ go }: HistoryScreenProps) {
-  const { trips, setDetailTripId } = useApp()
+  const { trips, setDetailTripId, officer } = useApp()
   const [filter, setFilter] = useState<'all' | 'muatan' | 'kosong'>('all')
 
+  // Officers only see their own trips (matches HomeScreen)
+  const myTrips = trips.filter(t => t.officer === officer.name)
   const filtered = filter === 'all'
-    ? trips
-    : trips.filter(t => filter === 'muatan' ? t.load === 'Ada Muatan' : t.load === 'Kosong')
+    ? myTrips
+    : myTrips.filter(t => filter === 'muatan' ? t.load === 'Ada Muatan' : t.load === 'Kosong')
 
   return (
     <div className="px-4 pt-2 pb-4 animate-fade-in">
@@ -40,7 +42,9 @@ export default function HistoryScreen({ go }: HistoryScreenProps) {
             </div>
             <p className="text-[13px] font-bold text-slate-700 mb-1">Belum ada trip</p>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Trip dengan status "{filter === 'muatan' ? 'Ada Muatan' : 'Kosong'}" akan muncul di sini
+              {filter === 'all'
+                ? 'Trip yang Anda catat akan muncul di sini'
+                : `Trip dengan status "${filter === 'muatan' ? 'Ada Muatan' : 'Kosong'}" akan muncul di sini`}
             </p>
           </div>
         )}

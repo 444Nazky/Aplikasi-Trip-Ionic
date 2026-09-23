@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../db');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, requireAdmin } = require('../middleware/auth');
 
-// Get summary stats
-router.get('/summary', authenticate, (req, res) => {
+// Get summary stats — revenue reporting is admin-only
+router.get('/summary', authenticate, requireAdmin, (req, res) => {
   try {
     const { startDate, endDate, regionId } = req.query;
 
@@ -46,8 +46,8 @@ router.get('/summary', authenticate, (req, res) => {
   }
 });
 
-// Get trips report
-router.get('/trips', authenticate, (req, res) => {
+// Get trips report — contains revenue, admin-only
+router.get('/trips', authenticate, requireAdmin, (req, res) => {
   try {
     const { startDate, endDate, route, golongan, status } = req.query;
 
@@ -90,8 +90,8 @@ router.get('/trips', authenticate, (req, res) => {
   }
 });
 
-// Export trips as CSV (simple implementation)
-router.get('/trips/export', authenticate, (req, res) => {
+// Export trips as CSV (simple implementation) — revenue included, admin-only
+router.get('/trips/export', authenticate, requireAdmin, (req, res) => {
   try {
     const { startDate, endDate } = req.query;
 
