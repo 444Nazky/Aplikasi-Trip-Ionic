@@ -20,6 +20,7 @@ interface SyncResult {
   id: string
   success: boolean
   error?: string
+  code?: string
 }
 
 // ─── Queue Management ─────────────────────────────────────────────────────────
@@ -82,7 +83,12 @@ async function postTripToServer(trip: Trip): Promise<SyncResult> {
   const tripResult = await api.post<{ id: string; noTrip: string }>('/trips', payload)
 
   if (!tripResult.ok || !tripResult.data) {
-    return { id: trip.id, success: false, error: tripResult.error?.message }
+    return {
+      id: trip.id,
+      success: false,
+      error: tripResult.error?.message,
+      code: tripResult.error?.code,
+    }
   }
 
   // Step 2: Add vehicles to trip (if any)
@@ -115,7 +121,7 @@ async function syncTrip(trip: Trip): Promise<SyncResult> {
   let result = await postTripToServer(trip)
 
   // Token expired or rejected mid-flight — api cleared it on 401; re-auth once
-  if (result.error?.code === '401' && (await ensureBackendSession())) {
+  if (result.code === '401' && (await ensureBackendSession())) {
     result = await postTripToServer(trip)
   }
 
