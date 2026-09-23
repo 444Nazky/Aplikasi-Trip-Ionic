@@ -50,10 +50,6 @@ export default function HistoryDetailScreen({ go }: HistoryDetailScreenProps) {
             </div>
           </div>
         ))}
-        <div className="mt-3 pt-3 border-t-2 border-dashed border-slate-200 flex justify-between items-center">
-          <span className="text-[11px] font-semibold text-slate-500">Total Pendapatan</span>
-          <span className="text-[16px] font-black text-slate-900">{t.revenue}</span>
-        </div>
       </div>
 
       {/* Foto */}

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ChevronLeft } from 'lucide-react'
-import { ROUTES, tariffData } from '../data'
-import { formatRp, useApp } from '../store'
+import { ROUTES } from '../data'
+import { useApp } from '../store'
 import type { MobileScreen } from '../types'
 
 interface TripConditionScreenProps {
@@ -13,8 +13,6 @@ export default function TripConditionScreen({ go }: TripConditionScreenProps) {
   const [condition, setCondition] = useState<'kosong' | 'muatan' | null>(draft.condition)
 
   const route = ROUTES.find(r => r.code === draft.routeCode) ?? ROUTES[0]
-  const loadedMin = Math.min(...tariffData.map(t => t.loadedNum))
-  const loadedMax = Math.max(...tariffData.map(t => t.loadedNum))
 
   return (
     <div className="px-4 pt-2 pb-4 animate-fade-in">
@@ -35,8 +33,8 @@ export default function TripConditionScreen({ go }: TripConditionScreenProps) {
 
       <div className="space-y-3 mb-5">
         {[
-          { key: 'kosong', label: 'Angkutan Kosong', desc: 'Kendaraan berjalan tanpa muatan — tanpa tarif angkut', emoji: '🚛', tariff: 'Rp 0' },
-          { key: 'muatan', label: 'Ada Muatan', desc: 'Kendaraan membawa muatan barang — tarif menyesuaikan jenis kendaraan', emoji: '📦', tariff: `${formatRp(loadedMin)} – ${formatRp(loadedMax)}` },
+          { key: 'kosong', label: 'Angkutan Kosong', desc: 'Kendaraan berjalan tanpa muatan — tanpa tarif angkut', emoji: '🚛' },
+          { key: 'muatan', label: 'Ada Muatan', desc: 'Kendaraan membawa muatan barang — tarif menyesuaikan jenis kendaraan', emoji: '📦' },
         ].map(opt => (
           <button
             key={opt.key}
@@ -51,7 +49,6 @@ export default function TripConditionScreen({ go }: TripConditionScreenProps) {
               <div className="flex-1">
                 <p className="font-bold text-slate-900 text-[13px] mb-0.5">{opt.label}</p>
                 <p className="text-[11px] text-slate-500 leading-relaxed">{opt.desc}</p>
-                <p className={`text-[11px] font-bold mt-1.5 ${condition === opt.key && opt.key === 'muatan' ? 'text-blue-600' : condition === opt.key ? 'text-slate-700' : 'text-slate-400'}`}>Estimasi: {opt.tariff}</p>
               </div>
               <div className={`w-5 h-5 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center ${condition === opt.key ? opt.key === 'muatan' ? 'border-blue-500 bg-blue-500' : 'border-slate-500 bg-slate-500' : 'border-slate-200'}`}>
                 {condition === opt.key && <div className="w-2 h-2 rounded-full bg-white" />}

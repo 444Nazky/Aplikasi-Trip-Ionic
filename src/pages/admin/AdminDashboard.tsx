@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Truck, Lock, LayoutGrid, Table2, Users, BarChart2, Settings, LogOut, Plus, Pencil, Trash2, Download, ChevronLeft, Check, X } from 'lucide-react'
-import { allTrips, tariffData, officerList } from '../data'
+import { officerList } from '../data'
+import { useApp } from '../store'
 import type { AdminTab } from '../types'
 
 interface TariffRow { golongan: string; type: string; loaded: string; loadedNum: number; empty: string; emptyNum: number; desc: string }
@@ -11,7 +12,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<AdminTab>('overview')
   const [toast, setToast] = useState<Toast | null>(null)
 
-  const [tariffs, setTariffs] = useState<TariffRow[]>(tariffData)
+  const { trips, tariffs, saveTariffs } = useApp()
   const [editTarIdx, setEditTarIdx] = useState<number | null>(null)
   const [addTar, setAddTar] = useState(false)
   const [tarForm, setTarForm] = useState({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
@@ -34,7 +35,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const handleAddTar = () => {
     if (!tarForm.type || !tarForm.golongan) return showToast('Lengkapi form!', 'error')
     const row: TariffRow = { ...tarForm, loaded: fmtRp(tarForm.loadedNum), empty: fmtRp(tarForm.emptyNum) }
-    setTariffs([...tariffs, row])
+    saveTariffs([...tariffs, row])
     setTarForm({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
     setAddTar(false)
     showToast('Tarif ditambahkan')
@@ -43,14 +44,14 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const handleUpdTar = () => {
     const row: TariffRow = { ...editTar, loaded: fmtRp(editTar.loadedNum), empty: fmtRp(editTar.emptyNum) }
     const ns = [...tariffs]
-    if (editTarIdx !== null) { ns[editTarIdx] = row; setTariffs(ns) }
+    if (editTarIdx !== null) { ns[editTarIdx] = row; saveTariffs(ns) }
     setEditTarIdx(null)
     showToast('Tarif diupdate')
   }
 
   const handleDelTar = (i: number) => {
     if (!confirm('Hapus?')) return
-    setTariffs(tariffs.filter((_, idx) => idx !== i))
+    saveTariffs(tariffs.filter((_, idx) => idx !== i))
     showToast('Tarif dihapus')
   }
 
@@ -134,10 +135,10 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             <div className="space-y-6">
               <div className="grid grid-cols-4 gap-4">
                 {[
-                  { label: 'Total Trip', val: allTrips.length, color: 'bg-blue-100 text-blue-600' },
+                  { label: 'Total Trip', val: trips.length, color: 'bg-blue-100 text-blue-600' },
                   { label: 'Total Petugas', val: officers.length, color: 'bg-amber-100 text-amber-600' },
                   { label: 'Total Tarif', val: tariffs.length, color: 'bg-purple-100 text-purple-600' },
-                  { label: 'Petugas Aktif', val: officers.filter(o => o.status === 'Aktif').length, color: 'bg-blue-100 text-blue-600' },
+                  { label: 'Pendapatan Trip', val: `Rp ${trips.reduce((s, t) => s + t.revenueNum, 0).toLocaleString('id-ID')}`, color: 'bg-emerald-100 text-emerald-600' },
                 ].map(({ label, val, color }) => (
                   <div key={label} className="bg-white rounded-2xl p-5 shadow-sm">
                     <p className="text-slate-500 text-[11px] mb-1">{label}</p>
@@ -149,16 +150,17 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 <div className="px-6 py-4 border-b border-slate-100 font-bold text-slate-800">Trip Terbaru</div>
                 <table className="w-full text-[13px]">
                   <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase">
-                    <tr><th className="text-left p-4">ID</th><th className="text-left p-4">Rute</th><th className="text-left p-4">Petugas</th><th className="text-left p-4">Kendaraan</th><th className="text-left p-4">Status</th><th className="text-left p-4">Aksi</th></tr>
+                    <tr><th className="text-left p-4">ID</th><th className="text-left p-4">Rute</th><th className="text-left p-4">Petugas</th><th className="text-left p-4">Kendaraan</th><th className="text-left p-4">Status</th><th className="text-left p-4">Pendapatan</th><th className="text-left p-4">Aksi</th></tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
-                    {allTrips.slice(0, 5).map(t => (
+                    {trips.slice(0, 5).map(t => (
                       <tr key={t.id} className="hover:bg-slate-50">
                         <td className="p-4 font-mono text-slate-400">{t.id}</td>
                         <td className="p-4 font-bold">{t.route}</td>
                         <td className="p-4">{t.officer}</td>
                         <td className="p-4">{t.type}</td>
                         <td className="p-4"><span className={`px-2 py-1 rounded-full text-[10px] font-bold ${t.load === 'Ada Muatan' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>{t.load}</span></td>
+                        <td className="p-4 font-bold text-emerald-600">{t.revenue}</td>
                         <td className="p-4"><button onClick={() => setTab('tariff')} className="text-blue-600 font-bold text-sm">Edit</button></td>
                       </tr>
                     ))}

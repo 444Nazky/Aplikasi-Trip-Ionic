@@ -54,10 +54,7 @@ export default function HistoryScreen({ go }: HistoryScreenProps) {
               <Truck size={18} className={t.load === 'Ada Muatan' ? 'text-blue-500' : 'text-slate-400'} />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between mb-0.5">
-                <p className="text-[12px] font-bold text-slate-900">{t.route}</p>
-                <p className="text-[12px] font-bold text-slate-900 ml-2">{t.revenue}</p>
-              </div>
+              <p className="text-[12px] font-bold text-slate-900 mb-0.5">{t.route}</p>
               <p className="font-mono text-[10px] text-slate-400">{t.id}</p>
               <div className="flex items-center gap-2 mt-1.5">
                 <span className="text-[10px] text-slate-400">{t.date} · {t.time}</span>
