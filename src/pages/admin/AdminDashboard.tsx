@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Truck, Lock, LayoutGrid, Table2, Users, BarChart2, Settings, LogOut, Plus, Pencil, Trash2, Download, ChevronLeft, Check, X } from 'lucide-react'
+import { Truck, Lock, LayoutGrid, Table2, Users, BarChart2, Settings, LogOut, Plus, Pencil, Trash2, Download, ChevronLeft, ChevronDown, Check, X } from 'lucide-react'
 import { useApp } from '../store'
 import { ensureAdminBackendSession } from '../../services/auth'
 import { fetchTariffs, createTariff, updateTariff, deleteTariff } from '../../services/tariffs'
-import { fetchTrips, type BackendTrip } from '../../services/trips'
+import { fetchTrips, fetchTripReports, type BackendTrip, type ReportTrip } from '../../services/trips'
 import type { AdminTab } from '../types'
 
 interface TariffRow { id?: string; golongan: string; type: string; loaded: string; loadedNum: number; empty: string; emptyNum: number; desc: string }
@@ -19,6 +19,10 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [serverTrips, setServerTrips] = useState<BackendTrip[]>([])
   // Tariff backend connectivity: 'connecting' until the first attempt finishes
   const [serverState, setServerState] = useState<'connecting' | 'online' | 'offline'>('connecting')
+  // Laporan (trip + vehicle detail from /reports/trips)
+  const [reportTrips, setReportTrips] = useState<ReportTrip[]>([])
+  const [reportState, setReportState] = useState<'idle' | 'loading' | 'ready' | 'offline'>('idle')
+  const [openTripId, setOpenTripId] = useState<string | null>(null)
   const [editTarIdx, setEditTarIdx] = useState<number | null>(null)
   const [addTar, setAddTar] = useState(false)
   const [tarForm, setTarForm] = useState({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
@@ -63,6 +67,22 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     return () => { alive = false }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Laporan: load lazily on first open of the tab
+  const loadReports = async () => {
+    setReportState('loading')
+    const ok = await ensureAdminBackendSession()
+    if (!ok) { setReportState('offline'); return }
+    const rows = await fetchTripReports()
+    if (rows === null) { setReportState('offline'); return }
+    setReportTrips(rows)
+    setReportState('ready')
+  }
+
+  useEffect(() => {
+    if (tab === 'reports' && reportState === 'idle') void loadReports()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, reportState])
 
   // Tariff CRUD — local state always updates (works offline), server is
   // pushed to best-effort when connected; failure flips us to 'offline'.
@@ -418,9 +438,131 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           )}
 
           {tab === 'reports' && (
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="font-bold">Laporan</h3>
-              <p className="text-slate-500 mt-2">Fitur dalam development</p>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-black text-slate-900 text-lg">Laporan Trip</h3>
+                  <p className="text-slate-500 text-[12px]">Detail kendaraan, kategori, dan tarif per trip</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full ${
+                    reportState === 'ready' ? 'bg-emerald-50 text-emerald-600'
+                    : reportState === 'offline' ? 'bg-amber-50 text-amber-600'
+                    : 'bg-slate-100 text-slate-500'
+                  }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      reportState === 'ready' ? 'bg-emerald-500'
+                      : reportState === 'offline' ? 'bg-amber-500'
+                      : 'bg-slate-400 animate-pulse'
+                    }`} />
+                    {reportState === 'ready' ? 'Server: Tersambung'
+                    : reportState === 'offline' ? 'Server: Offline'
+                    : 'Memuat laporan...'}
+                  </span>
+                  <button onClick={() => void loadReports()} disabled={reportState === 'loading'}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-blue-700 disabled:opacity-50">
+                    {reportState === 'loading' ? 'Memuat...' : 'Refresh'}
+                  </button>
+                </div>
+              </div>
+
+              {reportState === 'ready' && (
+                <div className="grid grid-cols-4 gap-4">
+                  {[
+                    { label: 'Total Trip', val: reportTrips.length, color: 'bg-blue-100 text-blue-600' },
+                    { label: 'Trip Muatan', val: reportTrips.filter(t => t.status_muatan === 'muatan').length, color: 'bg-sky-100 text-sky-600' },
+                    { label: 'Total Unit Kendaraan', val: reportTrips.reduce((s, t) => s + (t.vehicle_count || 0), 0), color: 'bg-amber-100 text-amber-600' },
+                    { label: 'Total Pendapatan', val: fmtRp(reportTrips.reduce((s, t) => s + (t.trip_revenue || 0), 0)), color: 'bg-emerald-100 text-emerald-600' },
+                  ].map(({ label, val, color }) => (
+                    <div key={label} className="bg-white rounded-2xl p-5 shadow-sm">
+                      <p className="text-slate-500 text-[11px] mb-1">{label}</p>
+                      <p className={`text-2xl font-black ${color.split(' ')[1]}`}>{val}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="bg-white rounded-2xl shadow-sm divide-y divide-slate-100 overflow-hidden">
+                {reportState === 'offline' ? (
+                  <div className="p-8 text-center text-slate-400 text-sm">Tidak dapat terhubung ke server. Pastikan backend berjalan.</div>
+                ) : reportState !== 'ready' ? (
+                  <div className="p-8 text-center text-slate-400 text-sm animate-pulse">Memuat laporan dari server...</div>
+                ) : reportTrips.length === 0 ? (
+                  <div className="p-8 text-center text-slate-400 text-sm">Belum ada trip di server</div>
+                ) : reportTrips.map(t => {
+                  const open = openTripId === t.id
+                  return (
+                    <div key={t.id}>
+                      <button onClick={() => setOpenTripId(open ? null : t.id)}
+                        className="w-full px-6 py-4 flex items-center gap-4 hover:bg-slate-50 text-left">
+                        <span className="font-mono text-[12px] text-slate-500 w-36 shrink-0">{t.no_trip}</span>
+                        <span className="font-bold text-slate-800 w-32 shrink-0">{t.route_from} → {t.route_to}</span>
+                        <span className="text-slate-600 text-[13px] w-32 shrink-0">{t.officer_name || '-'}</span>
+                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${t.status_muatan === 'muatan' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>
+                          {t.status_muatan === 'muatan' ? 'Ada Muatan' : 'Kosong'}
+                        </span>
+                        <span className="text-slate-400 text-[12px] w-10 shrink-0">{t.vehicle_count} unit</span>
+                        <span className="ml-auto font-black text-slate-900">{fmtRp(t.trip_revenue || 0)}</span>
+                        <ChevronDown size={16} className={`text-slate-400 transition-transform shrink-0 ${open ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {open && (
+                        <div className="px-6 pb-5 pt-1 bg-slate-50/60 border-t border-slate-100">
+                          <div className="flex flex-wrap gap-x-8 gap-y-1 py-3 text-[12px]">
+                            <span><span className="text-slate-400">Kategori:</span> <span className="font-semibold text-slate-700">{t.keterangan && t.keterangan !== '-' ? t.keterangan : '-'}</span></span>
+                            <span><span className="text-slate-400">Wilayah:</span> <span className="font-semibold text-slate-700">{t.region_name || '-'}</span></span>
+                            <span><span className="text-slate-400">Tanggal:</span> <span className="font-semibold text-slate-700">{t.created_at}</span></span>
+                          </div>
+
+                          {t.vehicles.length === 0 ? (
+                            <p className="text-slate-400 text-[13px] py-3">Tidak ada kendaraan — trip dalam kondisi kosong.</p>
+                          ) : (
+                            <div className="bg-white rounded-xl overflow-hidden border border-slate-100">
+                              <table className="w-full text-[13px]">
+                                <thead className="bg-slate-100 text-slate-400 text-[10px] uppercase">
+                                  <tr>
+                                    <th className="text-left p-3">No. Plat</th>
+                                    <th className="text-left p-3">Jenis</th>
+                                    <th className="text-left p-3">Kategori</th>
+                                    <th className="text-left p-3">Beban</th>
+                                    <th className="text-right p-3">Tarif</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50">
+                                  {t.vehicles.map((v, i) => {
+                                    const cat = v.golongan
+                                    const catColor = cat === 'Internal' ? 'bg-slate-800 text-white'
+                                      : cat === 'Eksternal (Berganji)' ? 'bg-amber-500 text-white'
+                                      : cat === 'Eksternal (Tanpa Garansi)' ? 'bg-rose-500 text-white'
+                                      : 'bg-blue-100 text-blue-700'
+                                    return (
+                                      <tr key={`${v.no_polisi}-${i}`} className="hover:bg-slate-50">
+                                        <td className="p-3 font-mono font-bold text-slate-700">{v.no_polisi}</td>
+                                        <td className="p-3">{v.vehicle_type}</td>
+                                        <td className="p-3"><span className={`px-2 py-1 rounded-full text-[10px] font-bold ${catColor}`}>{cat}</span></td>
+                                        <td className="p-3">
+                                          <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${v.has_load ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                                            {v.has_load ? 'Ada Muatan' : 'Kosong'}
+                                          </span>
+                                        </td>
+                                        <td className="p-3 text-right font-bold text-slate-900">{fmtRp(v.tariff_amount || 0)}</td>
+                                      </tr>
+                                    )
+                                  })}
+                                  <tr className="bg-slate-50">
+                                    <td colSpan={4} className="p-3 text-right font-bold text-slate-600 text-[12px]">Total Tarif Trip ({t.vehicles.length} unit)</td>
+                                    <td className="p-3 text-right font-black text-emerald-600">{fmtRp(t.trip_revenue || 0)}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )}
 
