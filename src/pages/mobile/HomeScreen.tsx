@@ -1,5 +1,5 @@
 import { Truck, ChevronRight, ArrowRight, RefreshCw } from 'lucide-react'
-import { useApp, compactRp } from '../store'
+import { useApp } from '../store'
 import { getPendingCount, processSyncQueue } from '../../services/sync'
 import { useState, useEffect } from 'react'
 import type { MobileScreen } from '../types'
@@ -34,7 +34,6 @@ export default function HomeScreen({ go }: HomeScreenProps) {
   }
 
   const myTrips = trips.filter(t => t.officer === officer.name)
-  const totalRevenue = myTrips.reduce((sum, t) => sum + t.revenueNum, 0)
   const units = new Set(
     myTrips
       .flatMap(t => (t.vehicles && t.vehicles.length ? t.vehicles.map(v => v.plate) : [t.vehicle]))
@@ -74,11 +73,10 @@ export default function HomeScreen({ go }: HomeScreenProps) {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-2 gap-2.5">
         {[
           { label: 'Trip', val: String(myTrips.length), sub: 'Total tercatat', color: 'blue' },
           { label: 'Kendaraan', val: String(units.size), sub: 'Unit unik', color: 'slate' },
-          { label: 'Pendapatan', val: compactRp(totalRevenue), sub: 'Rp semua trip', color: 'emerald' },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100">
             <p className={`text-[18px] font-black ${s.color === 'blue' ? 'text-blue-600' : s.color === 'emerald' ? 'text-emerald-600' : 'text-slate-900'}`}>{s.val}</p>
@@ -111,7 +109,6 @@ export default function HomeScreen({ go }: HomeScreenProps) {
                 <p className="text-[10px] text-slate-400 truncate">{t.time} · {t.vehicle !== '-' ? t.vehicle : t.load}</p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-[12px] font-bold text-slate-900">{t.revenue}</p>
                 <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${t.load === 'Ada Muatan' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>{t.load}</span>
               </div>
             </button>

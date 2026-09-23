@@ -1,5 +1,5 @@
 import { Truck, Map, ShieldCheck, Settings, ChevronRight, ArrowLeftRight, Lock } from 'lucide-react'
-import { compactRp, useApp } from '../store'
+import { useApp } from '../store'
 import type { MobileScreen } from '../types'
 
 interface ProfileScreenProps {
@@ -10,7 +10,6 @@ export default function ProfileScreen({ go }: ProfileScreenProps) {
   const { officer, trips, beginVerify } = useApp()
 
   const myTrips = trips.filter(t => t.officer === officer.name)
-  const totalRevenue = myTrips.reduce((sum, t) => sum + t.revenueNum, 0)
   const units = new Set(
     myTrips
       .flatMap(t => (t.vehicles && t.vehicles.length ? t.vehicles.map(v => v.plate) : [t.vehicle]))
@@ -33,8 +32,8 @@ export default function ProfileScreen({ go }: ProfileScreenProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 mt-4 pt-4 border-t border-white/10">
-          {[{ v: String(myTrips.length), l: 'Trip' }, { v: compactRp(totalRevenue), l: 'Pendapatan' }, { v: String(units.size), l: 'Kendaraan' }].map((s, i) => (
+        <div className="grid grid-cols-2 mt-4 pt-4 border-t border-white/10">
+          {[{ v: String(myTrips.length), l: 'Trip' }, { v: String(units.size), l: 'Kendaraan' }].map((s, i) => (
             <div key={s.l} className={`text-center ${i > 0 ? 'border-l border-white/10' : ''}`}>
               <p className="text-white font-black text-[15px] leading-tight">{s.v}</p>
               <p className="text-slate-400 text-[10px] mt-0.5">{s.l}</p>

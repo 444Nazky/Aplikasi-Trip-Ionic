@@ -1,6 +1,6 @@
 import { ChevronLeft, Truck, Play } from 'lucide-react'
 import { ROUTES } from '../data'
-import { fmtDate, fmtTime, formatRp, nextTripId, useApp } from '../store'
+import { fmtDate, fmtTime, nextTripId, useApp } from '../store'
 import type { MobileScreen } from '../types'
 
 interface TripSummaryScreenProps {
@@ -14,7 +14,6 @@ export default function TripSummaryScreen({ go }: TripSummaryScreenProps) {
   const now = new Date()
   const tripId = nextTripId(trips)
   const vehicles = draft.vehicles
-  const total = vehicles.reduce((sum, v) => sum + v.tariff, 0)
   const conditionLabel = draft.condition === 'muatan' ? 'Ada Muatan' : 'Kosong'
 
   return (
@@ -60,13 +59,8 @@ export default function TripSummaryScreen({ go }: TripSummaryScreenProps) {
               <p className="font-mono text-[11px] font-black text-slate-800">{v.plate}</p>
               <p className="text-[10px] text-slate-400">{v.type} · {v.category}</p>
             </div>
-            <p className="text-[11px] font-bold text-emerald-700">{formatRp(v.tariff)}</p>
           </div>
         ))}
-        <div className="mt-3 pt-3 border-t-2 border-dashed border-slate-200 flex justify-between items-center">
-          <span className="text-[11px] font-semibold text-slate-600">Total Tarif</span>
-          <span className="text-[15px] font-black text-slate-900">{formatRp(total)}</span>
-        </div>
       </div>
 
       <button

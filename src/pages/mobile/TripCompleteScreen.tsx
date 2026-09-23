@@ -46,7 +46,7 @@ export default function TripCompleteScreen({ go }: TripCompleteScreenProps) {
             { label: 'Rute', val: t.route },
             { label: 'Durasi', val: t.duration },
             { label: 'Kendaraan', val: unitCount > 0 ? `${unitCount} unit` : 'Kosong' },
-            { label: 'Total Tarif', val: t.revenue },
+            { label: 'Kondisi', val: t.load },
           ].map(({ label, val }) => (
             <div key={label}>
               <p className="text-slate-500 text-[10px] mb-0.5">{label}</p>

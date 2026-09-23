@@ -37,6 +37,7 @@ export interface Draft {
 }
 
 type Officer = (typeof officerList)[number]
+export type TariffRow = (typeof tariffData)[number]
 export type VerifyIntent = 'switch' | 'security'
 
 interface StoreValue {
@@ -48,6 +49,8 @@ interface StoreValue {
   setOfficerId: (id: number) => void
   trips: Trip[]
   commitTrip: (t: Trip) => void
+  tariffs: TariffRow[]
+  saveTariffs: (rows: TariffRow[]) => void
   draft: Draft
   resetDraft: () => void
   patchDraft: (p: Partial<Draft>) => void
@@ -69,6 +72,7 @@ const LS = {
   trips: 'trip.trips.v1',
   officer: 'trip.officerId.v1',
   session: 'trip.session.v1',
+  tariffs: 'trip.tariffs.v1',
 }
 
 function load<T>(key: string, fallback: T): T {
@@ -129,9 +133,11 @@ export function fmtElapsed(totalSec: number): string {
 }
 
 export function tariffFor(vehicleType: string) {
+  const list = load(LS.tariffs, tariffData)
   return (
-    tariffData.find(t => t.type === vehicleType) ??
-    tariffData.find(t => t.type === 'Truck Sedang')!
+    list.find(t => t.type === vehicleType) ??
+    list.find(t => t.type === 'Truck Sedang') ??
+    tariffData[0]
   )
 }
 
@@ -155,6 +161,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [userType, setUserType] = useState<'admin' | 'member'>(() => load('trip.userType', 'member'))
   const [officerId, setOfficerIdState] = useState<number>(() => load(LS.officer, officerList[0].id))
   const [trips, setTrips] = useState<Trip[]>(() => load(LS.trips, seedTrips))
+  const [tariffs, setTariffs] = useState<TariffRow[]>(() => load(LS.tariffs, tariffData))
   const [draft, setDraft] = useState<Draft>(emptyDraft)
   const [detailTripId, setDetailTripId] = useState<string | null>(null)
   const [pendingOfficerId, setPendingOfficerId] = useState<number | null>(null)
@@ -163,6 +170,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try { localStorage.setItem(LS.trips, JSON.stringify(trips)) } catch { /* quota */ }
   }, [trips])
+  useEffect(() => {
+    try { localStorage.setItem(LS.tariffs, JSON.stringify(tariffs)) } catch { /* quota */ }
+  }, [tariffs])
   useEffect(() => {
     try { localStorage.setItem(LS.officer, JSON.stringify(officerId)) } catch { /* quota */ }
   }, [officerId])
@@ -207,15 +217,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setVerifyIntent(opts.intent)
   }, [])
   const clearVerify = useCallback(() => setPendingOfficerId(null), [])
+  const saveTariffs = useCallback((rows: TariffRow[]) => setTariffs(rows), [])
 
   const value = useMemo<StoreValue>(() => ({
     loggedIn, login, logout, userType,
     officer, setOfficerId,
     trips, commitTrip,
+    tariffs, saveTariffs,
     draft, resetDraft, patchDraft, addVehicle, startTrip,
     detailTripId, setDetailTripId,
     pendingOfficerId, verifyIntent, beginVerify, clearVerify,
-  }), [loggedIn, login, logout, userType, officer, setOfficerId, trips, commitTrip, draft, resetDraft, patchDraft,
+  }), [loggedIn, login, logout, userType, officer, setOfficerId, trips, commitTrip, tariffs, saveTariffs, draft, resetDraft, patchDraft,
     addVehicle, startTrip, detailTripId, pendingOfficerId, verifyIntent, beginVerify, clearVerify])
 
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
