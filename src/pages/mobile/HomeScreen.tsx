@@ -1,5 +1,7 @@
-import { Truck, ChevronRight, ArrowRight } from 'lucide-react'
+import { Truck, ChevronRight, ArrowRight, RefreshCw } from 'lucide-react'
 import { useApp, compactRp } from '../store'
+import { getPendingCount, processSyncQueue } from '../../services/sync'
+import { useState, useEffect } from 'react'
 import type { MobileScreen } from '../types'
 
 interface HomeScreenProps {
@@ -8,6 +10,28 @@ interface HomeScreenProps {
 
 export default function HomeScreen({ go }: HomeScreenProps) {
   const { officer, trips, resetDraft, setDetailTripId } = useApp()
+  const [pendingCount, setPendingCount] = useState(getPendingCount)
+  const [syncing, setSyncing] = useState(false)
+
+  useEffect(() => {
+    // Check pending count on mount
+    setPendingCount(getPendingCount())
+    // Check on window focus
+    const handleFocus = () => setPendingCount(getPendingCount())
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [])
+
+  const handleSync = async () => {
+    if (syncing || !navigator.onLine) return
+    setSyncing(true)
+    try {
+      await processSyncQueue()
+      setPendingCount(getPendingCount())
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   const myTrips = trips.filter(t => t.officer === officer.name)
   const totalRevenue = myTrips.reduce((sum, t) => sum + t.revenueNum, 0)
@@ -33,6 +57,21 @@ export default function HomeScreen({ go }: HomeScreenProps) {
           </button>
         </div>
       </div>
+
+      {/* Sync Status */}
+      {pendingCount > 0 && (
+        <button
+          onClick={handleSync}
+          disabled={syncing}
+          className="w-full bg-amber-50 border border-amber-200 rounded-2xl p-3 flex items-center gap-3 hover:bg-amber-100 transition-colors disabled:opacity-50"
+        >
+          <RefreshCw size={16} className={syncing ? 'animate-spin text-amber-500' : 'text-amber-500'} />
+          <span className="text-[12px] font-semibold text-amber-700">
+            {syncing ? 'Menyinkronkan...' : `${pendingCount} trip menunggu sinkronisasi`}
+          </span>
+          {!syncing && <span className="ml-auto text-[11px] text-amber-500 font-bold">Tap untuk sync</span>}
+        </button>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-2.5">

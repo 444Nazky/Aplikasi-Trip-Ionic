@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { allTrips, officerList, tariffData } from './data'
+import { addToSyncQueue } from '../services/sync'
 
 export interface VehicleEntry {
   plate: string
@@ -194,9 +195,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   )
   const startTrip = useCallback(() => setDraft(d => ({ ...d, startedAt: d.startedAt ?? Date.now() })), [])
   const commitTrip = useCallback((t: Trip) => {
-    setTrips(prev => [t, ...prev])
+    const tripWithSync = { ...t, synced: false }
+    setTrips(prev => [tripWithSync, ...prev])
     setDetailTripId(t.id)
     setDraft(emptyDraft)
+    // Add to sync queue for background upload
+    addToSyncQueue(tripWithSync)
   }, [])
   const beginVerify = useCallback((opts: { pendingOfficerId: number | null; intent: VerifyIntent }) => {
     setPendingOfficerId(opts.pendingOfficerId)
