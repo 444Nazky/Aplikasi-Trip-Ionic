@@ -138,4 +138,6 @@ function seedData() {
   console.log('Database seeded with initial data');
 }
 
+db.initialize = initialize;
+
 module.exports = db;
