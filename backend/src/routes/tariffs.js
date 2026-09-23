@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+const { db } = require('../db');
 const { authenticate, requireAdmin } = require('../middleware/auth');
 
 // Get all tariffs — price details are admin-only
