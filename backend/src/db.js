@@ -83,9 +83,82 @@ async function loadDb() {
 function migrate() {
   try {
     db.run(`ALTER TABLE tariffs ADD COLUMN description TEXT DEFAULT ''`);
-    saveDb();
   } catch (e) {
     // column already exists — nothing to do
+  }
+
+  // ── Registrasi & penarifan nomor plat ──────────────────────────────────────
+  // Semua CREATE bersifat idempotent agar DB lama ikut termigrasi.
+  db.run(`
+    CREATE TABLE IF NOT EXISTS vehicle_plates (
+      id TEXT PRIMARY KEY,
+      plate TEXT NOT NULL,
+      owner TEXT DEFAULT '',
+      origin_region_id TEXT,
+      status TEXT NOT NULL DEFAULT 'internal',
+      is_active INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (origin_region_id) REFERENCES regions(id)
+    )
+  `);
+
+  // Konfigurasi tarif terpusat per region: (region_id, jenis_tarif) → nominal.
+  // jenis_tarif: 'lokal' (saat ini 0 / cadangan kebijakan) | 'eksternal'
+  db.run(`
+    CREATE TABLE IF NOT EXISTS region_tariffs (
+      id TEXT PRIMARY KEY,
+      region_id TEXT NOT NULL,
+      tariff_type TEXT NOT NULL,
+      nominal_tariff INTEGER DEFAULT 0,
+      is_active INTEGER DEFAULT 1,
+      UNIQUE(region_id, tariff_type),
+      FOREIGN KEY (region_id) REFERENCES regions(id)
+    )
+  `);
+
+  // Many-to-many petugas ↔ region.
+  db.run(`
+    CREATE TABLE IF NOT EXISTS officer_regions (
+      officer_id TEXT NOT NULL,
+      region_id TEXT NOT NULL,
+      PRIMARY KEY (officer_id, region_id),
+      FOREIGN KEY (officer_id) REFERENCES officers(id),
+      FOREIGN KEY (region_id) REFERENCES regions(id)
+    )
+  `);
+
+  // Log transaksi scan plat (jejak penarifan).
+  db.run(`
+    CREATE TABLE IF NOT EXISTS plate_scans (
+      id TEXT PRIMARY KEY,
+      plate TEXT NOT NULL,
+      status TEXT NOT NULL,
+      origin_region_id TEXT,
+      checkpoint_region_id TEXT,
+      tariff_amount INTEGER DEFAULT 0,
+      officer_id TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  seedSpecTables();
+  saveDb();
+}
+
+// Seed relasi petugas-region (backfill dari kolom lama) + tarif region default.
+function seedSpecTables() {
+  // Backfill many-to-many dari officers.region_id (INSERT OR IGNORE = idempotent)
+  db.run(`INSERT OR IGNORE INTO officer_regions (officer_id, region_id) SELECT id, region_id FROM officers`);
+
+  // Setiap region dapat pasangan tarif lokal + eksternal (default 0, aktif)
+  const regions = db.prepare(`SELECT id FROM regions`).all();
+  for (const r of regions) {
+    for (const jenis of ['lokal', 'eksternal']) {
+      db.run(
+        `INSERT OR IGNORE INTO region_tariffs (id, region_id, tariff_type, nominal_tariff, is_active) VALUES (?, ?, ?, 0, 1)`,
+        [`${r.id}:${jenis}`, r.id, jenis]
+      );
+    }
   }
 }
 
