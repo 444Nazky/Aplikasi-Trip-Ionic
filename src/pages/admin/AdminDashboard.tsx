@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Truck, Lock, LayoutGrid, Table2, Users, BarChart2, Settings, LogOut, Plus, Pencil, Trash2, Download, ChevronLeft, Check, X } from 'lucide-react'
 import { useApp } from '../store'
+import { ensureAdminBackendSession } from '../../services/auth'
+import { fetchTariffs, createTariff, updateTariff, deleteTariff } from '../../services/tariffs'
 import type { AdminTab } from '../types'
 
-interface TariffRow { golongan: string; type: string; loaded: string; loadedNum: number; empty: string; emptyNum: number; desc: string }
+interface TariffRow { id?: string; golongan: string; type: string; loaded: string; loadedNum: number; empty: string; emptyNum: number; desc: string }
 interface Officer { id: number; name: string; initials: string; region: string; pin: string; status: string; device: string; trips: number; lastActive: string; joined: string }
 interface Toast { msg: string; type: 'success' | 'error' }
 
@@ -12,6 +14,8 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [toast, setToast] = useState<Toast | null>(null)
 
   const { trips, tariffs, saveTariffs, officers, saveOfficers } = useApp()
+  // Tariff backend connectivity: 'connecting' until the first attempt finishes
+  const [serverState, setServerState] = useState<'connecting' | 'online' | 'offline'>('connecting')
   const [editTarIdx, setEditTarIdx] = useState<number | null>(null)
   const [addTar, setAddTar] = useState(false)
   const [tarForm, setTarForm] = useState({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
@@ -29,30 +33,83 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   const fmtRp = (n: number) => `Rp ${n.toLocaleString('id-ID')}`
 
-  // Tariff CRUD
-  const handleAddTar = () => {
+  // On mount: get an admin JWT and load Master Tarif from the server.
+  // Server data wins; localStorage stays as the offline fallback/cache.
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      const ok = await ensureAdminBackendSession()
+      if (!alive) return
+      if (!ok) { setServerState('offline'); return }
+
+      const rows = await fetchTariffs()
+      if (!alive) return
+      if (rows === null) { setServerState('offline'); return }
+      if (rows.length > 0) saveTariffs(rows)
+      setServerState('online')
+    })()
+    return () => { alive = false }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Tariff CRUD — local state always updates (works offline), server is
+  // pushed to best-effort when connected; failure flips us to 'offline'.
+  const handleAddTar = async () => {
     if (!tarForm.type || !tarForm.golongan) return showToast('Lengkapi form!', 'error')
     const row: TariffRow = { ...tarForm, loaded: fmtRp(tarForm.loadedNum), empty: fmtRp(tarForm.emptyNum) }
+
+    if (serverState === 'online') {
+      const id = await createTariff(row)
+      if (id) {
+        row.id = id
+      } else {
+        setServerState('offline')
+        showToast('Server gagal — tarif disimpan lokal', 'error')
+      }
+    }
+
     saveTariffs([...tariffs, row])
     setTarForm({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
     setAddTar(false)
     showToast('Tarif ditambahkan')
   }
 
-  const handleUpdTar = () => {
+  const handleUpdTar = async () => {
     const row: TariffRow = { ...editTar, loaded: fmtRp(editTar.loadedNum), empty: fmtRp(editTar.emptyNum) }
     const ns = [...tariffs]
     if (editTarIdx !== null) { ns[editTarIdx] = row; saveTariffs(ns) }
+
+    if (serverState === 'online') {
+      const ok = row.id
+        ? await updateTariff(row)
+        : (row.id = await createTariff(row)) !== null
+      if (!ok) {
+        if (row.id === undefined) row.id = undefined
+        setServerState('offline')
+        showToast('Server gagal — perubahan tersimpan lokal', 'error')
+      }
+    }
+
     setEditTarIdx(null)
     showToast('Tarif diupdate')
   }
 
-  const handleDelTar = (i: number) => {
+  const handleDelTar = async (i: number) => {
     if (!confirm('Hapus?')) return
+    const row = tariffs[i]
     saveTariffs(tariffs.filter((_, idx) => idx !== i))
     // Keep the open edit form pointing at the right row after deletion
     if (editTarIdx === i) setEditTarIdx(null)
     else if (editTarIdx !== null && editTarIdx > i) setEditTarIdx(editTarIdx - 1)
+
+    if (serverState === 'online' && row?.id) {
+      const ok = await deleteTariff(row)
+      if (!ok) {
+        setServerState('offline')
+        showToast('Server gagal — hapus lokal saja', 'error')
+        return
+      }
+    }
     showToast('Tarif dihapus')
   }
 
@@ -176,7 +233,21 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
           {tab === 'tariff' && (
             <div className="space-y-4">
-              <div className="flex justify-end">
+              <div className="flex items-center justify-between">
+                <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full ${
+                  serverState === 'online' ? 'bg-emerald-50 text-emerald-600'
+                  : serverState === 'offline' ? 'bg-amber-50 text-amber-600'
+                  : 'bg-slate-100 text-slate-500'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    serverState === 'online' ? 'bg-emerald-500'
+                    : serverState === 'offline' ? 'bg-amber-500'
+                    : 'bg-slate-400 animate-pulse'
+                  }`} />
+                  {serverState === 'online' ? 'Server: Tersambung'
+                  : serverState === 'offline' ? 'Server: Offline (lokal)'
+                  : 'Memeriksa server...'}
+                </span>
                 <button onClick={() => setAddTar(true)} className="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-blue-700">
                   <Plus size={14} />Tambah Golongan
                 </button>

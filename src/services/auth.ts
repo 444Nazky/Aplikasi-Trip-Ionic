@@ -8,6 +8,9 @@ const OFFICER_KEY = 'trip.auth.officer.v1'
 // Demo PIN shared by all seeded officers
 export const DEMO_PIN = '123456'
 
+// Officer the app *wants* to be authenticated as, even while offline
+let activeOfficerId: number | null = null
+
 export interface StoredOfficer {
   id: number
   name: string
@@ -75,17 +78,63 @@ export function isLoggedIn(): boolean {
   return api.isAuthenticated && !!getStoredOfficer()
 }
 
+// Decode the stored JWT payload without verification (UI-level checks only)
+function jwtPayload(): { role?: string; officerId?: string | number } | null {
+  const token = api.token
+  if (!token) return null
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    return JSON.parse(atob(base64))
+  } catch {
+    return null
+  }
+}
+
 /**
- * Ensure we have a valid backend JWT for the current officer.
- * Safe to call repeatedly: no-op if token exists, fails soft if backend unreachable.
+ * Fetch an admin JWT for the dashboard (username/password login).
+ * Overwrites the current token — admin and officer sessions are mutually
+ * exclusive in this app (routing is based on userType).
  */
-export async function ensureBackendSession(): Promise<boolean> {
+export async function ensureAdminBackendSession(): Promise<boolean> {
+  const result = await api.post<{ token: string }>('/auth/admin-login', {
+    username: 'admin',
+    password: 'admin123',
+  })
+
+  if (result.ok && result.data) {
+    api.setToken(result.data.token)
+    return true
+  }
+  return false
+}
+
+/**
+ * Ensure we have a valid backend JWT for the given (or last known) officer.
+ * Safe to call repeatedly: no-op if the right token exists, fails soft if
+ * the backend is unreachable (queue keeps the data for later retry).
+ */
+export async function ensureBackendSession(officerId?: number): Promise<boolean> {
+  if (officerId != null) {
+    activeOfficerId = officerId
+    // A token belonging to a different officer must not be reused
+    const stored = getStoredOfficer()
+    if (stored && Number(stored.id) !== Number(officerId)) {
+      api.setToken(null)
+    }
+  }
+
+  // Never reuse an admin token for officer sync — it carries no officerId
+  const payload = jwtPayload()
+  if (payload && (payload.role === 'admin' || payload.officerId == null)) {
+    api.setToken(null)
+  }
+
   if (api.isAuthenticated) return true
 
-  const stored = getStoredOfficer()
-  if (!stored) return false
+  // Try PIN login with demo PIN (works even if memberLogin failed offline)
+  const id = officerId ?? activeOfficerId ?? getStoredOfficer()?.id
+  if (id == null) return false
 
-  // Try PIN login with demo PIN
-  const result = await loginWithPin(stored.id, DEMO_PIN)
+  const result = await loginWithPin(Number(id), DEMO_PIN)
   return result.success
 }
