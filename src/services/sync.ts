@@ -112,13 +112,19 @@ async function postTripToServer(trip: Trip): Promise<SyncResult> {
 }
 
 async function syncTrip(trip: Trip): Promise<SyncResult> {
+  console.log('[Sync] Starting sync for trip:', trip.id)
+
   // The login screen never talks to the backend, so make sure a JWT exists
   // before posting (otherwise POST /trips 401s forever).
-  if (!(await ensureBackendSession())) {
+  const hasSession = await ensureBackendSession()
+  console.log('[Sync] Backend session:', hasSession ? 'OK' : 'FAILED')
+
+  if (!hasSession) {
     return { id: trip.id, success: false, error: 'Tidak ada sesi backend' }
   }
 
   let result = await postTripToServer(trip)
+  console.log('[Sync] Post result:', result.success ? 'SUCCESS' : 'FAILED', result.error)
 
   // Token expired or rejected mid-flight — api cleared it on 401; re-auth once
   if (result.code === '401' && (await ensureBackendSession())) {
@@ -146,10 +152,21 @@ function notifyListeners() {
 }
 
 export async function processSyncQueue(): Promise<SyncResult[]> {
-  if (syncInProgress) return []
+  if (syncInProgress) {
+    console.log('[Sync] Already in progress, skipping')
+    return []
+  }
   syncInProgress = true
 
   const queue = loadQueue()
+  console.log('[Sync] Queue length:', queue.length)
+
+  if (queue.length === 0) {
+    console.log('[Sync] Queue empty, nothing to sync')
+    syncInProgress = false
+    return []
+  }
+
   const results: SyncResult[] = []
   const updatedQueue: SyncItem[] = []
 

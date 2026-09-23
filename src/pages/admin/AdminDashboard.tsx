@@ -3,6 +3,7 @@ import { Truck, Lock, LayoutGrid, Table2, Users, BarChart2, Settings, LogOut, Pl
 import { useApp } from '../store'
 import { ensureAdminBackendSession } from '../../services/auth'
 import { fetchTariffs, createTariff, updateTariff, deleteTariff } from '../../services/tariffs'
+import { fetchTrips, type BackendTrip } from '../../services/trips'
 import type { AdminTab } from '../types'
 
 interface TariffRow { id?: string; golongan: string; type: string; loaded: string; loadedNum: number; empty: string; emptyNum: number; desc: string }
@@ -13,7 +14,9 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<AdminTab>('overview')
   const [toast, setToast] = useState<Toast | null>(null)
 
-  const { trips, tariffs, saveTariffs, officers, saveOfficers } = useApp()
+  const { trips: localTrips, tariffs, saveTariffs, officers, saveOfficers } = useApp()
+  // Server trips fetched from backend (these are the "real" trips)
+  const [serverTrips, setServerTrips] = useState<BackendTrip[]>([])
   // Tariff backend connectivity: 'connecting' until the first attempt finishes
   const [serverState, setServerState] = useState<'connecting' | 'online' | 'offline'>('connecting')
   const [editTarIdx, setEditTarIdx] = useState<number | null>(null)
@@ -33,7 +36,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
   const fmtRp = (n: number) => `Rp ${n.toLocaleString('id-ID')}`
 
-  // On mount: get an admin JWT and load Master Tarif from the server.
+  // On mount: get an admin JWT and load Master Tarif + Trips from server.
   // Server data wins; localStorage stays as the offline fallback/cache.
   useEffect(() => {
     let alive = true
@@ -42,10 +45,19 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       if (!alive) return
       if (!ok) { setServerState('offline'); return }
 
+      // Fetch tariffs
       const rows = await fetchTariffs()
       if (!alive) return
       if (rows === null) { setServerState('offline'); return }
       if (rows.length > 0) saveTariffs(rows)
+
+      // Fetch trips from backend
+      const tripsData = await fetchTrips()
+      if (!alive) return
+      if (tripsData !== null) {
+        setServerTrips(tripsData)
+      }
+
       setServerState('online')
     })()
     return () => { alive = false }
@@ -201,10 +213,10 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             <div className="space-y-6">
               <div className="grid grid-cols-4 gap-4">
                 {[
-                  { label: 'Total Trip', val: trips.length, color: 'bg-blue-100 text-blue-600' },
+                  { label: 'Server Trips', val: serverTrips.length, color: 'bg-blue-100 text-blue-600' },
                   { label: 'Total Petugas', val: officers.length, color: 'bg-amber-100 text-amber-600' },
                   { label: 'Total Tarif', val: tariffs.length, color: 'bg-purple-100 text-purple-600' },
-                  { label: 'Pendapatan Trip', val: `Rp ${trips.reduce((s, t) => s + t.revenueNum, 0).toLocaleString('id-ID')}`, color: 'bg-emerald-100 text-emerald-600' },
+                  { label: 'Pending Sync', val: localTrips.length, color: 'bg-red-100 text-red-600' },
                 ].map(({ label, val, color }) => (
                   <div key={label} className="bg-white rounded-2xl p-5 shadow-sm">
                     <p className="text-slate-500 text-[11px] mb-1">{label}</p>
@@ -213,21 +225,30 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 ))}
               </div>
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100 font-bold text-slate-800">Trip Terbaru</div>
+                <div className="px-6 py-4 border-b border-slate-100 font-bold text-slate-800 flex justify-between items-center">
+                  <span>Trip Terbaru dari Server</span>
+                  <button
+                    onClick={() => {
+                      ensureAdminBackendSession().then(() => fetchTrips().then(t => t && setServerTrips(t)))
+                    }}
+                    className="text-blue-600 text-sm font-bold hover:underline"
+                  >
+                    Refresh
+                  </button>
+                </div>
                 <table className="w-full text-[13px]">
                   <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase">
-                    <tr><th className="text-left p-4">ID</th><th className="text-left p-4">Rute</th><th className="text-left p-4">Petugas</th><th className="text-left p-4">Kendaraan</th><th className="text-left p-4">Status</th><th className="text-left p-4">Pendapatan</th><th className="text-left p-4">Aksi</th></tr>
+                    <tr><th className="text-left p-4">No Trip</th><th className="text-left p-4">Rute</th><th className="text-left p-4">Status</th><th className="text-left p-4">Tanggal</th></tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
-                    {trips.slice(0, 5).map(t => (
+                    {serverTrips.length === 0 ? (
+                      <tr><td colSpan={4} className="p-8 text-center text-slate-400">Belum ada trip dari server</td></tr>
+                    ) : serverTrips.slice(0, 10).map(t => (
                       <tr key={t.id} className="hover:bg-slate-50">
-                        <td className="p-4 font-mono text-slate-400">{t.id}</td>
-                        <td className="p-4 font-bold">{t.route}</td>
-                        <td className="p-4">{t.officer}</td>
-                        <td className="p-4">{t.type}</td>
-                        <td className="p-4"><span className={`px-2 py-1 rounded-full text-[10px] font-bold ${t.load === 'Ada Muatan' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>{t.load}</span></td>
-                        <td className="p-4 font-bold text-emerald-600">{t.revenue}</td>
-                        <td className="p-4"><button onClick={() => setTab('tariff')} className="text-blue-600 font-bold text-sm">Edit</button></td>
+                        <td className="p-4 font-mono text-slate-600">{t.no_trip}</td>
+                        <td className="p-4 font-bold">{t.route_from} → {t.route_to}</td>
+                        <td className="p-4"><span className={`px-2 py-1 rounded-full text-[10px] font-bold ${t.status_muatan === 'muatan' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>{t.status_muatan}</span></td>
+                        <td className="p-4 text-slate-500">{t.created_at}</td>
                       </tr>
                     ))}
                   </tbody>

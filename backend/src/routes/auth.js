@@ -98,12 +98,13 @@ router.post('/login', (req, res) => {
       return res.status(400).json({ error: 'Officer ID and PIN required' });
     }
 
+    // Always query by string to match SQLite storage
     const officer = db.prepare(`
       SELECT o.*, r.name as region_name, r.code as region_code
       FROM officers o
       JOIN regions r ON o.region_id = r.id
       WHERE o.id = ? AND o.is_active = 1
-    `).get(officerId);
+    `).get(String(officerId));
 
     if (!officer) {
       return res.status(401).json({ error: 'Officer not found' });
