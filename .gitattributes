@@ -2,3 +2,5 @@
 *.tsx linguist-language=TypeScript
 *.ts linguist-language=TypeScript
 src/** linguist-language=TypeScript
+*.scss linguist-vendored
+*.css linguist-vendored
