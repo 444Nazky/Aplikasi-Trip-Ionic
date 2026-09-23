@@ -18,6 +18,10 @@ router.post('/', authenticate, (req, res) => {
     const { statusMuatan, routeFrom, routeTo, keterangan, fotoKosongPath } = req.body;
     const { officerId, regionId } = req.officer;
 
+    if (!statusMuatan) {
+      return res.status(400).json({ error: 'statusMuatan wajib diisi' });
+    }
+
     const tripId = uuidv4();
     const noTrip = generateTripNo();
 
