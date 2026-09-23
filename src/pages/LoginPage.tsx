@@ -40,11 +40,11 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-emerald-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-600 text-white mb-4 shadow-lg shadow-emerald-600/30">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600 text-white mb-4 shadow-lg shadow-blue-600/30">
             <Truck size={28} />
           </div>
           <h1 className="text-2xl font-bold text-slate-800">Trip Angkutan</h1>
@@ -74,7 +74,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-colors ${
                     error
                       ? 'border-red-300 bg-red-50'
-                      : 'border-slate-200 focus:border-emerald-500 bg-slate-50/50'
+                      : 'border-slate-200 focus:border-blue-500 bg-slate-50/50'
                   }`}
                 />
               </div>
@@ -96,7 +96,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                   className={`w-full pl-10 pr-10 py-3 rounded-xl border-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-colors ${
                     error
                       ? 'border-red-300 bg-red-50'
-                      : 'border-slate-200 focus:border-emerald-500 bg-slate-50/50'
+                      : 'border-slate-200 focus:border-blue-500 bg-slate-50/50'
                   }`}
                 />
                 <button
@@ -121,7 +121,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             <button
               onClick={handleLogin}
               disabled={!username || !password || loading}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-300 text-white font-bold py-3.5 rounded-xl text-sm transition-all active:scale-[0.98] shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 mt-2"
+              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-300 text-white font-bold py-3.5 rounded-xl text-sm transition-all active:scale-[0.98] shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 mt-2"
             >
               {loading ? (
                 <>

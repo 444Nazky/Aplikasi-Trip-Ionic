@@ -1,180 +1,165 @@
 import { useState } from 'react'
-import {
-  Truck, Lock, LayoutGrid, Table2, Users, BarChart2, Bell,
-  Map, Settings, LogOut, Plus, Pencil, Trash2, Download,
-  ChevronLeft, Camera, ArrowRight,
-} from 'lucide-react'
+import { Truck, Lock, LayoutGrid, Table2, Users, BarChart2, Settings, LogOut, Plus, Pencil, Trash2, Download, ChevronLeft, Check, X } from 'lucide-react'
 import { allTrips, tariffData, officerList } from '../data'
 import type { AdminTab } from '../types'
 
-// ─── Admin Dashboard ──────────────────────────────────────────────────────────
-interface AdminDashboardProps {
-  onLogout: () => void
-}
+interface TariffRow { golongan: string; type: string; loaded: string; loadedNum: number; empty: string; emptyNum: number; desc: string }
+interface Officer { id: number; name: string; initials: string; region: string; pin: string; status: string; device: string; trips: number; lastActive: string; joined: string }
+interface Toast { msg: string; type: 'success' | 'error' }
 
-export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
+export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<AdminTab>('overview')
-  const [filterStatus, setFilterStatus] = useState('')
-  const [filterOfficer, setFilterOfficer] = useState('')
-  const [editTariff, setEditTariff] = useState<typeof tariffData[0] | null>(null)
-  const [showOfficerForm, setShowOfficerForm] = useState(false)
-  const [selectedReport, setSelectedReport] = useState<typeof allTrips[0] | null>(null)
+  const [toast, setToast] = useState<Toast | null>(null)
 
-  const filteredTrips = allTrips.filter(t =>
-    (!filterStatus || t.load === filterStatus) &&
-    (!filterOfficer || t.officer === filterOfficer)
-  )
-  const totalRevenue = allTrips.reduce((s, t) => s + (parseInt(t.revenue.replace(/\D/g, '')) || 0), 0)
+  const [tariffs, setTariffs] = useState<TariffRow[]>(tariffData)
+  const [editTarIdx, setEditTarIdx] = useState<number | null>(null)
+  const [addTar, setAddTar] = useState(false)
+  const [tarForm, setTarForm] = useState({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
+  const [editTar, setEditTar] = useState({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
 
-  const navItems: { key: AdminTab; label: string; Icon: React.ElementType }[] = [
-    { key: 'overview', label: 'Overview', Icon: LayoutGrid },
+  const [officers, setOfficers] = useState<Officer[]>(officerList)
+  const [addOff, setAddOff] = useState(false)
+  const [editOffIdx, setEditOffIdx] = useState<number | null>(null)
+  const [offForm, setOffForm] = useState({ name: '', region: 'BADAU', pin: '', device: '' })
+  const [editOff, setEditOff] = useState<Officer | null>(null)
+
+  const showToast = (msg: string, type: Toast['type'] = 'success') => {
+    setToast({ msg, type })
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  const fmtRp = (n: number) => `Rp ${n.toLocaleString('id-ID')}`
+
+  // Tariff CRUD
+  const handleAddTar = () => {
+    if (!tarForm.type || !tarForm.golongan) return showToast('Lengkapi form!', 'error')
+    const row: TariffRow = { ...tarForm, loaded: fmtRp(tarForm.loadedNum), empty: fmtRp(tarForm.emptyNum) }
+    setTariffs([...tariffs, row])
+    setTarForm({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
+    setAddTar(false)
+    showToast('Tarif ditambahkan')
+  }
+
+  const handleUpdTar = () => {
+    const row: TariffRow = { ...editTar, loaded: fmtRp(editTar.loadedNum), empty: fmtRp(editTar.emptyNum) }
+    const ns = [...tariffs]
+    if (editTarIdx !== null) { ns[editTarIdx] = row; setTariffs(ns) }
+    setEditTarIdx(null)
+    showToast('Tarif diupdate')
+  }
+
+  const handleDelTar = (i: number) => {
+    if (!confirm('Hapus?')) return
+    setTariffs(tariffs.filter((_, idx) => idx !== i))
+    showToast('Tarif dihapus')
+  }
+
+  // Officer CRUD
+  const handleAddOff = () => {
+    if (!offForm.name || !offForm.pin) return showToast('Lengkapi form!', 'error')
+    const initials = offForm.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    const row: Officer = { id: Date.now(), name: offForm.name, initials, region: offForm.region, pin: offForm.pin, status: 'Aktif', device: offForm.device || '-', trips: 0, lastActive: '-', joined: new Date().toLocaleDateString('id-ID') }
+    setOfficers([...officers, row])
+    setOffForm({ name: '', region: 'BADAU', pin: '', device: '' })
+    setAddOff(false)
+    showToast('Petugas ditambahkan')
+  }
+
+  const handleUpdOff = () => {
+    if (!editOff) return
+    const initials = editOff.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    const ns = [...officers]
+    if (editOffIdx !== null) ns[editOffIdx] = { ...editOff, initials }
+    setOfficers(ns)
+    setEditOffIdx(null)
+    setEditOff(null)
+    showToast('Petugas diupdate')
+  }
+
+  const handleDelOff = (i: number) => {
+    if (!confirm('Hapus?')) return
+    setOfficers(officers.filter((_, idx) => idx !== i))
+    showToast('Petugas dihapus')
+  }
+
+  const toggleOffStatus = (i: number) => {
+    const ns = [...officers]
+    ns[i] = { ...ns[i], status: ns[i].status === 'Aktif' ? 'Nonaktif' : 'Aktif' }
+    setOfficers(ns)
+    showToast('Status diubah')
+  }
+
+  const navItems: { key: AdminTab; label: string; Icon: any }[] = [
+    { key: 'overview', label: 'Dashboard', Icon: LayoutGrid },
     { key: 'tariff', label: 'Master Tarif', Icon: Table2 },
-    { key: 'officers', label: 'Petugas & Wilayah', Icon: Users },
-    { key: 'reports', label: 'Laporan & Ekspor', Icon: BarChart2 },
+    { key: 'officers', label: 'Petugas', Icon: Users },
+    { key: 'reports', label: 'Laporan', Icon: BarChart2 },
     { key: 'settings', label: 'Pengaturan', Icon: Settings },
   ]
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <div className="w-60 bg-[#0F172A] min-h-screen flex flex-col shrink-0 fixed left-0 top-0 bottom-0">
+      {toast && (
+        <div className={`fixed top-4 right-4 z-[100] px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 ${toast.type === 'success' ? 'bg-blue-600 text-white' : 'bg-red-500 text-white'}`}>
+          {toast.type === 'success' ? <Check size={16} /> : <X size={16} />}
+          {toast.msg}
+        </div>
+      )}
+
+      <div className="w-60 bg-[#0F172A] min-h-screen flex flex-col shrink-0 fixed left-0 top-0">
         <div className="p-6 border-b border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
-              <Truck size={18} className="text-white" />
-            </div>
-            <div>
-              <p className="text-white font-black text-[13px] leading-tight">Trip Angkutan</p>
-              <p className="text-slate-500 text-[10px]">Admin Dashboard</p>
-            </div>
+            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center"><Truck size={18} className="text-white" /></div>
+            <div><p className="text-white font-black text-[13px]">Trip Angkutan</p><p className="text-slate-500 text-[10px]">Admin</p></div>
           </div>
         </div>
-        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-0.5">
           {navItems.map(({ key, label, Icon }) => (
-            <button
-              key={key}
-              onClick={() => { setTab(key); setSelectedReport(null); setEditTariff(null); setShowOfficerForm(false) }}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left text-[13px] transition-all ${tab === key ? 'bg-blue-600 text-white font-bold shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
-            >
-              <Icon size={16} strokeWidth={tab === key ? 2.5 : 1.8} />
-              {label}
+            <button key={key} onClick={() => { setTab(key); setEditTarIdx(null); setAddTar(false); setEditOffIdx(null); setAddOff(false) }}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left text-[13px] ${tab === key ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}>
+              <Icon size={16} />{label}
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-slate-800 space-y-1">
-          <div className="flex items-center gap-3 px-3.5 py-2">
-            <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-[11px] font-black text-white">AD</div>
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-[12px] font-bold truncate">Admin Utama</p>
-              <p className="text-slate-500 text-[10px]">Super Admin · BADAU</p>
-            </div>
-          </div>
-          <button
-            onClick={onLogout}
-            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all text-[12px] font-semibold"
-          >
-            <LogOut size={14} /> Logout
+        <div className="p-4 border-t border-slate-800">
+          <button onClick={onLogout} className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/10 text-[12px] font-semibold">
+            <LogOut size={14} />Logout
           </button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 ml-60 overflow-auto bg-[#F1F5F9] min-h-screen">
-        {/* Topbar */}
-        <div className="bg-white border-b border-slate-100 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-          <div>
-            <h1 className="font-black text-slate-900 text-[17px]">
-              {tab === 'overview' && 'Dashboard Overview'}
-              {tab === 'tariff' && (editTariff ? 'Edit Golongan Tarif' : 'Master Tarif Kendaraan')}
-              {tab === 'officers' && (showOfficerForm ? 'Tambah Petugas Baru' : 'Manajemen Petugas & Wilayah')}
-              {tab === 'reports' && (selectedReport ? 'Detail Trip' : 'Laporan & Ekspor Data')}
-              {tab === 'settings' && 'Pengaturan Sistem'}
-            </h1>
-            <p className="text-slate-400 text-[11px] mt-0.5">Senin, 21 September 2026 · Region: BADAU</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="relative w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors cursor-pointer">
-              <Bell size={16} className="text-slate-600" />
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-blue-600 rounded-full text-[8px] text-white flex items-center justify-center font-black">3</span>
-            </div>
-          </div>
-        </div>
-
+      <div className="flex-1 ml-60 bg-slate-100 min-h-screen">
         <div className="p-8">
-
-          {/* ─── Overview ─── */}
           {tab === 'overview' && (
-            <div className="space-y-6 animate-fade-in">
+            <div className="space-y-6">
               <div className="grid grid-cols-4 gap-4">
                 {[
-                  { label: 'Total Trip', val: allTrips.length.toString(), sub: 'Semua waktu', color: 'blue', Icon: Truck },
-                  { label: 'Trip Hari Ini', val: '3', sub: '↑ +1 dari kemarin', color: 'emerald', Icon: BarChart2 },
-                  { label: 'Kendaraan Hari Ini', val: '5', sub: '2 jenis berbeda', color: 'amber', Icon: LayoutGrid },
-                  { label: 'Pendapatan Bulan Ini', val: `Rp ${(totalRevenue / 1000).toFixed(0)}rb`, sub: 'September 2026', color: 'slate', Icon: Download },
-                ].map(({ label, val, sub, color, Icon }) => (
-                  <div key={label} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${color === 'blue' ? 'bg-blue-100' : color === 'emerald' ? 'bg-emerald-100' : color === 'amber' ? 'bg-amber-100' : 'bg-slate-100'}`}>
-                      <Icon size={18} className={color === 'blue' ? 'text-blue-600' : color === 'emerald' ? 'text-emerald-600' : color === 'amber' ? 'text-amber-600' : 'text-slate-600'} />
-                    </div>
-                    <p className="text-slate-500 text-[11px] font-medium mb-0.5">{label}</p>
-                    <p className="text-slate-900 font-black text-[24px]">{val}</p>
-                    <p className="text-slate-400 text-[11px] mt-1">{sub}</p>
+                  { label: 'Total Trip', val: allTrips.length, color: 'bg-blue-100 text-blue-600' },
+                  { label: 'Total Petugas', val: officers.length, color: 'bg-amber-100 text-amber-600' },
+                  { label: 'Total Tarif', val: tariffs.length, color: 'bg-purple-100 text-purple-600' },
+                  { label: 'Petugas Aktif', val: officers.filter(o => o.status === 'Aktif').length, color: 'bg-blue-100 text-blue-600' },
+                ].map(({ label, val, color }) => (
+                  <div key={label} className="bg-white rounded-2xl p-5 shadow-sm">
+                    <p className="text-slate-500 text-[11px] mb-1">{label}</p>
+                    <p className="text-3xl font-black">{val}</p>
                   </div>
                 ))}
               </div>
-
-              <div className="grid grid-cols-3 gap-5">
-                <div className="col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                  <div className="flex items-center justify-between mb-5">
-                    <h3 className="font-bold text-slate-800">Trip per Hari (Sep 2026)</h3>
-                    <span className="text-[11px] text-slate-400 font-medium">Minggu ini</span>
-                  </div>
-                  <div className="flex items-end gap-2 h-32">
-                    {[2, 4, 3, 5, 3, 4, 3].map((v, i) => (
-                      <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
-                        <div className="w-full rounded-t-lg bg-blue-500 hover:bg-blue-600 transition-colors" style={{ height: `${v / 5 * 100}%` }} />
-                        <span className="text-[9px] text-slate-400 font-medium">{['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'][i]}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                  <h3 className="font-bold text-slate-800 mb-4">Distribusi Muatan</h3>
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="relative w-28 h-28">
-                      <svg viewBox="0 0 36 36" className="w-28 h-28 -rotate-90">
-                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#E2E8F0" strokeWidth="3" />
-                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#3B82F6" strokeWidth="3" strokeDasharray="67 33" strokeLinecap="round" />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-[17px] font-black text-slate-900">67%</span>
-                        <span className="text-[9px] text-slate-400">Muatan</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-[12px]"><span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block" />Ada Muatan</span><span className="font-bold">67%</span></div>
-                    <div className="flex justify-between text-[12px]"><span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-slate-200 inline-block" />Kosong</span><span className="font-bold">33%</span></div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                  <h3 className="font-bold text-slate-800">Trip Terbaru</h3>
-                  <button onClick={() => setTab('reports')} className="text-blue-600 text-[12px] font-bold hover:underline flex items-center gap-1">Lihat Semua <ArrowRight size={13} /></button>
-                </div>
-                <table className="w-full">
-                  <thead><tr className="bg-slate-50/70">{['ID Trip', 'Rute', 'Petugas', 'Kendaraan', 'Status', 'Pendapatan'].map(h => <th key={h} className="text-left px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">{h}</th>)}</tr></thead>
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 font-bold text-slate-800">Trip Terbaru</div>
+                <table className="w-full text-[13px]">
+                  <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase">
+                    <tr><th className="text-left p-4">ID</th><th className="text-left p-4">Rute</th><th className="text-left p-4">Petugas</th><th className="text-left p-4">Kendaraan</th><th className="text-left p-4">Status</th><th className="text-left p-4">Aksi</th></tr>
+                  </thead>
                   <tbody className="divide-y divide-slate-50">
                     {allTrips.slice(0, 5).map(t => (
-                      <tr key={t.id} className="hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => { setSelectedReport(t); setTab('reports') }}>
-                        <td className="px-6 py-3.5 font-mono text-[11px] text-slate-400">{t.id}</td>
-                        <td className="px-6 py-3.5 text-[13px] font-bold text-slate-800">{t.route}</td>
-                        <td className="px-6 py-3.5 text-[13px] text-slate-600">{t.officer}</td>
-                        <td className="px-6 py-3.5 text-[13px] text-slate-600">{t.type}</td>
-                        <td className="px-6 py-3.5"><span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${t.load === 'Ada Muatan' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>{t.load}</span></td>
-                        <td className="px-6 py-3.5 text-[13px] font-black text-slate-900">{t.revenue}</td>
+                      <tr key={t.id} className="hover:bg-slate-50">
+                        <td className="p-4 font-mono text-slate-400">{t.id}</td>
+                        <td className="p-4 font-bold">{t.route}</td>
+                        <td className="p-4">{t.officer}</td>
+                        <td className="p-4">{t.type}</td>
+                        <td className="p-4"><span className={`px-2 py-1 rounded-full text-[10px] font-bold ${t.load === 'Ada Muatan' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>{t.load}</span></td>
+                        <td className="p-4"><button onClick={() => setTab('tariff')} className="text-blue-600 font-bold text-sm">Edit</button></td>
                       </tr>
                     ))}
                   </tbody>
@@ -183,43 +168,67 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             </div>
           )}
 
-          {/* ─── Tariff ─── */}
-          {tab === 'tariff' && !editTariff && (
-            <div className="animate-fade-in space-y-5">
-              <div className="grid grid-cols-3 gap-4">
-                {[
-                  { label: 'Total Golongan', val: tariffData.length.toString(), color: 'blue' },
-                  { label: 'Tarif Tertinggi', val: 'Rp 450.000', color: 'emerald' },
-                  { label: 'Tarif Terendah', val: 'Rp 8.000', color: 'slate' },
-                ].map(({ label, val, color }) => (
-                  <div key={label} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-                    <p className="text-slate-500 text-[11px] mb-0.5">{label}</p>
-                    <p className={`font-black text-[24px] ${color === 'blue' ? 'text-blue-600' : color === 'emerald' ? 'text-emerald-600' : 'text-slate-900'}`}>{val}</p>
-                  </div>
-                ))}
+          {tab === 'tariff' && (
+            <div className="space-y-4">
+              <div className="flex justify-end">
+                <button onClick={() => setAddTar(true)} className="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-blue-700">
+                  <Plus size={14} />Tambah Golongan
+                </button>
               </div>
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                  <h3 className="font-bold text-slate-800">Tabel Tarif Kendaraan</h3>
-                  <button onClick={() => setEditTariff({ golongan: 'VI', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })} className="flex items-center gap-2 bg-blue-600 text-white text-[12px] font-bold px-4 py-2.5 rounded-xl hover:bg-blue-700 active:scale-95 transition-all shadow-sm shadow-blue-600/20">
-                    <Plus size={14} /> Tambah Golongan
-                  </button>
+
+              {addTar && (
+                <div className="bg-white rounded-2xl p-6 shadow-sm max-w-lg">
+                  <h3 className="font-bold mb-4">Tambah Golongan</h3>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Golongan</label><input value={tarForm.golongan} onChange={e => setTarForm({...tarForm, golongan: e.target.value})} placeholder="I, II, III" className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Jenis</label><input value={tarForm.type} onChange={e => setTarForm({...tarForm, type: e.target.value})} placeholder="Truck Besar" className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                  </div>
+                  <div className="mb-4"><label className="text-[11px] text-slate-500 block mb-1">Deskripsi</label><input value={tarForm.desc} onChange={e => setTarForm({...tarForm, desc: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Muatan (Rp)</label><input type="number" value={tarForm.loadedNum || ''} onChange={e => setTarForm({...tarForm, loadedNum: parseInt(e.target.value) || 0})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Kosong (Rp)</label><input type="number" value={tarForm.emptyNum || ''} onChange={e => setTarForm({...tarForm, emptyNum: parseInt(e.target.value) || 0})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setAddTar(false)} className="flex-1 py-3 rounded-xl border text-slate-700 font-semibold">Batal</button>
+                    <button onClick={handleAddTar} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Simpan</button>
+                  </div>
                 </div>
-                <table className="w-full">
-                  <thead><tr className="bg-slate-50/70">{['Gol.', 'Jenis Kendaraan', 'Deskripsi', 'Tarif Muatan', 'Tarif Kosong', 'Aksi'].map(h => <th key={h} className="text-left px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">{h}</th>)}</tr></thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {tariffData.map(row => (
-                      <tr key={row.golongan} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-4"><span className="w-8 h-8 rounded-lg bg-slate-100 font-mono font-black text-[13px] flex items-center justify-center text-slate-700">{row.golongan}</span></td>
-                        <td className="px-6 py-4 text-[13px] font-bold text-slate-800">{row.type}</td>
-                        <td className="px-6 py-4 text-[12px] text-slate-500">{row.desc}</td>
-                        <td className="px-6 py-4 text-[13px] font-bold text-emerald-700">{row.loaded}</td>
-                        <td className="px-6 py-4 text-[13px] text-slate-500">{row.empty}</td>
-                        <td className="px-6 py-4">
-                          <div className="flex gap-3">
-                            <button onClick={() => setEditTariff(row)} className="text-[12px] text-blue-600 font-bold hover:underline flex items-center gap-1"><Pencil size={12} />Edit</button>
-                            <button className="text-[12px] text-red-500 font-bold hover:underline flex items-center gap-1"><Trash2 size={12} />Hapus</button>
-                          </div>
+              )}
+
+              {editTarIdx !== null && (
+                <div className="bg-white rounded-2xl p-6 shadow-sm max-w-lg">
+                  <h3 className="font-bold mb-4">Edit Golongan</h3>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Golongan</label><input value={editTar.golongan} onChange={e => setEditTar({...editTar, golongan: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Jenis</label><input value={editTar.type} onChange={e => setEditTar({...editTar, type: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                  </div>
+                  <div className="mb-4"><label className="text-[11px] text-slate-500 block mb-1">Deskripsi</label><input value={editTar.desc} onChange={e => setEditTar({...editTar, desc: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Muatan</label><input type="number" value={editTar.loadedNum || ''} onChange={e => setEditTar({...editTar, loadedNum: parseInt(e.target.value) || 0})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Kosong</label><input type="number" value={editTar.emptyNum || ''} onChange={e => setEditTar({...editTar, emptyNum: parseInt(e.target.value) || 0})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setEditTarIdx(null)} className="flex-1 py-3 rounded-xl border text-slate-700 font-semibold">Batal</button>
+                    <button onClick={handleUpdTar} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Update</button>
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase">
+                    <tr><th className="text-left p-4">Gol</th><th className="text-left p-4">Jenis</th><th className="text-left p-4">Muatan</th><th className="text-left p-4">Kosong</th><th className="text-left p-4">Aksi</th></tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {tariffs.map((t, i) => (
+                      <tr key={t.golongan} className="hover:bg-slate-50">
+                        <td className="p-4 font-mono font-bold">{t.golongan}</td>
+                        <td className="p-4 font-bold">{t.type}</td>
+                        <td className="p-4 text-blue-700 font-bold">{t.loaded}</td>
+                        <td className="p-4 text-slate-500">{t.empty}</td>
+                        <td className="p-4">
+                          <button onClick={() => { setEditTarIdx(i); setEditTar(t) }} className="text-blue-600 font-bold text-sm mr-4">Edit</button>
+                          <button onClick={() => handleDelTar(i)} className="text-red-500 font-bold text-sm">Hapus</button>
                         </td>
                       </tr>
                     ))}
@@ -229,83 +238,74 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             </div>
           )}
 
-          {tab === 'tariff' && editTariff && (
-            <div className="animate-fade-in max-w-xl">
-              <button onClick={() => setEditTariff(null)} className="flex items-center gap-1.5 text-slate-500 text-[13px] mb-6 hover:text-slate-700 font-medium">
-                <ChevronLeft size={16} /> Kembali ke Tabel Tarif
-              </button>
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-5">
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="text-[11px] font-bold text-slate-500 mb-2 block uppercase tracking-wide">Golongan</label><input defaultValue={editTariff.golongan} className="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-[13px] font-mono font-bold focus:outline-none focus:border-blue-500 transition-colors" /></div>
-                  <div><label className="text-[11px] font-bold text-slate-500 mb-2 block uppercase tracking-wide">Jenis Kendaraan</label><input defaultValue={editTariff.type} placeholder="cth: Truck Besar" className="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-blue-500 transition-colors" /></div>
-                </div>
-                <div><label className="text-[11px] font-bold text-slate-500 mb-2 block uppercase tracking-wide">Deskripsi</label><input defaultValue={editTariff.desc} className="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-blue-500 transition-colors" /></div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="text-[11px] font-bold text-slate-500 mb-2 block uppercase tracking-wide">Tarif Muatan (Rp)</label><input defaultValue={editTariff.loadedNum || ''} type="number" className="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-blue-500 transition-colors" /></div>
-                  <div><label className="text-[11px] font-bold text-slate-500 mb-2 block uppercase tracking-wide">Tarif Kosong (Rp)</label><input defaultValue={editTariff.emptyNum || ''} type="number" className="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-blue-500 transition-colors" /></div>
-                </div>
-                <div className="flex gap-3 pt-2">
-                  <button onClick={() => setEditTariff(null)} className="flex-1 py-3 rounded-xl border-2 border-slate-200 text-slate-700 font-semibold text-[13px] hover:bg-slate-50">Batal</button>
-                  <button onClick={() => setEditTariff(null)} className="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold text-[13px] hover:bg-blue-700">Simpan Perubahan</button>
-                </div>
+          {tab === 'officers' && (
+            <div className="space-y-4">
+              <div className="flex justify-end">
+                <button onClick={() => setAddOff(true)} className="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2">
+                  <Plus size={14} />Tambah Petugas
+                </button>
               </div>
-            </div>
-          )}
 
-          {/* ─── Officers ─── */}
-          {tab === 'officers' && !showOfficerForm && (
-            <div className="animate-fade-in space-y-5">
-              <div className="grid grid-cols-4 gap-4">
-                {[
-                  { label: 'Total Petugas', val: '5', color: 'blue' },
-                  { label: 'Aktif Hari Ini', val: '4', color: 'emerald' },
-                  { label: 'Nonaktif', val: '1', color: 'slate' },
-                  { label: 'Total Wilayah', val: '2', color: 'amber' },
-                ].map(({ label, val, color }) => (
-                  <div key={label} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-                    <p className="text-slate-400 text-[11px] mb-0.5">{label}</p>
-                    <p className={`font-black text-[24px] ${color === 'blue' ? 'text-blue-600' : color === 'emerald' ? 'text-emerald-600' : color === 'amber' ? 'text-amber-600' : 'text-slate-900'}`}>{val}</p>
+              {addOff && (
+                <div className="bg-white rounded-2xl p-6 shadow-sm max-w-lg">
+                  <h3 className="font-bold mb-4">Tambah Petugas</h3>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Nama</label><input value={offForm.name} onChange={e => setOffForm({...offForm, name: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Wilayah</label>
+                      <select value={offForm.region} onChange={e => setOffForm({...offForm, region: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm">
+                        <option value="BADAU">BADAU</option><option value="ENTIKONG">ENTIKONG</option>
+                      </select>
+                    </div>
                   </div>
-                ))}
-              </div>
+                  <div className="mb-4"><label className="text-[11px] text-slate-500 block mb-1">PIN</label><input type="password" maxLength={6} value={offForm.pin} onChange={e => setOffForm({...offForm, pin: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setAddOff(false)} className="flex-1 py-3 rounded-xl border text-slate-700 font-semibold">Batal</button>
+                    <button onClick={handleAddOff} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Simpan</button>
+                  </div>
+                </div>
+              )}
+
+              {editOffIdx !== null && editOff && (
+                <div className="bg-white rounded-2xl p-6 shadow-sm max-w-lg">
+                  <h3 className="font-bold mb-4">Edit Petugas</h3>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Nama</label><input value={editOff.name} onChange={e => setEditOff({...editOff, name: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Wilayah</label>
+                      <select value={editOff.region} onChange={e => setEditOff({...editOff, region: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm">
+                        <option value="BADAU">BADAU</option><option value="ENTIKONG">ENTIKONG</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="mb-4"><label className="text-[11px] text-slate-500 block mb-1">PIN Baru</label><input type="password" maxLength={6} value={editOff.pin} onChange={e => setEditOff({...editOff, pin: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                  <div className="flex gap-3">
+                    <button onClick={() => { setEditOffIdx(null); setEditOff(null) }} className="flex-1 py-3 rounded-xl border text-slate-700 font-semibold">Batal</button>
+                    <button onClick={handleUpdOff} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Update</button>
+                  </div>
+                </div>
+              )}
 
               {['BADAU', 'ENTIKONG'].map(region => (
-                <div key={region} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                  <div className="px-6 py-4 bg-[#0F172A] flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Lock size={15} className="text-amber-400" />
-                      <span className="text-white font-bold text-[14px]">Wilayah {region}</span>
-                      <span className="text-slate-500 text-[12px]">· {officerList.filter(o => o.region === region).length} petugas</span>
-                    </div>
-                    <button onClick={() => setShowOfficerForm(true)} className="flex items-center gap-1.5 bg-blue-600 text-white text-[11px] font-bold px-3 py-2 rounded-lg hover:bg-blue-500 transition-colors">
-                      <Plus size={13} /> Tambah
-                    </button>
-                  </div>
-                  <table className="w-full">
-                    <thead><tr className="bg-slate-50/70">{['Petugas', 'PIN', 'Perangkat', 'Trip Total', 'Terakhir Aktif', 'Status', 'Aksi'].map(h => <th key={h} className="text-left px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">{h}</th>)}</tr></thead>
-                    <tbody className="divide-y divide-slate-50">
-                      {officerList.filter(o => o.region === region).map(o => (
-                        <tr key={o.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-[12px] ${o.status === 'Aktif' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>{o.initials}</div>
-                              <div><p className="text-[13px] font-bold text-slate-800">{o.name}</p><p className="text-[10px] text-slate-400">Bergabung {o.joined}</p></div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 font-mono text-[13px] text-slate-400">{o.pin}</td>
-                          <td className="px-6 py-4 text-[13px] text-slate-500">{o.device}</td>
-                          <td className="px-6 py-4 text-[13px] font-black text-slate-800">{o.trips}</td>
-                          <td className="px-6 py-4 text-[12px] text-slate-500">{o.lastActive}</td>
-                          <td className="px-6 py-4"><span className={`text-[11px] font-black px-2.5 py-1 rounded-full ${o.status === 'Aktif' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>{o.status}</span></td>
-                          <td className="px-6 py-4">
-                            <div className="flex gap-2 text-[12px]">
-                              <button className="text-blue-600 font-bold hover:underline">Edit PIN</button>
-                              <span className="text-slate-200">|</span>
-                              <button className={`font-bold hover:underline ${o.status === 'Aktif' ? 'text-amber-500' : 'text-emerald-600'}`}>{o.status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}</button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                <div key={region} className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                  <div className="px-6 py-3 bg-[#0F172A] text-white font-bold flex items-center gap-2"><Lock size={14} className="text-blue-400" />{region} ({officers.filter(o => o.region === region).length} petugas)</div>
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase">
+                      <tr><th className="text-left p-4">Nama</th><th className="text-left p-4">Status</th><th className="text-left p-4">Aksi</th></tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {officers.filter(o => o.region === region).map((o, _, arr) => {
+                        const i = officers.indexOf(o)
+                        return (
+                          <tr key={o.id} className="hover:bg-slate-50">
+                            <td className="p-4 font-bold">{o.name}</td>
+                            <td className="p-4"><span className={`px-2 py-1 rounded-full text-[10px] font-bold ${o.status === 'Aktif' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>{o.status}</span></td>
+                            <td className="p-4">
+                              <button onClick={() => { setEditOffIdx(i); setEditOff(o) }} className="text-blue-600 font-bold text-sm mr-3">Edit</button>
+                              <button onClick={() => toggleOffStatus(i)} className="text-amber-500 font-bold text-sm mr-3">{o.status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}</button>
+                              <button onClick={() => handleDelOff(i)} className="text-red-500 font-bold text-sm">Hapus</button>
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -313,203 +313,19 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             </div>
           )}
 
-          {tab === 'officers' && showOfficerForm && (
-            <div className="animate-fade-in max-w-xl">
-              <button onClick={() => setShowOfficerForm(false)} className="flex items-center gap-1.5 text-slate-500 text-[13px] mb-6 hover:text-slate-700 font-medium">
-                <ChevronLeft size={16} /> Kembali ke Daftar Petugas
-              </button>
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-5">
-                <div className="grid grid-cols-2 gap-4">
-                  <div><label className="text-[11px] font-bold text-slate-500 mb-2 block uppercase tracking-wide">Nama Lengkap</label><input placeholder="Nama petugas" className="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-blue-500 transition-colors" /></div>
-                  <div><label className="text-[11px] font-bold text-slate-500 mb-2 block uppercase tracking-wide">Wilayah</label>
-                    <select className="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-blue-500 transition-colors">
-                      <option>BADAU</option><option>ENTIKONG</option>
-                    </select>
-                  </div>
-                </div>
-                <div><label className="text-[11px] font-bold text-slate-500 mb-2 block uppercase tracking-wide">PIN (6 digit)</label><input type="password" maxLength={6} placeholder="••••••" className="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-[13px] font-mono tracking-widest focus:outline-none focus:border-blue-500 transition-colors" /></div>
-                <div><label className="text-[11px] font-bold text-slate-500 mb-2 block uppercase tracking-wide">Konfirmasi PIN</label><input type="password" maxLength={6} placeholder="••••••" className="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-[13px] font-mono tracking-widest focus:outline-none focus:border-blue-500 transition-colors" /></div>
-                <div><label className="text-[11px] font-bold text-slate-500 mb-2 block uppercase tracking-wide">Perangkat (opsional)</label><input placeholder="cth: Samsung A54" className="w-full border-2 border-slate-100 rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-blue-500 transition-colors" /></div>
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-                  <Lock size={15} className="text-amber-500 mt-0.5 shrink-0" />
-                  <div><p className="text-[12px] font-black text-amber-700 mb-0.5">Region Lock Aktif</p><p className="text-[11px] text-amber-600">Petugas ini hanya dapat login pada perangkat yang terdaftar di wilayahnya.</p></div>
-                </div>
-                <div className="flex gap-3">
-                  <button onClick={() => setShowOfficerForm(false)} className="flex-1 py-3 rounded-xl border-2 border-slate-200 text-slate-700 font-semibold text-[13px] hover:bg-slate-50">Batal</button>
-                  <button onClick={() => setShowOfficerForm(false)} className="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold text-[13px] hover:bg-blue-700">Simpan Petugas</button>
-                </div>
-              </div>
+          {tab === 'reports' && (
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="font-bold">Laporan</h3>
+              <p className="text-slate-500 mt-2">Fitur dalam development</p>
             </div>
           )}
 
-          {/* ─── Reports ─── */}
-          {tab === 'reports' && !selectedReport && (
-            <div className="animate-fade-in space-y-5">
-              <div className="grid grid-cols-3 gap-4">
-                {[
-                  { label: 'Total Trip', val: allTrips.length.toString(), sub: 'Semua data' },
-                  { label: 'Ada Muatan', val: allTrips.filter(t => t.load === 'Ada Muatan').length.toString(), sub: 'trip bermuatan' },
-                  { label: 'Total Pendapatan', val: `Rp ${(totalRevenue / 1000).toFixed(0)}rb`, sub: 'akumulasi' },
-                ].map(({ label, val, sub }) => (
-                  <div key={label} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-                    <p className="text-slate-500 text-[11px] mb-0.5">{label}</p>
-                    <p className="text-slate-900 font-black text-[24px]">{val}</p>
-                    <p className="text-slate-400 text-[11px] mt-1">{sub}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Status</label>
-                  <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="border border-slate-200 rounded-lg px-3 py-2 text-[12px] text-slate-700 focus:outline-none focus:border-blue-500 transition-colors">
-                    <option value="">Semua</option><option value="Ada Muatan">Ada Muatan</option><option value="Kosong">Kosong</option>
-                  </select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Petugas</label>
-                  <select value={filterOfficer} onChange={e => setFilterOfficer(e.target.value)} className="border border-slate-200 rounded-lg px-3 py-2 text-[12px] text-slate-700 focus:outline-none focus:border-blue-500 transition-colors">
-                    <option value="">Semua</option>
-                    {[...new Set(allTrips.map(t => t.officer))].map(o => <option key={o}>{o}</option>)}
-                  </select>
-                </div>
-                <div className="ml-auto flex gap-2">
-                  <button onClick={() => { setFilterStatus(''); setFilterOfficer('') }} className="text-[12px] text-slate-500 font-semibold px-3 py-2 rounded-lg hover:bg-slate-50 border border-slate-200">Reset</button>
-                  <button className="flex items-center gap-2 bg-emerald-600 text-white text-[12px] font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-700 active:scale-95 transition-all shadow-sm">
-                    <Download size={13} /> Ekspor Excel
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100">
-                  <h3 className="font-bold text-slate-800">Data Trip <span className="text-slate-400 font-normal text-[13px]">({filteredTrips.length} hasil)</span></h3>
-                </div>
-                <table className="w-full">
-                  <thead><tr className="bg-slate-50/70">{['ID Trip', 'Tanggal', 'Rute', 'Petugas', 'Kendaraan', 'Status', 'Pendapatan', ''].map(h => <th key={h} className="text-left px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">{h}</th>)}</tr></thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {filteredTrips.map(t => (
-                      <tr key={t.id} className="hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => setSelectedReport(t)}>
-                        <td className="px-6 py-3.5 font-mono text-[11px] text-slate-400">{t.id}</td>
-                        <td className="px-6 py-3.5 text-[12px] text-slate-500">{t.date} {t.time}</td>
-                        <td className="px-6 py-3.5 text-[13px] font-bold text-slate-800">{t.route}</td>
-                        <td className="px-6 py-3.5 text-[13px] text-slate-600">{t.officer}</td>
-                        <td className="px-6 py-3.5 text-[13px] text-slate-600">{t.type}</td>
-                        <td className="px-6 py-3.5"><span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${t.load === 'Ada Muatan' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>{t.load}</span></td>
-                        <td className="px-6 py-3.5 text-[13px] font-black text-slate-900">{t.revenue}</td>
-                        <td className="px-6 py-3.5"><button className="text-[12px] text-blue-600 font-bold hover:underline">Detail →</button></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {filteredTrips.length === 0 && <div className="py-12 text-center text-slate-400 text-[13px]">Tidak ada data yang sesuai filter</div>}
-              </div>
-            </div>
-          )}
-
-          {tab === 'reports' && selectedReport && (
-            <div className="animate-fade-in max-w-2xl">
-              <button onClick={() => setSelectedReport(null)} className="flex items-center gap-1.5 text-slate-500 text-[13px] mb-6 hover:text-slate-700 font-medium">
-                <ChevronLeft size={16} /> Kembali ke Laporan
-              </button>
-              <div className="flex items-center justify-between mb-5">
-                <div>
-                  <p className="font-mono text-[12px] text-slate-400">{selectedReport.id}</p>
-                  <h2 className="font-black text-slate-900 text-[22px]">{selectedReport.route}</h2>
-                </div>
-                <span className="font-black text-emerald-700 bg-emerald-100 px-4 py-2 rounded-xl text-[13px]">{selectedReport.status}</span>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-5">
-                <div className="bg-[#0F172A] rounded-2xl p-5">
-                  <p className="text-slate-400 text-[11px] mb-3 uppercase tracking-wide font-bold">Info Trip</p>
-                  <div className="space-y-2.5">
-                    {[['Tanggal', selectedReport.date], ['Jam', selectedReport.time], ['Durasi', selectedReport.duration], ['Petugas', selectedReport.officer]].map(([k, v]) => (
-                      <div key={k} className="flex justify-between"><span className="text-slate-500 text-[12px]">{k}</span><span className="text-white text-[12px] font-semibold">{v}</span></div>
-                    ))}
-                  </div>
-                </div>
-                <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-                  <p className="text-slate-400 text-[11px] mb-3 uppercase tracking-wide font-bold">Info Kendaraan</p>
-                  <div className="space-y-2.5">
-                    {[['No. Polisi', selectedReport.vehicle], ['Jenis', selectedReport.type], ['Kategori', selectedReport.category], ['Status', selectedReport.load]].map(([k, v]) => (
-                      <div key={k} className="flex justify-between"><span className="text-slate-400 text-[12px]">{k}</span><span className="text-slate-800 text-[12px] font-bold">{v}</span></div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 mb-4 flex justify-between items-center">
-                <p className="text-slate-500 text-[13px]">Total Pendapatan Trip</p>
-                <p className="text-[24px] font-black text-slate-900">{selectedReport.revenue}</p>
-              </div>
-              {selectedReport.photo && (
-                <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-                  <p className="text-[11px] font-black text-slate-500 mb-3 uppercase tracking-wide">Foto Bukti Muatan</p>
-                  <div className="bg-slate-100 rounded-xl h-40 flex items-center justify-center">
-                    <div className="text-center"><Camera size={36} className="text-slate-300 mx-auto" /><p className="text-[12px] text-slate-400 mt-2">Foto tersimpan di server</p></div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ─── Settings ─── */}
           {tab === 'settings' && (
-            <div className="animate-fade-in max-w-2xl space-y-5">
-              {[
-                {
-                  title: 'Pengaturan Wilayah',
-                  items: [
-                    { label: 'Wilayah Aktif', desc: 'Region saat ini yang terdaftar', type: 'text', val: 'BADAU' },
-                    { label: 'Multi-Region', desc: 'Izinkan petugas lintas wilayah', type: 'toggle', val: false },
-                    { label: 'GPS Fence Radius', desc: 'Radius batas wilayah (km)', type: 'number', val: '25' },
-                  ]
-                },
-                {
-                  title: 'Pengaturan Trip',
-                  items: [
-                    { label: 'Auto-sync Data', desc: 'Sinkronisasi otomatis saat koneksi tersedia', type: 'toggle', val: true },
-                    { label: 'Wajib Foto Bukti', desc: 'Petugas wajib foto untuk trip bermuatan', type: 'toggle', val: true },
-                    { label: 'Tambah Kendaraan Maks.', desc: 'Jumlah maks. kendaraan per trip', type: 'number', val: '5' },
-                  ]
-                },
-                {
-                  title: 'Keamanan',
-                  items: [
-                    { label: 'PIN Expiry', desc: 'Masa berlaku PIN (hari, 0 = tidak kedaluwarsa)', type: 'number', val: '90' },
-                    { label: 'Auto-logout', desc: 'Logout otomatis setelah tidak aktif (menit)', type: 'number', val: '30' },
-                    { label: 'Device Lock', desc: 'Kunci akun ke satu perangkat saja', type: 'toggle', val: true },
-                  ]
-                },
-              ].map(section => (
-                <div key={section.title} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/70">
-                    <h3 className="font-black text-slate-700 text-[13px] uppercase tracking-wide">{section.title}</h3>
-                  </div>
-                  <div className="divide-y divide-slate-100">
-                    {section.items.map(item => (
-                      <div key={item.label} className="px-6 py-4 flex items-center justify-between">
-                        <div>
-                          <p className="text-[13px] font-semibold text-slate-800">{item.label}</p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">{item.desc}</p>
-                        </div>
-                        {item.type === 'toggle' ? (
-                          <div className={`w-11 h-6 rounded-full relative cursor-pointer transition-colors ${item.val ? 'bg-blue-600' : 'bg-slate-200'}`}>
-                            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${item.val ? 'left-6' : 'left-1'}`} />
-                          </div>
-                        ) : item.type === 'number' ? (
-                          <input defaultValue={item.val as string} type="number" className="w-20 text-right border border-slate-200 rounded-lg px-3 py-1.5 text-[13px] focus:outline-none focus:border-blue-500 font-mono" />
-                        ) : (
-                          <input defaultValue={item.val as string} className="border border-slate-200 rounded-lg px-3 py-1.5 text-[13px] focus:outline-none focus:border-blue-500" />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              <button className="bg-blue-600 text-white font-black px-8 py-3.5 rounded-xl hover:bg-blue-700 active:scale-95 transition-all text-[13px] shadow-sm shadow-blue-600/20">Simpan Semua Pengaturan</button>
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="font-bold">Pengaturan</h3>
+              <p className="text-slate-500 mt-2">Fitur dalam development</p>
             </div>
           )}
-
         </div>
       </div>
     </div>
