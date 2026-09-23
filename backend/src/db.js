@@ -19,12 +19,15 @@ const dbWrapper = {
   prepare(sql) {
     return {
       run(...params) {
-        db.run(sql, params);
+        // sql.js requires null instead of undefined
+        const safeParams = params.map(p => p === undefined ? null : p);
+        db.run(sql, safeParams);
         saveDb();
       },
       get(...params) {
+        const safeParams = params.map(p => p === undefined ? null : p);
         const stmt = db.prepare(sql);
-        stmt.bind(params);
+        stmt.bind(safeParams);
         if (stmt.step()) {
           const row = stmt.getAsObject();
           stmt.free();
@@ -34,9 +37,10 @@ const dbWrapper = {
         return undefined;
       },
       all(...params) {
+        const safeParams = params.map(p => p === undefined ? null : p);
         const results = [];
         const stmt = db.prepare(sql);
-        stmt.bind(params);
+        stmt.bind(safeParams);
         while (stmt.step()) {
           results.push(stmt.getAsObject());
         }
@@ -243,5 +247,6 @@ function seedData() {
 module.exports = {
   loadDb,
   db: dbWrapper,
-  initialize
+  initialize,
+  seedData
 };
