@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { db } = require('../db');
-const { authenticate } = require('../middleware/auth');
+const db = require('../db');
+const { authenticate, requireAdmin } = require('../middleware/auth');
 
-// Get all tariffs
-router.get('/', (req, res) => {
+// Get all tariffs — price details are admin-only
+router.get('/', authenticate, requireAdmin, (req, res) => {
   try {
     const tariffs = db.prepare(`
       SELECT * FROM tariffs WHERE is_active = 1 ORDER BY golongan, vehicle_type
@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
 });
 
 // Create tariff
-router.post('/', authenticate, (req, res) => {
+router.post('/', authenticate, requireAdmin, (req, res) => {
   try {
     const { golongan, vehicleType, loadedTariff, emptyTariff } = req.body;
     const { v4: uuidv4 } = require('uuid');
@@ -34,7 +34,7 @@ router.post('/', authenticate, (req, res) => {
 });
 
 // Update tariff
-router.put('/:id', authenticate, (req, res) => {
+router.put('/:id', authenticate, requireAdmin, (req, res) => {
   try {
     const { loadedTariff, emptyTariff, isActive } = req.body;
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ChevronLeft, Check, Camera } from 'lucide-react'
 import { tariffFor, useApp } from '../store'
+import { tariffData } from '../data'
 import type { MobileScreen } from '../types'
 
 // ─── Vehicle Form Screen ───────────────────────────────────────────────────────
@@ -9,10 +10,15 @@ interface VehicleFormScreenProps {
 }
 
 export default function VehicleFormScreen({ go }: VehicleFormScreenProps) {
-  const { draft, patchDraft, addVehicle } = useApp()
+  const { draft, patchDraft, addVehicle, tariffs } = useApp()
   const [showModal, setShowModal] = useState(false)
   const { plate, type: vehicleType, category } = draft.vehicleForm
   const photoTaken = draft.photo
+
+  // Vehicle types come from the admin-managed master tariff so the selected
+  // type always maps 1:1 to a tariff row (e.g. Truck Besar ≠ Truck Sedang).
+  const vehicleTypes = tariffs.length > 0 ? tariffs.map(t => t.type) : tariffData.map(t => t.type)
+  const emojiFor = (t: string) => /motor/i.test(t) ? '🏍️' : /mobil/i.test(t) ? '🚗' : '🚛'
 
   // Form fields live in the store draft so they survive navigation to the
   // camera screen and back (component unmounts while off-screen).
@@ -84,13 +90,13 @@ export default function VehicleFormScreen({ go }: VehicleFormScreenProps) {
         <div>
           <label className="text-[11px] font-bold text-slate-600 mb-2 block uppercase tracking-wide">Jenis Kendaraan</label>
           <div className="grid grid-cols-3 gap-2">
-            {[{ k: 'Motor', e: '🏍️' }, { k: 'Mobil', e: '🚗' }, { k: 'Truck', e: '🚛' }].map(vt => (
+            {vehicleTypes.map(vt => (
               <button
-                key={vt.k}
-                onClick={() => setVehicleType(vt.k)}
-                className={`py-3.5 rounded-xl text-[11px] font-bold border-2 flex flex-col items-center gap-1.5 transition-all ${vehicleType === vt.k ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-100 bg-white text-slate-600 hover:border-slate-200'}`}
+                key={vt}
+                onClick={() => setVehicleType(vt)}
+                className={`py-3.5 rounded-xl text-[11px] font-bold border-2 flex flex-col items-center gap-1.5 transition-all ${vehicleType === vt ? 'border-blue-500 bg-blue-600 text-white' : 'border-slate-100 bg-white text-slate-600 hover:border-slate-200'}`}
               >
-                <span className="text-xl">{vt.e}</span>{vt.k}
+                <span className="text-xl">{emojiFor(vt)}</span>{vt}
               </button>
             ))}
           </div>

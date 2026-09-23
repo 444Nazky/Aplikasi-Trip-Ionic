@@ -1,5 +1,4 @@
 import { ChevronLeft, Lock } from 'lucide-react'
-import { officerList } from '../data'
 import { useApp } from '../store'
 import type { MobileScreen } from '../types'
 
@@ -9,8 +8,8 @@ interface OfficerSwitchScreenProps {
 }
 
 export default function OfficerSwitchScreen({ go }: OfficerSwitchScreenProps) {
-  const { officer, beginVerify } = useApp()
-  const regionOfficers = officerList.filter(o => o.region === officer.region)
+  const { officer, beginVerify, officers } = useApp()
+  const regionOfficers = officers.filter(o => o.region === officer.region)
   return (
     <div className="px-4 pt-2 pb-4 animate-fade-in">
       <button onClick={() => go('profile')} className="flex items-center gap-1.5 text-slate-500 text-[13px] mb-4 hover:text-slate-700 font-medium">

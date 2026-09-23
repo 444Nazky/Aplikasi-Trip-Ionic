@@ -39,8 +39,19 @@ export default function TripConditionScreen({ go }: TripConditionScreenProps) {
           <button
             key={opt.key}
             onClick={() => {
-              setCondition(opt.key as 'kosong' | 'muatan')
-              patchDraft({ condition: opt.key as 'kosong' | 'muatan' })
+              const next = opt.key as 'kosong' | 'muatan'
+              setCondition(next)
+              if (next === 'kosong') {
+                // Dropping any vehicles entered for a loaded trip
+                patchDraft({
+                  condition: 'kosong',
+                  vehicles: [],
+                  vehicleForm: { plate: '', type: '', category: '' },
+                  photo: false,
+                })
+              } else {
+                patchDraft({ condition: 'muatan' })
+              }
             }}
             className={`w-full rounded-3xl p-5 text-left border-2 transition-all ${condition === opt.key ? opt.key === 'muatan' ? 'border-blue-500 bg-blue-50' : 'border-slate-400 bg-slate-50' : 'border-slate-100 bg-white hover:border-slate-200'}`}
           >

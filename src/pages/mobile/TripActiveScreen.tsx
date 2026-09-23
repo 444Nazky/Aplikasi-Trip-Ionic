@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Square } from 'lucide-react'
 import { ROUTES } from '../data'
 import {
@@ -15,6 +15,7 @@ export default function TripActiveScreen({ go }: TripActiveScreenProps) {
 
   const route = ROUTES.find(r => r.code === draft.routeCode) ?? ROUTES[0]
   const [startedAt, setStartedAt] = useState<number>(() => draft.startedAt ?? Date.now())
+  const finishingRef = useRef(false)
   const [elapsed, setElapsed] = useState(() =>
     Math.floor((Date.now() - (draft.startedAt ?? Date.now())) / 1000),
   )
@@ -47,6 +48,10 @@ export default function TripActiveScreen({ go }: TripActiveScreenProps) {
   const etaMinutes = Math.max(0, Math.ceil((totalSec - elapsed) / 60))
 
   const finish = () => {
+    // Guard against double-tap creating duplicate trips
+    if (finishingRef.current) return
+    finishingRef.current = true
+
     const vehicles = draft.vehicles
     const total = vehicles.reduce((sum, v) => sum + v.tariff, 0)
     const isMuatan = draft.condition === 'muatan'

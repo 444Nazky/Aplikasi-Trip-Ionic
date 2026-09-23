@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { ChevronLeft, Lock } from 'lucide-react'
-import { officerList } from '../data'
 import { useApp } from '../store'
 import { loginWithPin } from '../../services/auth'
 import type { MobileScreen } from '../types'
@@ -11,9 +10,9 @@ interface PinVerifyScreenProps {
 }
 
 export default function PinVerifyScreen({ go }: PinVerifyScreenProps) {
-  const { officer, pendingOfficerId, verifyIntent, setOfficerId, clearVerify } = useApp()
+  const { officer, officers, pendingOfficerId, verifyIntent, setOfficerId, clearVerify } = useApp()
   const target = pendingOfficerId != null
-    ? officerList.find(o => o.id === pendingOfficerId) ?? officer
+    ? officers.find(o => o.id === pendingOfficerId) ?? officer
     : officer
   const [digits, setDigits] = useState<string[]>([])
   const [error, setError] = useState(false)

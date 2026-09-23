@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { db } = require('../db');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, requireAdmin } = require('../middleware/auth');
 
-// Get all officers
-router.get('/', authenticate, (req, res) => {
+// Get all officers — officer database is admin-only
+router.get('/', authenticate, requireAdmin, (req, res) => {
   try {
     const officers = db.prepare(`
       SELECT o.id, o.name, o.region_id, o.is_active, r.name as region_name, r.code as region_code
@@ -20,7 +20,7 @@ router.get('/', authenticate, (req, res) => {
 });
 
 // Create officer
-router.post('/', authenticate, (req, res) => {
+router.post('/', authenticate, requireAdmin, (req, res) => {
   try {
     const { name, pin, regionId } = req.body;
     const { v4: uuidv4 } = require('uuid');
@@ -40,7 +40,7 @@ router.post('/', authenticate, (req, res) => {
 });
 
 // Update officer PIN
-router.put('/:id/pin', authenticate, (req, res) => {
+router.put('/:id/pin', authenticate, requireAdmin, (req, res) => {
   try {
     const { pin } = req.body;
     const hashedPin = bcrypt.hashSync(pin, 10);
@@ -53,7 +53,7 @@ router.put('/:id/pin', authenticate, (req, res) => {
 });
 
 // Toggle officer status
-router.put('/:id/status', authenticate, (req, res) => {
+router.put('/:id/status', authenticate, requireAdmin, (req, res) => {
   try {
     const { isActive } = req.body;
     db.prepare(`UPDATE officers SET is_active = ? WHERE id = ?`).run(isActive ? 1 : 0, req.params.id);

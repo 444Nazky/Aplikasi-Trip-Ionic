@@ -2,6 +2,7 @@
 // Handles trip data synchronization between mobile app and backend
 
 import { api } from './api'
+import { ensureBackendSession } from './auth'
 import type { Trip } from '../pages/store'
 
 const SYNC_QUEUE_KEY = 'trip.syncQueue.v1'
@@ -60,7 +61,7 @@ export function getPendingCount(): number {
 
 // ─── Trip Sync ────────────────────────────────────────────────────────────────
 
-async function syncTrip(trip: Trip): Promise<SyncResult> {
+async function postTripToServer(trip: Trip): Promise<SyncResult> {
   // Transform app trip to backend format
   const payload = {
     statusMuatan: trip.load === 'Ada Muatan' ? 'muatan' : 'kosong',
@@ -102,6 +103,23 @@ async function syncTrip(trip: Trip): Promise<SyncResult> {
   }
 
   return { id: trip.id, success: true }
+}
+
+async function syncTrip(trip: Trip): Promise<SyncResult> {
+  // The login screen never talks to the backend, so make sure a JWT exists
+  // before posting (otherwise POST /trips 401s forever).
+  if (!(await ensureBackendSession())) {
+    return { id: trip.id, success: false, error: 'Tidak ada sesi backend' }
+  }
+
+  let result = await postTripToServer(trip)
+
+  // Token expired or rejected mid-flight — api cleared it on 401; re-auth once
+  if (result.error?.code === '401' && (await ensureBackendSession())) {
+    result = await postTripToServer(trip)
+  }
+
+  return result
 }
 
 // ─── Background Sync ──────────────────────────────────────────────────────────
@@ -161,7 +179,12 @@ export async function processSyncQueue(): Promise<SyncResult[]> {
 
 // ─── Auto Sync on App Start ───────────────────────────────────────────────────
 
+let initialized = false
+
 export async function initializeSync() {
+  if (initialized) return
+  initialized = true
+
   const queue = loadQueue()
   if (queue.length === 0) return
 
