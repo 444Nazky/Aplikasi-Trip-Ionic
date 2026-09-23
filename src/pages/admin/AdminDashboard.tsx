@@ -80,11 +80,16 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     if (editTarIdx !== null) { ns[editTarIdx] = row; saveTariffs(ns) }
 
     if (serverState === 'online') {
-      const ok = row.id
-        ? await updateTariff(row)
-        : (row.id = await createTariff(row)) !== null
+      let ok = false
+      if (row.id) {
+        ok = await updateTariff(row)
+      } else {
+        const newId = await createTariff(row)
+        ok = newId !== null
+        if (newId) row.id = newId
+        else row.id = undefined
+      }
       if (!ok) {
-        if (row.id === undefined) row.id = undefined
         setServerState('offline')
         showToast('Server gagal — perubahan tersimpan lokal', 'error')
       }
