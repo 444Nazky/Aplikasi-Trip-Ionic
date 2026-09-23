@@ -1,181 +1,165 @@
 # Trip Angkutan
 
-Trip Angkutan is an Indonesian-language, local-first mobile application for recording transportation trips and vehicles. It is built with Ionic Angular and Capacitor and supports offline data capture, GPS coordinates, photos, local tariff calculation, trip history, and later synchronization with a REST API.
+Aplikasi mobile recording trips dan kendaraan transportasi berbahasa Indonesia, bersifat local-first. Dibangun dengan Ionic Angular dan Capacitor.
 
-## Features
+## Screenshots
 
-- Six-digit PIN authentication with device identification
-- Home dashboard with user, region, connectivity, and trip summaries
-- Loaded and empty-trip recording
-- GPS capture for trip and vehicle records
-- Vehicle data capture, including license plate, classification, type, photo, location, and tariff
-- Local trip and vehicle persistence using Ionic Storage
-- Trip history and trip detail views
-- Automatic and manual synchronization when the device is online
-- Pending-sync indicators for locally stored trips
-- Camera, geolocation, network status, and persistent device preferences through Capacitor
+Tambahkan screenshot di folder `screenshots/` dan referensi di sini.
 
-## Technology Stack
+## Fitur Utama
 
-- Angular 22
-- Ionic Angular 9
-- Capacitor 7
-- TypeScript 6
-- RxJS 7
-- Ionic Storage with IndexedDB or SQLite backing
-- Angular ESLint
-- Vitest and jsdom for the configured test environment
+| Modul | Deskripsi |
+|-------|-----------|
+| **Autentikasi PIN** | Login 6 digit dengan identifikasi perangkat unik |
+| **Dashboard Home** | Ringkasan user, region, konektivitas, dan trip |
+| **Recording Trip** | Pembuatan trip muatan (berat/kosong) dengan GPS capture |
+| **Input Kendaraan** | Data kendaraan: plat nomor, klasifikasi, tipe, foto, lokasi, tarif |
+| **Riwayat Trip** | Histori trip dengan status sinkronisasi |
+| **Sinkronisasi** | Upload otomatis saat online + manual |
+| **Offline-First** | Data tersimpan lokal menggunakan IndexedDB/SQLite |
+| **Native Features** | Kamera, GPS, network status via Capacitor |
 
-## Project Structure
+## Tech Stack
 
-```text
+| Teknologi | Versi | Fungsi |
+|-----------|--------|---------|
+| Angular | 22 | Framework utama |
+| Ionic Angular | 9 | UI components & mobile-first design |
+| Capacitor | 7 | Akses native features (camera, geolocation) |
+| TypeScript | 6 | Bahasa pemrograman |
+| RxJS | 7 | Reactive state management |
+| Ionic Storage | - | Penyimpanan lokal (IndexedDB/SQLite) |
+| ESLint | - | Code linting |
+| Vitest | - | Unit testing |
+
+## Struktur Proyek
+
+```
 src/
-├── app/
-│   ├── core/
-│   │   ├── constants/       Application constants and API configuration
-│   │   ├── guards/          Route guards
-│   │   ├── services/        Authentication, API, storage, sync, and native services
-│   │   └── utils/           Shared utilities
-│   ├── data/
-│   │   └── models/          Trip, vehicle, user, tariff, and region models
-│   └── features/
-│       ├── auth/            Splash and login pages
-│       ├── home/            Dashboard
-│       ├── profile/         User profile and logout
-│       └── trip/            Trip creation, vehicle input, history, and details
-├── environments/            Development and production environment values
-├── theme/                   Ionic theme variables
-├── global.scss              Global styles
-└── main.ts                  Angular application bootstrap
+├── App.tsx                  # Root component
+├── main.tsx                # Entry point
+├── index.html              # HTML template
+├── global.scss              # Global styles
+├── global.d.ts              # Type declarations
+├── vite-env.d.ts           # Vite environment types
+├── environments/
+│   ├── environment.ts       # Development config
+│   └── environment.prod.ts   # Production config
+├── theme/
+│   └── variables.scss       # Ionic theme variables
+├── pages/                   # Page components
+└── assets/                  # Static assets
 ```
 
-Native Android configuration is stored under `android/`. Capacitor web output is generated in `www/`.
+**Native Android:**
+```
+android/                     # Project Android Studio
+www/                         # Capacitor web build output
+```
 
-## Requirements
+## Prerequisites
 
-- Node.js 22 or a Node.js version supported by Angular 22
-- npm
-- Android Studio, Android SDK, and a Java 21-compatible JDK for native Android development
-- Android SDK 36 for the checked-in Android project
-- Access to the configured Trip Angkutan API
-- A device or emulator with camera and location support for native feature testing
+- **Node.js** 22+
+- **npm** (terinstall dengan Node.js)
+- **Android Studio** + SDK 36
+- **JDK** 21+ (untuk build Android)
+- **API Backend** - konfigurasi ada di `src/environments/environment.ts`
+- **Perangkat dengan kamera & GPS** untuk testing native features
 
-The Android project uses Gradle 8.14.3 through the included Gradle wrapper.
-
-## Installation
-
-Install the locked npm dependencies:
+## Instalasi
 
 ```bash
+# Clone repo
+git clone https://github.com/444Nazky/Aplikasi-Trip-Ionic.git
+cd Aplikasi-Trip-Ionic
+
+# Install dependencies
 npm ci
+
+# Setup Capacitor
+npx cap sync android
 ```
-
-The API base URL is configured in `src/app/core/constants/app.constants.ts` and is currently:
-
-```text
-https://api.tripangkut.com/v1
-```
-
-The development and production environment files use the same API URL. Change the configuration before deploying to an environment that requires a different backend.
 
 ## Development
 
-Start the Angular development server:
-
 ```bash
+# Start dev server (http://localhost:5173)
 npm start
-```
 
-Create a development build and watch for changes:
-
-```bash
+# Watch mode untuk development
 npm run watch
+
+# Lint code
+npm run lint
+
+# Unit tests
+npm test
+
+# Type check & build validation
+npm run build
 ```
 
 ## Build
 
-Create a production build:
-
 ```bash
+# Production build (output ke www/)
 npm run build
-```
 
-The build output is written to `www/`, which is the Capacitor web directory configured in `capacitor.config.ts`.
-
-## Android
-
-Synchronize the current web build with the checked-in Android project:
-
-```bash
-npm run build
+# Sync ke Android project
 npx cap sync android
-```
 
-Open the project in Android Studio:
-
-```bash
+# Open di Android Studio
 npx cap open android
 ```
 
-Build and run it on a connected device or emulator from Android Studio, or use:
+## Android
 
 ```bash
+# Run langsung ke device/emulator
 npx cap run android
 ```
 
-The configured Android application ID is `com.plantation.tripangkut`, and the display name is `Trip Angkutan`.
+**App ID:** `com.plantation.tripangkut`
+**Display Name:** `Trip Angkutan`
+**Package:** `android/` (Android Studio project)
 
-Camera and location features require the relevant native permissions and device capabilities. Verify platform permissions before release builds.
+## Alur Aplikasi
 
-## Validation
-
-Run ESLint:
-
-```bash
-npm run lint
+```
+1. Splash Screen → cek session lokal
+2. Login PIN 6 digit → device ID di-generate otomatis
+3. Home Dashboard → ringkasan & navigasi
+4. Buat Trip → input data + GPS + kendaraan + tarif
+5. Simpan lokal → IndexedDB/SQLite
+6. History → lihat trip + status sync
+7. Sinkronisasi → upload ke API saat online
 ```
 
-Run the configured unit-test command:
+## Data Lokal
 
-```bash
-npm test
-```
+**Database:** `tripangkut_db`
 
-Run the Angular application build as an additional type and template check:
+| Data | Keterangan |
+|------|------------|
+| User session | Token & data user |
+| Trips | Semua trip dengan nested vehicles |
+| Vehicles | Data kendaraan per trip |
+| Tariffs | Cache tarif offline |
+| Device ID | Identifikasi unik perangkat |
 
-```bash
-npm run build
-```
+Trip tersimpan lokal sampai berhasil di-sync ke server. Status: `pending`, `synced`, `failed`.
 
-## Application Flow
+## API
 
-1. The app opens on the splash screen and restores a locally stored session when available.
-2. Users without a valid local session enter a six-digit PIN.
-3. Authenticated users can start a trip from the Home tab.
-4. Trip and vehicle records are saved locally before synchronization.
-5. Completed trips appear in History with their synchronization status.
-6. The synchronization service attempts to upload pending trips automatically and can also be triggered manually.
+**Base URL:** `https://api.tripangkut.com/v1`
 
-## Local Data
+Endpoint utama:
+- `POST /auth/login` - Login dengan PIN hash
+- `POST /auth/refresh` - Refresh token
+- `GET/POST /trips` - CRUD trips
+- `GET /vehicles` - Data kendaraan
+- `GET /tariffs` - Daftar tarif
 
-The Ionic Storage database is named `tripangkut_db`. The application stores:
+## Lisensi
 
-- The current user and session data
-- Trips and their nested vehicle records
-- A local tariff cache
-
-Trips are retained locally so they remain available without a network connection. A pending trip is one that has not been marked synchronized or permanently failed.
-
-## Configuration Files
-
-- `angular.json`: Angular build, serve, test, and lint configuration
-- `ionic.config.json`: Ionic project metadata
-- `capacitor.config.ts`: Capacitor application identity and web directory
-- `src/environments/environment.ts`: Development environment values
-- `src/environments/environment.prod.ts`: Production environment values
-- `tsconfig.json`: Shared strict TypeScript settings
-- `eslint.config.js`: ESLint configuration
-
-## License
-
-No license file is included in this repository. Confirm the project license before distributing the application or its source code.
+MIT License
