@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://api.tripangkut.com/v1'
+  // Backend API URL - update to your production server
+  apiBaseUrl: 'https://api.tripangkut.com/api'
 };

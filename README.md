@@ -86,6 +86,29 @@ npx cap sync android
 # Start dev server (http://localhost:5173)
 npm start
 
+# Start both frontend + backend together
+./start-dev.sh
+
+# Start backend separately
+cd backend && npm start
+```
+
+### Backend Development
+
+Backend Express.js di folder `backend/`:
+- Port: 3000
+- Database: SQLite (otomatis dibuat)
+- API prefix: `/api`
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+### Frontend Development
+
+```bash
 # Watch mode untuk development
 npm run watch
 
@@ -151,16 +174,68 @@ Trip tersimpan lokal sampai berhasil di-sync ke server. Status: `pending`, `sync
 
 ## API
 
-**Base URL:** `https://api.tripangkut.com/v1`
+**Base URL Development:** `http://localhost:3000/api`
+**Base URL Production:** `https://api.tripangkut.com/api`
 
-Endpoint utama:
-- `POST /auth/login` - Login dengan PIN hash
-- `POST /auth/refresh` - Refresh token
-- `GET/POST /trips` - CRUD trips
-- `GET /vehicles` - Data kendaraan
-- `GET /tariffs` - Daftar tarif
+### Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/login` | Login dengan officer ID + PIN |
+| GET | `/auth/verify` | Verify JWT token |
+| GET | `/auth/officers/:regionCode` | List officers by region |
+| GET/POST | `/trips` | CRUD trips |
+| GET | `/trips/:id` | Trip detail |
+| POST | `/trips/:tripId/vehicles` | Add vehicle to trip |
+| GET | `/vehicles` | Data kendaraan |
+| GET | `/tariffs` | Daftar tarif |
+| GET | `/officers` | Daftar officer |
+| GET | `/regions` | Daftar region |
+| GET | `/reports` | Laporan |
+| GET | `/api/health` | Health check |
+
+### Authentication
+
+Backend menggunakan JWT. Login endpoint:
+```json
+POST /auth/login
+Body: { "officerId": 1, "pin": "123456" }
+Response: { "token": "...", "officer": {...} }
+```
+
+Frontend kirim token di header:
+```
+Authorization: Bearer <token>
+```
+
+## Sinkronisasi Data
+
+### Cara Kerja
+
+1. **Trip dibuat** → data disimpan ke localStorage + ditambahkan ke sync queue
+2. **Sync queue diproses** → HTTP POST ke backend saat:
+   - App di foreground + ada koneksi internet
+   - Tab/browser mendapat fokus (focus event)
+   - Tombol "Sync" ditekan manual
+3. **Retry otomatis** → max 3x dengan delay 5 detik
+4. **Offline mode** → data tetap tersimpan, sync saat online
+
+### Status Sinkronisasi
+
+- `pending` - Di queue, belum diupload
+- `syncing` - Sedang diupload
+- `synced` - Berhasil diupload ke server
+- `failed` - Gagal setelah max retry
+
+### File Sync Service
+
+```
+src/services/
+├── api.ts      # HTTP client dengan auth
+├── auth.ts     # Login/logout + token management
+└── sync.ts     # Queue-based background sync
+```
 
 ## Lisensi
 
 MIT License
-test

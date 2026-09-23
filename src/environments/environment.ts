@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://api.tripangkut.com/v1'
+  // Untuk development: http://localhost:3000
+  // Untuk production: https://api.tripangkut.com
+  apiBaseUrl: 'http://localhost:3000/api'
 };
 
 /*
