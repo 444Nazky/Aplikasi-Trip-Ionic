@@ -32,6 +32,7 @@ export interface Draft {
   routeCode: string | null
   condition: 'kosong' | 'muatan' | null
   vehicles: VehicleEntry[]
+  vehicleForm: { plate: string; type: string; category: string }
   photo: boolean
   startedAt: number | null
 }
@@ -64,7 +65,14 @@ interface StoreValue {
   clearVerify: () => void
 }
 
-const emptyDraft: Draft = { routeCode: null, condition: null, vehicles: [], photo: false, startedAt: null }
+const emptyDraft: Draft = {
+  routeCode: null,
+  condition: null,
+  vehicles: [],
+  vehicleForm: { plate: '', type: '', category: '' },
+  photo: false,
+  startedAt: null,
+}
 
 const StoreCtx = createContext<StoreValue | null>(null)
 

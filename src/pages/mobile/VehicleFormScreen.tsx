@@ -10,18 +10,21 @@ interface VehicleFormScreenProps {
 
 export default function VehicleFormScreen({ go }: VehicleFormScreenProps) {
   const { draft, patchDraft, addVehicle } = useApp()
-  const [vehicleType, setVehicleType] = useState('')
-  const [category, setCategory] = useState('')
-  const [plate, setPlate] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const { plate, type: vehicleType, category } = draft.vehicleForm
   const photoTaken = draft.photo
+
+  // Form fields live in the store draft so they survive navigation to the
+  // camera screen and back (component unmounts while off-screen).
+  const setField = (p: Partial<{ plate: string; type: string; category: string }>) =>
+    patchDraft({ vehicleForm: { ...draft.vehicleForm, ...p } })
+  const setPlate = (v: string) => setField({ plate: v })
+  const setVehicleType = (v: string) => setField({ type: v })
+  const setCategory = (v: string) => setField({ category: v })
 
   const pushVehicle = () => {
     addVehicle({ plate, type: vehicleType, category, tariff: tariffFor(vehicleType).loadedNum })
-    setPlate('')
-    setVehicleType('')
-    setCategory('')
-    patchDraft({ photo: false })
+    patchDraft({ vehicleForm: { plate: '', type: '', category: '' }, photo: false })
   }
 
   return (
