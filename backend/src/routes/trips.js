@@ -39,14 +39,16 @@ router.post('/:tripId/vehicles', authenticate, (req, res) => {
     const { tripId } = req.params;
     const { noPolisi, vehicleType, golongan, hasLoad, tariffAmount, fotoPath, latitude, longitude } = req.body;
 
-    // Find tariff
-    let tariff = null;
-    if (golongan === 'Eksternal') {
-      tariff = db.prepare(`
-        SELECT * FROM tariffs
-        WHERE golongan = ? AND vehicle_type = ? AND is_active = 1
-      `).get(golongan, vehicleType);
-    }
+    // Prices are owned by admins: the server computes the amount from the
+    // master tariff whenever the vehicle type matches. The client-sent
+    // amount is only a fallback (legacy/offline data).
+    const masterTariff = db.prepare(`
+      SELECT * FROM tariffs WHERE vehicle_type = ? AND is_active = 1 LIMIT 1
+    `).get(vehicleType);
+
+    const amount = masterTariff
+      ? (hasLoad ? masterTariff.loaded_tariff : masterTariff.empty_tariff)
+      : (tariffAmount || 0);
 
     const vehicleId = uuidv4();
     db.prepare(`
@@ -54,7 +56,7 @@ router.post('/:tripId/vehicles', authenticate, (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       vehicleId, noPolisi, vehicleType, golongan, tripId,
-      hasLoad ? 1 : 0, tariff?.id || null, tariffAmount || 0,
+      hasLoad ? 1 : 0, masterTariff ? masterTariff.id : null, amount,
       fotoPath, latitude, longitude
     );
 

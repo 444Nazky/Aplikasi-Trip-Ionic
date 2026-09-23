@@ -39,7 +39,7 @@ export interface Draft {
 }
 
 type Officer = (typeof officerList)[number]
-export type TariffRow = (typeof tariffData)[number]
+export type TariffRow = (typeof tariffData)[number] & { id?: string }
 export type VerifyIntent = 'switch' | 'security'
 
 interface StoreValue {

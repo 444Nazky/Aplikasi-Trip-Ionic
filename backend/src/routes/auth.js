@@ -31,6 +31,64 @@ router.post('/admin-login', (req, res) => {
   }
 });
 
+// Member/officer login with username/password
+// Maps to seeded officer data: budi=1, andi=2, siti=3, rizky=4, dewi=5
+const OFFICER_USERNAME_MAP = {
+  'budi': 1,
+  'andi': 2,
+  'siti': 3,
+  'rizky': 4,
+  'dewi': 5
+};
+
+router.post('/member-login', (req, res) => {
+  try {
+    const { username, password } = req.body || {};
+    const memberPass = process.env.MEMBER_PASSWORD || 'budi123';
+
+    if (username !== 'budi' || password !== memberPass) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const officerId = OFFICER_USERNAME_MAP[username.toLowerCase()];
+    if (!officerId) {
+      return res.status(401).json({ error: 'Officer not found' });
+    }
+
+    // Get officer from database
+    const officer = db.prepare(`
+      SELECT o.*, r.name as region_name, r.code as region_code
+      FROM officers o
+      JOIN regions r ON o.region_id = r.id
+      WHERE o.id = ?
+    `).get(String(officerId));
+
+    if (!officer) {
+      return res.status(401).json({ error: 'Officer not found in database' });
+    }
+
+    const token = jwt.sign(
+      { officerId: officer.id, regionId: officer.region_id, role: 'officer' },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      token,
+      officer: {
+        id: parseInt(officer.id),
+        name: officer.name,
+        regionId: officer.region_id,
+        regionName: officer.region_name,
+        regionCode: officer.region_code
+      }
+    });
+  } catch (error) {
+    console.error('Member login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
 // Login with PIN
 router.post('/login', (req, res) => {
   try {
