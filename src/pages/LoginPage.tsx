@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Truck, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle, ChevronDown } from 'lucide-react'
+import { memberLogin } from '../services/auth'
 
 interface LoginPageProps {
   onLogin: (userType: 'admin' | 'member') => void
@@ -18,7 +19,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   const [loading, setLoading] = useState(false)
   const [adminMode, setAdminMode] = useState(false)
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setError(false)
 
     const userType = adminMode ? 'admin' : 'member'
@@ -26,7 +27,13 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
     if (username === creds.username && password === creds.password) {
       setLoading(true)
-      setTimeout(() => onLogin(userType), 800)
+
+      // For member login, also get JWT from backend for sync
+      if (userType === 'member') {
+        await memberLogin(username, password)
+      }
+
+      onLogin(userType)
     } else {
       setError(true)
       setTimeout(() => setError(false), 2500)

@@ -70,7 +70,19 @@ async function loadDb() {
     initialize();
   }
 
+  migrate();
   return dbWrapper;
+}
+
+// Schema migrations for databases created before the column existed.
+// Runs on every boot; swallows the "duplicate column" error when present.
+function migrate() {
+  try {
+    db.run(`ALTER TABLE tariffs ADD COLUMN description TEXT DEFAULT ''`);
+    saveDb();
+  } catch (e) {
+    // column already exists — nothing to do
+  }
 }
 
 function initialize() {
