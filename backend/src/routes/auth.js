@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('../db');
+const { db } = require('../db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'trip-angkut-secret-key';
 
