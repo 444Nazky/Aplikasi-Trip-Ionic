@@ -38,7 +38,7 @@ export interface Draft {
   startedAt: number | null
 }
 
-type Officer = (typeof officerList)[number]
+type Officer = (typeof officerList)[number] & { regions?: string[] }
 export type TariffRow = (typeof tariffData)[number] & { id?: string }
 export type VerifyIntent = 'switch' | 'security'
 

@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react'
-import { Truck, Lock, LayoutGrid, Table2, Users, BarChart2, Settings, LogOut, Plus, Pencil, Trash2, Download, ChevronLeft, ChevronDown, Check, X } from 'lucide-react'
+import { Truck, Lock, LayoutGrid, Table2, Hash, Users, BarChart2, Settings, LogOut, Plus, Pencil, Trash2, Download, ChevronLeft, ChevronDown, Check, X } from 'lucide-react'
 import { useApp } from '../store'
 import { ensureAdminBackendSession } from '../../services/auth'
-import { fetchTariffs, createTariff, updateTariff, deleteTariff } from '../../services/tariffs'
+import { fetchTariffs, createTariff, updateTariff, deleteTariff, fetchRegionTariffs, upsertRegionTariff, type RegionTariffRow } from '../../services/tariffs'
 import { fetchTrips, fetchTripReports, type BackendTrip, type ReportTrip } from '../../services/trips'
+import { fetchPlates, createPlate, updatePlate, deletePlate, type PlateRecord, type PlateStatus } from '../../services/plates'
+import { fetchRegions, type Region } from '../../services/regions'
+import { api } from '../../services/api'
 import type { AdminTab } from '../types'
 
 interface TariffRow { id?: string; golongan: string; type: string; loaded: string; loadedNum: number; empty: string; emptyNum: number; desc: string }
-interface Officer { id: number; name: string; initials: string; region: string; pin: string; status: string; device: string; trips: number; lastActive: string; joined: string }
+interface Officer { id: number; name: string; initials: string; region: string; regions?: string[]; pin: string; status: string; device: string; trips: number; lastActive: string; joined: string }
+interface BackendOfficerRow { id: string; name: string; region_id: string; regions: Region[] }
 interface Toast { msg: string; type: 'success' | 'error' }
 
 export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
@@ -23,6 +27,15 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [reportTrips, setReportTrips] = useState<ReportTrip[]>([])
   const [reportState, setReportState] = useState<'idle' | 'loading' | 'ready' | 'offline'>('idle')
   const [openTripId, setOpenTripId] = useState<string | null>(null)
+  // Registrasi plat & konfigurasi tarif region
+  const [regions, setRegions] = useState<Region[]>([])
+  const [regionTariffs, setRegionTariffs] = useState<RegionTariffRow[]>([])
+  const [plates, setPlates] = useState<PlateRecord[]>([])
+  const [plateState, setPlateState] = useState<'idle' | 'loading' | 'ready' | 'offline'>('idle')
+  const [plateForm, setPlateForm] = useState({ plate: '', owner: '', originRegionId: '', status: 'internal' as PlateStatus })
+  const [editPlateId, setEditPlateId] = useState<string | null>(null)
+  const [backendOfficers, setBackendOfficers] = useState<BackendOfficerRow[]>([])
+  const [editRegions, setEditRegions] = useState<string[]>([])
   const [editTarIdx, setEditTarIdx] = useState<number | null>(null)
   const [addTar, setAddTar] = useState(false)
   const [tarForm, setTarForm] = useState({ golongan: '', type: '', loaded: '', loadedNum: 0, empty: '', emptyNum: 0, desc: '' })
@@ -39,6 +52,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   }
 
   const fmtRp = (n: number) => `Rp ${n.toLocaleString('id-ID')}`
+  const regionCodes = regions.length > 0 ? regions.map(r => r.code) : ['BADAU', 'ENTIKONG']
 
   // On mount: get an admin JWT and load Master Tarif + Trips from server.
   // Server data wins; localStorage stays as the offline fallback/cache.
@@ -62,6 +76,22 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         setServerTrips(tripsData)
       }
 
+      // Registrasi plat + tarif region + daftar region + petugas (backend)
+      const regs = await fetchRegions()
+      if (!alive) return
+      if (regs) setRegions(regs)
+
+      const rts = await fetchRegionTariffs()
+      if (!alive) return
+      if (rts) setRegionTariffs(rts)
+
+      const pls = await fetchPlates()
+      if (!alive) return
+      if (pls) { setPlates(pls); setPlateState('ready') } else setPlateState('offline')
+
+      const offs = await api.get<BackendOfficerRow[]>('/officers')
+      if (alive && offs.ok && offs.data) setBackendOfficers(offs.data)
+
       setServerState('online')
     })()
     return () => { alive = false }
@@ -83,6 +113,36 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     if (tab === 'reports' && reportState === 'idle') void loadReports()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, reportState])
+
+  // Master Plat: lazy-load saat tab dibuka (fallback kalau mount tadi offline)
+  const loadPlates = async () => {
+    setPlateState('loading')
+    const ok = await ensureAdminBackendSession()
+    if (!ok) { setPlateState('offline'); return }
+    const [pls, regs] = await Promise.all([fetchPlates(), fetchRegions()])
+    if (pls === null) { setPlateState('offline'); return }
+    setPlates(pls)
+    if (regs) setRegions(regs)
+    setPlateState('ready')
+  }
+
+  useEffect(() => {
+    if (tab === 'plates' && plateState === 'idle') void loadPlates()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, plateState])
+
+  // Tarif region: ambil konfigurasi saat tab Master Tarif dibuka (kalau belum ada)
+  useEffect(() => {
+    if (tab === 'tariff' && regionTariffs.length === 0) {
+      void (async () => {
+        if (await ensureAdminBackendSession()) {
+          const rt = await fetchRegionTariffs()
+          if (rt) setRegionTariffs(rt)
+        }
+      })()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, regionTariffs.length])
 
   // Tariff CRUD — local state always updates (works offline), server is
   // pushed to best-effort when connected; failure flips us to 'offline'.
@@ -150,6 +210,54 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     showToast('Tarif dihapus')
   }
 
+  // Registrasi plat — local state selalu ikut, server best-effort
+  const resetPlateForm = () => {
+    setPlateForm({ plate: '', owner: '', originRegionId: '', status: 'internal' })
+    setEditPlateId(null)
+  }
+
+  const handleSavePlate = async () => {
+    if (!plateForm.plate.trim()) return showToast('Nomor plat wajib diisi!', 'error')
+    const input = {
+      plate: plateForm.plate.trim().toUpperCase(),
+      owner: plateForm.owner.trim() || undefined,
+      originRegionId: plateForm.originRegionId || null,
+      status: plateForm.status,
+    }
+
+    const okEdit = editPlateId ? await updatePlate(editPlateId, input) : null
+    if (editPlateId) {
+      if (!okEdit) return showToast('Server gagal — plat tidak terupdate', 'error')
+    } else {
+      const id = await createPlate(input)
+      if (!id) return showToast('Server gagal daftar plat (duplikat/offline?)', 'error')
+    }
+
+    const fresh = await fetchPlates()
+    if (fresh) setPlates(fresh)
+    resetPlateForm()
+    showToast(editPlateId ? 'Plat diupdate' : 'Plat terdaftar')
+  }
+
+  const handleDelPlate = async (id: string) => {
+    if (!confirm('Hapus plat ini?')) return
+    const ok = await deletePlate(id)
+    if (!ok) return showToast('Server gagal — plat tidak terhapus', 'error')
+    setPlates(plates.filter(p => p.id !== id))
+    if (editPlateId === id) resetPlateForm()
+    showToast('Plat dihapus')
+  }
+
+  // Tarif region — simpan konfigurasi (lokal + eksternal) ke server
+  const handleSaveRegionTariff = async (rt: RegionTariffRow) => {
+    const [a, b] = await Promise.all([
+      upsertRegionTariff({ regionId: rt.id, tariffType: 'lokal', nominalTariff: rt.lokal_tariff ?? 0, isActive: !!rt.lokal_active }),
+      upsertRegionTariff({ regionId: rt.id, tariffType: 'eksternal', nominalTariff: rt.eksternal_tariff ?? 0, isActive: !!rt.eksternal_active }),
+    ])
+    if (!a || !b) return showToast('Server gagal — tarif region tidak tersimpan', 'error')
+    showToast(`Tarif region ${rt.code} diupdate`)
+  }
+
   // Officer CRUD
   const handleAddOff = () => {
     if (!offForm.name || !offForm.pin) return showToast('Lengkapi form!', 'error')
@@ -161,12 +269,24 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     showToast('Petugas ditambahkan')
   }
 
-  const handleUpdOff = () => {
+  const handleUpdOff = async () => {
     if (!editOff) return
     const initials = editOff.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    const chosen = editRegions.length > 0 ? editRegions : [editOff.region]
     const ns = [...officers]
-    if (editOffIdx !== null) ns[editOffIdx] = { ...editOff, initials }
+    if (editOffIdx !== null) ns[editOffIdx] = { ...editOff, region: chosen[0], regions: chosen, initials }
     saveOfficers(ns)
+
+    // Many-to-many: sinkron daftar wilayah ke server (petugas yang terdaftar di backend)
+    const be = backendOfficers.find(b => String(b.id) === String(editOff.id) || b.name === editOff.name)
+    if (be) {
+      const ids = chosen.map(c => regions.find(r => r.code === c)?.id).filter(Boolean) as string[]
+      if (ids.length > 0) {
+        const res = await api.put(`/officers/${be.id}/regions`, { regionIds: ids })
+        if (!res.ok) showToast('Wilayah tersimpan lokal — gagal sinkron ke server', 'error')
+      }
+    }
+
     setEditOffIdx(null)
     setEditOff(null)
     showToast('Petugas diupdate')
@@ -191,6 +311,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const navItems: { key: AdminTab; label: string; Icon: any }[] = [
     { key: 'overview', label: 'Dashboard', Icon: LayoutGrid },
     { key: 'tariff', label: 'Master Tarif', Icon: Table2 },
+    { key: 'plates', label: 'Master Plat', Icon: Hash },
     { key: 'officers', label: 'Petugas', Icon: Users },
     { key: 'reports', label: 'Laporan', Icon: BarChart2 },
     { key: 'settings', label: 'Pengaturan', Icon: Settings },
@@ -214,7 +335,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         </div>
         <nav className="flex-1 p-3 space-y-0.5">
           {navItems.map(({ key, label, Icon }) => (
-            <button key={key} onClick={() => { setTab(key); setEditTarIdx(null); setAddTar(false); setEditOffIdx(null); setAddOff(false) }}
+            <button key={key} onClick={() => { setTab(key); setEditTarIdx(null); setAddTar(false); setEditOffIdx(null); setAddOff(false); setEditPlateId(null) }}
               className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left text-[13px] ${tab === key ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}>
               <Icon size={16} />{label}
             </button>
@@ -362,6 +483,142 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             </div>
           )}
 
+          {tab === 'plates' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-black text-slate-900 text-lg">Master Plat</h3>
+                  <p className="text-slate-500 text-[12px]">Registrasi nomor plat — plat terdaftar sebagai <b>internal</b> tidak dikenakan tarif saat discan petugas</p>
+                </div>
+                <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full ${
+                  plateState === 'ready' ? 'bg-emerald-50 text-emerald-600'
+                  : plateState === 'offline' ? 'bg-amber-50 text-amber-600'
+                  : 'bg-slate-100 text-slate-500'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    plateState === 'ready' ? 'bg-emerald-500'
+                    : plateState === 'offline' ? 'bg-amber-500'
+                    : 'bg-slate-400 animate-pulse'
+                  }`} />
+                  {plateState === 'ready' ? 'Server: Tersambung'
+                  : plateState === 'offline' ? 'Server: Offline'
+                  : 'Memuat...'}
+                </span>
+              </div>
+
+              {/* Form tambah / edit plat */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm max-w-3xl">
+                <h3 className="font-bold mb-4">{editPlateId ? 'Edit Plat' : 'Daftar Plat Baru'}</h3>
+                <div className="grid grid-cols-4 gap-4 mb-4">
+                  <div><label className="text-[11px] text-slate-500 block mb-1">No. Plat *</label>
+                    <input value={plateForm.plate} onChange={e => setPlateForm({...plateForm, plate: e.target.value.toUpperCase()})} placeholder="B 1234 XY"
+                      className="w-full border rounded-xl px-3 py-2 text-sm font-mono tracking-wide" /></div>
+                  <div><label className="text-[11px] text-slate-500 block mb-1">Pemilik (opsional)</label>
+                    <input value={plateForm.owner} onChange={e => setPlateForm({...plateForm, owner: e.target.value})} placeholder="Nama pemilik"
+                      className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
+                  <div><label className="text-[11px] text-slate-500 block mb-1">Region Asal (opsional)</label>
+                    <select value={plateForm.originRegionId} onChange={e => setPlateForm({...plateForm, originRegionId: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm">
+                      <option value="">—</option>
+                      {regions.map(r => <option key={r.id} value={r.id}>{r.name} ({r.code})</option>)}
+                    </select></div>
+                  <div><label className="text-[11px] text-slate-500 block mb-1">Status</label>
+                    <select value={plateForm.status} onChange={e => setPlateForm({...plateForm, status: e.target.value as PlateStatus})} className="w-full border rounded-xl px-3 py-2 text-sm">
+                      <option value="internal">internal</option>
+                      <option value="lokal">lokal</option>
+                      <option value="eksternal">eksternal</option>
+                    </select></div>
+                </div>
+                <div className="flex gap-3">
+                  {editPlateId && <button onClick={resetPlateForm} className="flex-1 py-3 rounded-xl border text-slate-700 font-semibold">Batal</button>}
+                  <button onClick={() => void handleSavePlate()} className={`${editPlateId ? 'flex-1' : 'w-48'} py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700`}>
+                    {editPlateId ? 'Update' : 'Daftarkan'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Tabel plat terdaftar */}
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase">
+                    <tr><th className="text-left p-4">No. Plat</th><th className="text-left p-4">Pemilik</th><th className="text-left p-4">Region Asal</th><th className="text-left p-4">Status</th><th className="text-right p-4">Aksi</th></tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {plateState === 'loading' ? (
+                      <tr><td colSpan={5} className="p-6 text-center text-slate-400 animate-pulse">Memuat plat...</td></tr>
+                    ) : plates.length === 0 ? (
+                      <tr><td colSpan={5} className="p-6 text-center text-slate-400">Belum ada plat terdaftar</td></tr>
+                    ) : plates.map(p => (
+                      <tr key={p.id} className="hover:bg-slate-50">
+                        <td className="p-4 font-mono font-bold tracking-wide">{p.plate}</td>
+                        <td className="p-4">{p.owner || <span className="text-slate-300">—</span>}</td>
+                        <td className="p-4">{p.origin_region_code || <span className="text-slate-300">—</span>}</td>
+                        <td className="p-4">
+                          <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${
+                            p.status === 'internal' ? 'bg-slate-800 text-white'
+                            : p.status === 'lokal' ? 'bg-blue-100 text-blue-700'
+                            : 'bg-amber-100 text-amber-700'
+                          }`}>{p.status}</span>
+                        </td>
+                        <td className="p-4 text-right">
+                          <button onClick={() => { setEditPlateId(p.id); setPlateForm({ plate: p.plate, owner: p.owner || '', originRegionId: p.origin_region_id || '', status: p.status }) }}
+                            className="text-blue-600 font-bold text-sm mr-4">Edit</button>
+                          <button onClick={() => void handleDelPlate(p.id)} className="text-red-500 font-bold text-sm">Hapus</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Tarif Region — konfigurasi penarifan plat per region (lokal cadangan & eksternal) */}
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100">
+                  <p className="font-bold text-slate-800">Tarif Region (Penarifan Plat)</p>
+                  <p className="text-[11px] text-slate-400">Kendaraan <b>lokal</b> saat ini Rp 0 (cadangan kebijakan — bisa diubah tanpa ganti kode), <b>eksternal</b> menyesuaikan region pos pemeriksaan.</p>
+                </div>
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase">
+                    <tr><th className="text-left p-4">Region</th><th className="text-left p-4">Tarif Lokal (Rp)</th><th className="text-left p-4">Tarif Eksternal (Rp)</th><th className="text-right p-4">Aksi</th></tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {regionTariffs.length === 0 ? (
+                      <tr><td colSpan={4} className="p-6 text-center text-slate-400">Belum ada data region dari server</td></tr>
+                    ) : regionTariffs.map((rt, i) => (
+                      <tr key={rt.id} className="hover:bg-slate-50">
+                        <td className="p-4 font-bold">{rt.name} <span className="text-slate-400 font-mono text-[11px] font-normal">{rt.code}</span></td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2">
+                            <input type="number" min={0} value={rt.lokal_tariff ?? 0}
+                              onChange={e => { const v = [...regionTariffs]; v[i] = { ...rt, lokal_tariff: parseInt(e.target.value) || 0 }; setRegionTariffs(v) }}
+                              className="w-28 border rounded-lg px-2 py-1.5 text-[13px]" disabled={!rt.lokal_active && (rt.lokal_tariff ?? 0) === 0} />
+                            <label className="flex items-center gap-1 text-[11px] text-slate-500 font-semibold">
+                              <input type="checkbox" checked={!!rt.lokal_active}
+                                onChange={e => { const v = [...regionTariffs]; v[i] = { ...rt, lokal_active: e.target.checked ? 1 : 0 }; setRegionTariffs(v) }} />Aktif
+                            </label>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2">
+                            <input type="number" min={0} value={rt.eksternal_tariff ?? 0}
+                              onChange={e => { const v = [...regionTariffs]; v[i] = { ...rt, eksternal_tariff: parseInt(e.target.value) || 0 }; setRegionTariffs(v) }}
+                              className="w-28 border rounded-lg px-2 py-1.5 text-[13px]" />
+                            <label className="flex items-center gap-1 text-[11px] text-slate-500 font-semibold">
+                              <input type="checkbox" checked={!!rt.eksternal_active}
+                                onChange={e => { const v = [...regionTariffs]; v[i] = { ...rt, eksternal_active: e.target.checked ? 1 : 0 }; setRegionTariffs(v) }} />Aktif
+                            </label>
+                          </div>
+                        </td>
+                        <td className="p-4 text-right">
+                          <button onClick={() => void handleSaveRegionTariff(rt)} className="text-blue-600 font-bold text-sm">Simpan</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
           {tab === 'officers' && (
             <div className="space-y-4">
               <div className="flex justify-end">
@@ -377,8 +634,9 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                     <div><label className="text-[11px] text-slate-500 block mb-1">Nama</label><input value={offForm.name} onChange={e => setOffForm({...offForm, name: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
                     <div><label className="text-[11px] text-slate-500 block mb-1">Wilayah</label>
                       <select value={offForm.region} onChange={e => setOffForm({...offForm, region: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm">
-                        <option value="BADAU">BADAU</option><option value="ENTIKONG">ENTIKONG</option>
+                        {regionCodes.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
+                      <p className="text-[10px] text-slate-400 mt-1">Bisa tambah wilayah lain lewat tombol Edit</p>
                     </div>
                   </div>
                   <div className="mb-4"><label className="text-[11px] text-slate-500 block mb-1">PIN</label><input type="password" maxLength={6} value={offForm.pin} onChange={e => setOffForm({...offForm, pin: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
@@ -394,10 +652,16 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                   <h3 className="font-bold mb-4">Edit Petugas</h3>
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div><label className="text-[11px] text-slate-500 block mb-1">Nama</label><input value={editOff.name} onChange={e => setEditOff({...editOff, name: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
-                    <div><label className="text-[11px] text-slate-500 block mb-1">Wilayah</label>
-                      <select value={editOff.region} onChange={e => setEditOff({...editOff, region: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm">
-                        <option value="BADAU">BADAU</option><option value="ENTIKONG">ENTIKONG</option>
-                      </select>
+                    <div><label className="text-[11px] text-slate-500 block mb-1">Wilayah (boleh lebih dari satu — many-to-many)</label>
+                      <div className="flex flex-wrap gap-x-4 gap-y-2 pt-1.5">
+                        {regionCodes.map(c => (
+                          <label key={c} className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-600">
+                            <input type="checkbox" checked={editRegions.includes(c)}
+                              onChange={e => setEditRegions(prev => e.target.checked ? [...prev, c] : prev.filter(x => x !== c))} />
+                            {c}
+                          </label>
+                        ))}
+                      </div>
                     </div>
                   </div>
                   <div className="mb-4"><label className="text-[11px] text-slate-500 block mb-1">PIN Baru</label><input type="password" maxLength={6} value={editOff.pin} onChange={e => setEditOff({...editOff, pin: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-sm" /></div>
@@ -408,7 +672,7 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 </div>
               )}
 
-              {['BADAU', 'ENTIKONG'].map(region => (
+              {regionCodes.map(region => (
                 <div key={region} className="bg-white rounded-2xl shadow-sm overflow-hidden">
                   <div className="px-6 py-3 bg-[#0F172A] text-white font-bold flex items-center gap-2"><Lock size={14} className="text-blue-400" />{region} ({officers.filter(o => o.region === region).length} petugas)</div>
                   <table className="w-full text-sm">
@@ -416,14 +680,14 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                       <tr><th className="text-left p-4">Nama</th><th className="text-left p-4">Status</th><th className="text-left p-4">Aksi</th></tr>
                     </thead>
                     <tbody className="divide-y">
-                      {officers.filter(o => o.region === region).map((o, _, arr) => {
+                      {officers.filter(o => (o.regions && o.regions.length > 0 ? o.regions : [o.region]).includes(region)).map((o, _, arr) => {
                         const i = officers.indexOf(o)
                         return (
                           <tr key={o.id} className="hover:bg-slate-50">
                             <td className="p-4 font-bold">{o.name}</td>
                             <td className="p-4"><span className={`px-2 py-1 rounded-full text-[10px] font-bold ${o.status === 'Aktif' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>{o.status}</span></td>
                             <td className="p-4">
-                              <button onClick={() => { setEditOffIdx(i); setEditOff(o) }} className="text-blue-600 font-bold text-sm mr-3">Edit</button>
+                              <button onClick={() => { setEditOffIdx(i); setEditOff(o); setEditRegions(o.regions && o.regions.length > 0 ? o.regions : [o.region]) }} className="text-blue-600 font-bold text-sm mr-3">Edit</button>
                               <button onClick={() => toggleOffStatus(i)} className="text-amber-500 font-bold text-sm mr-3">{o.status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'}</button>
                               <button onClick={() => handleDelOff(i)} className="text-red-500 font-bold text-sm">Hapus</button>
                             </td>

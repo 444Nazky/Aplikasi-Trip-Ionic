@@ -150,9 +150,17 @@ function seedSpecTables() {
   // Backfill many-to-many dari officers.region_id (INSERT OR IGNORE = idempotent)
   db.run(`INSERT OR IGNORE INTO officer_regions (officer_id, region_id) SELECT id, region_id FROM officers`);
 
-  // Setiap region dapat pasangan tarif lokal + eksternal (default 0, aktif)
-  const regions = db.prepare(`SELECT id FROM regions`).all();
-  for (const r of regions) {
+  // Setiap region dapat pasangan tarif lokal + eksternal (default 0, aktif).
+  // Catatan: di dalam modul ini `db` = Database sql.js mentah (bukan dbWrapper),
+  // jadi pakai API statement sql.js (step/getAsObject/free), bukan .all().
+  const stmt = db.prepare(`SELECT id FROM regions`);
+  const regionIds = [];
+  while (stmt.step()) {
+    regionIds.push(stmt.getAsObject());
+  }
+  stmt.free();
+
+  for (const r of regionIds) {
     for (const jenis of ['lokal', 'eksternal']) {
       db.run(
         `INSERT OR IGNORE INTO region_tariffs (id, region_id, tariff_type, nominal_tariff, is_active) VALUES (?, ?, ?, 0, 1)`,
