@@ -77,26 +77,32 @@ router.post('/:tripId/vehicles', authenticate, (req, res) => {
   }
 });
 
-// Get trips for officer
+// Get trips — officers see their region, admins see everything
 router.get('/', authenticate, (req, res) => {
   try {
-    const { regionId } = req.officer;
-    const { date, status } = req.query;
+    const { regionId, role } = req.officer;
+    const { date } = req.query;
+
+    const isAdmin = role === 'admin';
 
     let query = `
       SELECT t.*,
+        o.name as officer_name,
+        r.code as region_code,
         (SELECT COUNT(*) FROM trip_vehicles tv WHERE tv.trip_id = t.id) as vehicle_count
       FROM trips t
-      WHERE t.region_id = ?
+      LEFT JOIN officers o ON t.officer_id = o.id
+      LEFT JOIN regions r ON t.region_id = r.id
+      WHERE ${isAdmin ? '1 = 1' : 't.region_id = ?'}
     `;
-    const params = [regionId];
+    const params = isAdmin ? [] : [regionId];
 
     if (date) {
       query += ` AND DATE(t.created_at) = ?`;
       params.push(date);
     }
 
-    query += ` ORDER BY t.created_at DESC LIMIT 50`;
+    query += ` ORDER BY t.created_at DESC LIMIT 100`;
 
     const trips = db.prepare(query).all(...params);
     res.json(trips);

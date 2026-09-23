@@ -52,11 +52,12 @@ router.get('/trips', authenticate, requireAdmin, (req, res) => {
     const { startDate, endDate, route, golongan, status } = req.query;
 
     let query = `
-      SELECT t.*, r.name as region_name,
+      SELECT t.*, r.name as region_name, o.name as officer_name,
         (SELECT COUNT(*) FROM trip_vehicles tv WHERE tv.trip_id = t.id) as vehicle_count,
         (SELECT SUM(v.tariff_amount) FROM vehicles v WHERE v.trip_id = t.id) as trip_revenue
       FROM trips t
       JOIN regions r ON t.region_id = r.id
+      LEFT JOIN officers o ON t.officer_id = o.id
       WHERE 1=1
     `;
     const params = [];
@@ -84,6 +85,19 @@ router.get('/trips', authenticate, requireAdmin, (req, res) => {
     query += ` ORDER BY t.created_at DESC LIMIT 200`;
 
     const trips = db.prepare(query).all(...params);
+
+    // Attach full vehicle detail per trip (plat, jenis, kategori, tarif)
+    const vehStmt = db.prepare(`
+      SELECT no_polisi, vehicle_type, golongan, has_load, tariff_amount
+      FROM vehicles WHERE trip_id = ?
+    `);
+    for (const t of trips) {
+      t.vehicles = vehStmt.all(t.id);
+      if (t.trip_revenue == null) {
+        t.trip_revenue = t.vehicles.reduce((s, v) => s + (v.tariff_amount || 0), 0);
+      }
+    }
+
     res.json(trips);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch report' });

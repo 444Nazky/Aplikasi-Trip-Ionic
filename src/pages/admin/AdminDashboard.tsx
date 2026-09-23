@@ -238,15 +238,16 @@ export default function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                 </div>
                 <table className="w-full text-[13px]">
                   <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase">
-                    <tr><th className="text-left p-4">No Trip</th><th className="text-left p-4">Rute</th><th className="text-left p-4">Status</th><th className="text-left p-4">Tanggal</th></tr>
+                    <tr><th className="text-left p-4">No Trip</th><th className="text-left p-4">Rute</th><th className="text-left p-4">Petugas</th><th className="text-left p-4">Status</th><th className="text-left p-4">Tanggal</th></tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
                     {serverTrips.length === 0 ? (
-                      <tr><td colSpan={4} className="p-8 text-center text-slate-400">Belum ada trip dari server</td></tr>
+                      <tr><td colSpan={5} className="p-8 text-center text-slate-400">Belum ada trip dari server</td></tr>
                     ) : serverTrips.slice(0, 10).map(t => (
                       <tr key={t.id} className="hover:bg-slate-50">
                         <td className="p-4 font-mono text-slate-600">{t.no_trip}</td>
                         <td className="p-4 font-bold">{t.route_from} → {t.route_to}</td>
+                        <td className="p-4">{t.officer_name || t.officer_id}</td>
                         <td className="p-4"><span className={`px-2 py-1 rounded-full text-[10px] font-bold ${t.status_muatan === 'muatan' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>{t.status_muatan}</span></td>
                         <td className="p-4 text-slate-500">{t.created_at}</td>
                       </tr>
