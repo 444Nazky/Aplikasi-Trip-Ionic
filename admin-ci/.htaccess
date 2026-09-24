@@ -1,0 +1,16 @@
+RewriteEngine On
+
+# CodeIgniter 2.x standard rules
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]
+
+# Static assets - tidak perlu melalui index.php
+RewriteCond %{REQUEST_URI} ^/assets/
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^assets/(.*)$ assets/$1 [L]
+
+# Jika ada static build React di folder www/
+RewriteCond %{REQUEST_URI} ^/
+RewriteCond %{DOCUMENT_ROOT}/www%{REQUEST_URI} -f
+RewriteRule ^(.*)$ /www/$1 [L]
