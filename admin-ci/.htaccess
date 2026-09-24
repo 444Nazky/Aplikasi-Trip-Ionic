@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Serve real files directly
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# SPA routing - all paths go to index.html
+RewriteRule ^.*$ index.html [L]

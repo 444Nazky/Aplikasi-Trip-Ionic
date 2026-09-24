@@ -1,46 +1,22 @@
 <?php
 /**
- * CodeIgniter 2.2.4 Entry Point
+ * Trip Angkutan Admin Dashboard
+ * React SPA served by CodeIgniter-style entry point
  *
- * Simple entry point yang serve React static build
- * Compatible PHP 5.6+
+ * API Backend: http://localhost:3000/api
  */
 
-// Define APPPATH
-define('APPPATH', dirname(__FILE__) . '/application/');
-define('FCPATH', dirname(__FILE__) . '/');
+// Entry point - serve React build
+$static_path = __DIR__ . '/index.html';
 
-// Load React static build jika ada
-$static_index = FCPATH . '../www/index.html';
-
-if (file_exists($static_index)) {
-    // Set headers
+if (file_exists($static_path)) {
+    // CORS headers untuk dev
+    header('Access-Control-Allow-Origin: *');
     header('Content-Type: text/html; charset=utf-8');
-    header('Cache-Control: public, max-age=3600');
-
-    // Output static HTML
-    readfile($static_index);
+    header('Cache-Control: no-cache');
+    readfile($static_path);
     exit;
 }
 
-// Fallback: Simple message jika static build tidak ada
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard - Setup Required</title>
-    <style>
-        body { font-family: -apple-system, sans-serif; max-width: 600px; margin: 100px auto; padding: 20px; text-align: center; }
-        h1 { color: #333; }
-        p { color: #666; }
-        code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; }
-    </style>
-</head>
-<body>
-    <h1>Admin Dashboard</h1>
-    <p>Build React app terlebih dahulu:</p>
-    <p><code>npm run build</code></p>
-    <p>Output akan di <code>www/</code> folder.</p>
-</body>
-</html>
-<?php
+http_response_code(404);
+echo "Build not found. Run: npm run build";
