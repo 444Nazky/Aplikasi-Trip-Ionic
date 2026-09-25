@@ -6,6 +6,9 @@ if (file_exists($static_path)) {
     header('Content-Type: text/html; charset=utf-8');
     $html = file_get_contents($static_path);
     $html = str_replace('<html', '<html data-admin', $html);
+    // Admin dashboard adalah app CodeIgniter, bukan aplikasi Ionic —
+    // sembunyikan favicon & icon bawaan build Ionic agar tidak ikut tampil.
+    $html = preg_replace('/<link\s+rel="icon"[^>]*>\s*/i', '', $html);
     echo $html;
     exit;
 }
