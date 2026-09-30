@@ -1,0 +1,1 @@
+import{n as F}from"./main-T6AMLVJ6.js";var t=F(`Network`,{web:()=>import(`./chunk-BdARhmXY.js`).then(r=>new r.NetworkWeb)});export{t as Network};
