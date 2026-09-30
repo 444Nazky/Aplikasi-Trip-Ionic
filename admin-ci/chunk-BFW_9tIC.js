@@ -1,1 +1,0 @@
-import{n as F}from"./main-ZS4I2C3B.js";var t=F(`Network`,{web:()=>import(`./chunk-DsmvlY0_.js`).then(r=>new r.NetworkWeb)});export{t as Network};

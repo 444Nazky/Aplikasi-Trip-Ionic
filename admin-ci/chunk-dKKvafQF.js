@@ -1,1 +1,0 @@
-import{n as F}from"./main-WEKY2PEQ.js";var t=F(`Network`,{web:()=>import(`./chunk-jc4N8soP.js`).then(r=>new r.NetworkWeb)});export{t as Network};

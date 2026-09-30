@@ -1,0 +1,1 @@
+import{n as F}from"./main-GFMDQ4GP.js";var t=F(`Network`,{web:()=>import(`./chunk-SfbQCBUF.js`).then(r=>new r.NetworkWeb)});export{t as Network};

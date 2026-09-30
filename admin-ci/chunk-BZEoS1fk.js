@@ -1,1 +1,0 @@
-import{n as F}from"./main-TSKDPQNN.js";var t=F(`Network`,{web:()=>import(`./chunk-goQViwmw.js`).then(r=>new r.NetworkWeb)});export{t as Network};
