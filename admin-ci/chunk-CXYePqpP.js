@@ -1,0 +1,1 @@
+import{n as F}from"./main-AOVCQCBR.js";var t=F(`Network`,{web:()=>import(`./chunk-Bxcgk4Ah.js`).then(r=>new r.NetworkWeb)});export{t as Network};
