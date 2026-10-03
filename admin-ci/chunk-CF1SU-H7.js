@@ -1,0 +1,1 @@
+import{n as F}from"./main-JJ5XDQCT.js";var t=F(`Network`,{web:()=>import(`./chunk-iD-vy_Sn.js`).then(r=>new r.NetworkWeb)});export{t as Network};
