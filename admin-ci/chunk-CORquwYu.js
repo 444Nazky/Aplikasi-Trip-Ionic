@@ -1,0 +1,1 @@
+import"./main-2THYZO74.js";import{r as T}from"./chunk-D5tTonY_.js";var t=T(`Network`,{web:()=>import(`./chunk-CwpKaBNk.js`).then(r=>new r.NetworkWeb)});export{t as Network};
