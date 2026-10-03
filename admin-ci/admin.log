@@ -1,0 +1,13 @@
+nohup: ignoring input
+[Fri Oct  2 15:54:37 2026] PHP Warning:  Module "pdo_mysql" is already loaded in Unknown on line 0
+[Fri Oct  2 15:54:37 2026] PHP Warning:  Module "mysqli" is already loaded in Unknown on line 0
+[Fri Oct  2 15:54:37 2026] PHP 8.5.10 Development Server (http://localhost:8000) started
+[Fri Oct  2 15:54:39 2026] [::1]:55072 Accepted
+[Fri Oct  2 15:54:39 2026] [::1]:55072 [200]: GET /
+[Fri Oct  2 15:54:39 2026] [::1]:55072 Closing
+[Fri Oct  2 16:23:48 2026] [::1]:50398 Accepted
+[Fri Oct  2 16:23:48 2026] [::1]:50398 [200]: GET /
+[Fri Oct  2 16:23:48 2026] [::1]:50398 Closing
+[Fri Oct  2 16:24:06 2026] [::1]:54112 Accepted
+[Fri Oct  2 16:24:06 2026] [::1]:54112 [200]: GET /
+[Fri Oct  2 16:24:06 2026] [::1]:54112 Closing
