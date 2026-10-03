@@ -1,0 +1,1 @@
+import"./main-PTYQVBEQ.js";import{r as T}from"./chunk-D5tTonY_.js";var t=T(`Network`,{web:()=>import(`./chunk-DH4_U__0.js`).then(r=>new r.NetworkWeb)});export{t as Network};
