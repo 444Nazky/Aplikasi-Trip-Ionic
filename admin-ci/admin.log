@@ -1,0 +1,115 @@
+nohup: ignoring input
+[Sat Oct  3 11:04:34 2026] PHP Warning:  Module "pdo_mysql" is already loaded in Unknown on line 0
+[Sat Oct  3 11:04:34 2026] PHP Warning:  Module "mysqli" is already loaded in Unknown on line 0
+[Sat Oct  3 11:04:34 2026] PHP 8.5.10 Development Server (http://localhost:8000) started
+[Sat Oct  3 11:04:36 2026] [::1]:36970 Accepted
+[Sat Oct  3 11:04:36 2026] [::1]:36970 [200]: GET /
+[Sat Oct  3 11:04:36 2026] [::1]:36970 Closing
+[Sat Oct  3 11:04:53 2026] [::1]:49874 Accepted
+[Sat Oct  3 11:04:53 2026] [::1]:49874 [200]: GET /
+[Sat Oct  3 11:04:53 2026] [::1]:49874 Closing
+[Sat Oct  3 11:04:53 2026] [::1]:49882 Accepted
+[Sat Oct  3 11:04:53 2026] [::1]:49882 [200]: GET /main-JJ5XDQCT.js
+[Sat Oct  3 11:04:53 2026] [::1]:49882 Closing
+[Sat Oct  3 11:04:53 2026] [::1]:46878 Accepted
+[Sat Oct  3 11:04:53 2026] [::1]:46878 [200]: GET /styles-D57FIYU2.css
+[Sat Oct  3 11:04:53 2026] [::1]:46878 Closing
+[Sat Oct  3 11:04:53 2026] [::1]:46890 Accepted
+[Sat Oct  3 11:04:53 2026] [::1]:46890 [200]: GET /Assets/karyamasv.svg
+[Sat Oct  3 11:04:53 2026] [::1]:46890 Closing
+[Sat Oct  3 11:04:53 2026] [::1]:46898 Accepted
+[Sat Oct  3 11:04:53 2026] [::1]:46898 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__984b6622_4732_48a1_8411_aeb8e57749bb__0
+[Sat Oct  3 11:04:53 2026] [::1]:46898 Closing
+[Sat Oct  3 11:04:53 2026] [::1]:46908 Accepted
+[Sat Oct  3 11:04:53 2026] [::1]:46908 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__1d0d595f_b94d_44df_8825_0d2702859de8__1
+[Sat Oct  3 11:04:53 2026] [::1]:46908 Closing
+[Sat Oct  3 11:04:53 2026] [::1]:46922 Accepted
+[Sat Oct  3 11:04:53 2026] [::1]:46922 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__99a739e4_5be0_4f15_9790_90d069ea5592__2
+[Sat Oct  3 11:04:53 2026] [::1]:46922 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:46932 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:46932 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__dfdde028_21af_4814_9905_81f57b86fe2f__3
+[Sat Oct  3 11:04:54 2026] [::1]:46932 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:46934 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:46934 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__ea9120b4_3c71_4ad4_a0f9_dcd9f917302f__4
+[Sat Oct  3 11:04:54 2026] [::1]:46934 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:46950 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:46950 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__813d3eb8_60b0_4ffb_aa6b_ef6d3381d4db__5
+[Sat Oct  3 11:04:54 2026] [::1]:46950 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:46960 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:46960 [200]: GET /chunk-CF1SU-H7.js
+[Sat Oct  3 11:04:54 2026] [::1]:46960 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:46962 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:46962 [200]: GET /main-JJ5XDQCT.js
+[Sat Oct  3 11:04:54 2026] [::1]:46962 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:46976 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:46976 [200]: GET /main-JJ5XDQCT.js
+[Sat Oct  3 11:04:54 2026] [::1]:46976 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:46986 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:46986 [200]: GET /main-JJ5XDQCT.js
+[Sat Oct  3 11:04:54 2026] [::1]:46986 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:46992 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:46992 [200]: GET /main-JJ5XDQCT.js
+[Sat Oct  3 11:04:54 2026] [::1]:46992 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:46994 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:46994 [200]: GET /main-JJ5XDQCT.js
+[Sat Oct  3 11:04:54 2026] [::1]:46994 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:46998 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:46998 [200]: GET /main-JJ5XDQCT.js
+[Sat Oct  3 11:04:54 2026] [::1]:46998 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:47008 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:47008 [200]: GET /styles-D57FIYU2.css
+[Sat Oct  3 11:04:54 2026] [::1]:47008 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:47014 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:47014 [200]: GET /styles-D57FIYU2.css
+[Sat Oct  3 11:04:54 2026] [::1]:47014 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:47030 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:47030 [200]: GET /styles-D57FIYU2.css
+[Sat Oct  3 11:04:54 2026] [::1]:47030 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:47032 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:47032 [200]: GET /styles-D57FIYU2.css
+[Sat Oct  3 11:04:54 2026] [::1]:47032 Closing
+[Sat Oct  3 11:04:54 2026] [::1]:47040 Accepted
+[Sat Oct  3 11:04:54 2026] [::1]:47040 [200]: GET /styles-D57FIYU2.css
+[Sat Oct  3 11:04:54 2026] [::1]:47040 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47050 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47050 [200]: GET /styles-D57FIYU2.css
+[Sat Oct  3 11:04:55 2026] [::1]:47050 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47058 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47058 [200]: GET /chunk-iD-vy_Sn.js
+[Sat Oct  3 11:04:55 2026] [::1]:47058 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47068 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47068 [200]: GET /Assets/karyamasv.svg
+[Sat Oct  3 11:04:55 2026] [::1]:47068 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47070 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47070 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__84237044_55b1_4c0d_bbee_11d4ac5e3260__0
+[Sat Oct  3 11:04:55 2026] [::1]:47070 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47082 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47082 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__0a4f5bca_9590_441d_bb92_9272ff7f1e48__1
+[Sat Oct  3 11:04:55 2026] [::1]:47082 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47084 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47084 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__4b798dcd_b461_4581_b34e_b9aae5aa8bb4__2
+[Sat Oct  3 11:04:55 2026] [::1]:47084 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47092 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47092 [200]: GET /Assets/karyamasv.svg
+[Sat Oct  3 11:04:55 2026] [::1]:47092 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47100 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47100 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__901cf6c1_4e47_4e78_8973_796fab77690c__0
+[Sat Oct  3 11:04:55 2026] [::1]:47100 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47102 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47102 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__8182a75f_1b68_4b5f_ba7d_9f9d008578ec__1
+[Sat Oct  3 11:04:55 2026] [::1]:47102 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47112 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47112 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__0f31b330_4f43_4c0c_a9b4_52cc20ebc58e__2
+[Sat Oct  3 11:04:55 2026] [::1]:47112 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47120 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47120 [200]: GET /Assets/karyamasv.svg
+[Sat Oct  3 11:04:55 2026] [::1]:47120 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47132 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47132 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__ea7efcc6_e316_409a_b86f_0b5cc50831ac__0
+[Sat Oct  3 11:04:55 2026] [::1]:47132 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47142 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47142 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__b08e857e_0d52_42a3_80a0_697eaf8aec5b__1
+[Sat Oct  3 11:04:55 2026] [::1]:47142 Closing
+[Sat Oct  3 11:04:55 2026] [::1]:47156 Accepted
+[Sat Oct  3 11:04:55 2026] [::1]:47156 [200]: GET /hybridaction/zybTrackerStatisticsAction?data=%7B%7D&__callback__=__cb__zybTrackerStatisticsAction__ff278fc0_c582_41d3_b0ed_ed742be8948b__2
+[Sat Oct  3 11:04:55 2026] [::1]:47156 Closing

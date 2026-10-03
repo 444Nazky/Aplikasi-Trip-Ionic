@@ -1,0 +1,4 @@
+nohup: ignoring input
+npm notice run ionic-app-base@0.0.0 start
+npm notice run ng serve
+sh: line 1: ng: command not found

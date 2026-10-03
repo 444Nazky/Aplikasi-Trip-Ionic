@@ -1,0 +1,6 @@
+nohup: ignoring input
+npm notice run trip-angkut-api@1.0.0 start
+npm notice run node src/index.js
+Database loaded
+Server listening on 0.0.0.0:3000
+Health check: /api/health
