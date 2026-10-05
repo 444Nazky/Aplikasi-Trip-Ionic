@@ -1,4 +1,4 @@
-import { Geolocation, type Position } from '@capacitor/geolocation'
+import { Network, getCurrentPosition, Geolocation, type Position } from '@capacitor/geolocation'
 import type { Trip } from '../pages/store'
 
 const SYNC_QUEUE_KEY = 'trip.syncQueue.v1'
@@ -31,7 +31,7 @@ function loadQueue(): SyncItem[] {
 
 function saveQueue(queue: SyncItem[]) {
   try {
-    localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue)
+    localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue))
   } catch { /* quota */
   }
 }
@@ -41,12 +41,13 @@ export function addToSyncQueue(trip: Trip) {
   if (queue.some(q => q.trip.id === trip.id)) return
   queue.push({ trip, attempts: 0, createdAt: Date.now() })
   saveQueue(queue)
-}
+  notifyListeners()
+  if (navigator.onLine) scheduleFlush(400)
 }
 
 export function removeFromSyncQueue(tripId: string) {
   saveQueue(loadQueue().filter(q => q.trip.id !== tripId))
-  syncListeners(loadQueue().length)
+  notifyListeners()
 }
 
 export function getSyncQueue(): SyncItem[] {
@@ -110,17 +111,16 @@ async function postTripToServer(trip: Trip): Promise<SyncResult> {
   }
 
   const form = new FormData()
-  form.append('data', JSON.stringify(base)
+  form.append('data', JSON.stringify(base))
   photos.forEach((blob, i) => form.append('photos', blob, `photo-${i}.jpg`)
   const res = await fetch(`${getApiBaseUrl()}/trips/sync`, { method: 'POST', body: form })
+  const json = await res.json()
   if (!res.ok) return { id: trip.id, success: false, code: String(res.status) }
   return { id: trip.id, success: true }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let syncInProgress = false
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let syncListeners: (count: number) => void = () => {}
+let syncListeners: ((count: number) => void = () => {}
 
 // ─── Read-only display ─────────────────────────────
 export function getApiBaseUrl(): string {
