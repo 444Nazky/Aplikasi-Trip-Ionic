@@ -3,7 +3,6 @@
     {
       "source": "functions",
       "codebase": "default",
-      "disallowLegacyRuntimeConfig": true,
       "ignore": [
         "node_modules",
         ".git",
@@ -11,9 +10,7 @@
         "firebase-debug.*.log",
         "*.local"
       ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint"
-      ]
+      "predeploy": []
     }
   ],
   "hosting": {
@@ -25,8 +22,43 @@
     ],
     "rewrites": [
       {
+        "source": "/api/trips",
+        "function": "apiTrips"
+      },
+      {
+        "source": "/api/trips/**",
+        "function": "apiTripById"
+      },
+      {
+        "source": "/api/health",
+        "function": "apiHealth"
+      },
+      {
+        "source": "/api",
+        "function": "apiInfo"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Access-Control-Allow-Methods",
+            "value": "GET, POST, PUT, DELETE, OPTIONS"
+          },
+          {
+            "key": "Access-Control-Allow-Headers",
+            "value": "Content-Type, Authorization"
+          }
+        ]
       }
     ]
   }
