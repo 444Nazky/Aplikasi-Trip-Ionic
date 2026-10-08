@@ -57,6 +57,16 @@ router.post('/complete', authenticate, uploadDocumentation.array('photos', 50), 
       return res.status(400).json({ error: 'statusMuatan wajib diisi' });
     }
 
+    // IDEMPOTEN / UPSERT: klien mengirim `clientTripId` (ID trip di perangkat).
+    // Bila trip dengan id ini SUDAH ada — baik karena antrean dikirim ulang
+    // setelah timeout, maupun karena petugas MENGEDIT trip yang sudah terkirim
+    // (ganti plat / ambil ulang foto) — perbarui trip lama, JANGAN insert duplikat.
+    // Ini yang membuat hasil edit sampai ke dashboard admin.
+    const clientTripId = typeof payload.clientTripId === 'string' ? payload.clientTripId.trim() : '';
+    const existingTrip = clientTripId
+      ? db.prepare(`SELECT id, no_trip FROM trips WHERE client_trip_id = ? LIMIT 1`).get(clientTripId)
+      : undefined;
+
     const tripPhotoIndex = validPhotoIndex(payload.tripPhotoIndex, files);
     const vehiclePhotoIndexes = vehicles.map(vehicle => validPhotoIndex(vehicle.photoIndex, files));
     if (tripPhotoIndex === null || tripPhotoIndex === undefined || vehiclePhotoIndexes.some(index => index === null || index === undefined)) {
@@ -78,30 +88,16 @@ router.post('/complete', authenticate, uploadDocumentation.array('photos', 50), 
 
     const photoPaths = files.map(file => `/uploads/${file.filename}`);
 
-    const tripId = uuidv4();
-    const noTrip = generateTripNo();
-    db.prepare(`
-      INSERT INTO trips (
-        id, no_trip, officer_id, region_id, dermaga_id, status_muatan,
-        route_from, route_to, keterangan, foto_kosong_path, foto_captured_at,
-        foto_latitude, foto_longitude, started_at, completed_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      tripId, noTrip, officerId, regionId, dermagaId, payload.statusMuatan,
-      payload.routeFrom || null, payload.routeTo || null, payload.keterangan || null,
-      photoPaths[tripPhotoIndex], payload.tripPhotoCapturedAt || null,
-      numericCoordinate(payload.tripPhotoLatitude), numericCoordinate(payload.tripPhotoLongitude),
-      payload.startedAt || null, payload.completedAt || null
-    );
+    const tripId = existingTrip ? existingTrip.id : uuidv4();
+    const noTrip = existingTrip ? existingTrip.no_trip : generateTripNo();
 
-    vehicles.forEach((vehicle, index) => {
+    const insertVehicle = (vehicle, index, id) => {
       const masterTariff = db.prepare(`
         SELECT * FROM tariffs WHERE vehicle_type = ? AND is_active = 1 LIMIT 1
       `).get(vehicle.vehicleType);
       const amount = masterTariff
         ? (vehicle.hasLoad ? masterTariff.loaded_tariff : masterTariff.empty_tariff)
         : (vehicle.tariffAmount || 0);
-      const vehicleId = uuidv4();
       const photoIndex = vehiclePhotoIndexes[index];
       db.prepare(`
         INSERT INTO vehicles (
@@ -109,14 +105,55 @@ router.post('/complete', authenticate, uploadDocumentation.array('photos', 50), 
           tariff_amount, foto_path, foto_captured_at, latitude, longitude
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
-        vehicleId, vehicle.noPolisi, vehicle.vehicleType, vehicle.golongan, tripId,
+        id, vehicle.noPolisi, vehicle.vehicleType, vehicle.golongan, tripId,
         vehicle.hasLoad ? 1 : 0, masterTariff ? masterTariff.id : null, amount,
         photoPaths[photoIndex], vehicle.photoCapturedAt || null,
         numericCoordinate(vehicle.latitude), numericCoordinate(vehicle.longitude)
       );
       db.prepare(`INSERT INTO trip_vehicles (id, trip_id, vehicle_id) VALUES (?, ?, ?)`)
-        .run(uuidv4(), tripId, vehicleId);
-    });
+        .run(uuidv4(), tripId, id);
+    };
+
+    if (existingTrip) {
+      // ── PERBARUI trip yang sudah ada (edit pasca-kirim / retry) ──────────────
+      db.prepare(`
+        UPDATE trips SET
+          status_muatan = ?, route_from = ?, route_to = ?, keterangan = ?,
+          foto_kosong_path = ?, foto_captured_at = ?, foto_latitude = ?, foto_longitude = ?,
+          started_at = ?, completed_at = ?
+        WHERE id = ?
+      `).run(
+        payload.statusMuatan, payload.routeFrom || null, payload.routeTo || null, payload.keterangan || null,
+        photoPaths[tripPhotoIndex], payload.tripPhotoCapturedAt || null,
+        numericCoordinate(payload.tripPhotoLatitude), numericCoordinate(payload.tripPhotoLongitude),
+        payload.startedAt || null, payload.completedAt || null, tripId
+      );
+      // Ganti seluruh kendaraan lama dengan yang baru (foto & plat terbaru).
+      const oldVehicles = db.prepare(`SELECT vehicle_id FROM trip_vehicles WHERE trip_id = ?`).all(tripId);
+      for (const row of oldVehicles) {
+        db.prepare(`DELETE FROM trip_vehicles WHERE trip_id = ? AND vehicle_id = ?`).run(tripId, row.vehicle_id);
+        db.prepare(`DELETE FROM vehicles WHERE id = ?`).run(row.vehicle_id);
+      }
+      vehicles.forEach((vehicle, index) => insertVehicle(vehicle, index, uuidv4()));
+      return res.status(200).json({ id: tripId, noTrip, updated: true });
+    }
+
+    // ── INSERT trip baru ─────────────────────────────────────────────────────
+    db.prepare(`
+      INSERT INTO trips (
+        id, no_trip, officer_id, region_id, dermaga_id, status_muatan,
+        route_from, route_to, keterangan, foto_kosong_path, foto_captured_at,
+        foto_latitude, foto_longitude, started_at, completed_at, client_trip_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      tripId, noTrip, officerId, regionId, dermagaId, payload.statusMuatan,
+      payload.routeFrom || null, payload.routeTo || null, payload.keterangan || null,
+      photoPaths[tripPhotoIndex], payload.tripPhotoCapturedAt || null,
+      numericCoordinate(payload.tripPhotoLatitude), numericCoordinate(payload.tripPhotoLongitude),
+      payload.startedAt || null, payload.completedAt || null, clientTripId || null
+    );
+
+    vehicles.forEach((vehicle, index) => insertVehicle(vehicle, index, uuidv4()));
 
     return res.status(201).json({ id: tripId, noTrip });
   } catch (error) {

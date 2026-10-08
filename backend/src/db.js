@@ -182,6 +182,7 @@ function migrate() {
     ['trips', 'foto_longitude', 'REAL'],
     ['trips', 'started_at', 'TEXT'],
     ['trips', 'completed_at', 'TEXT'],
+    ['trips', 'client_trip_id', 'TEXT'],
     ['vehicles', 'foto_captured_at', 'TEXT'],
   ]) {
     try { db.run(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`); } catch (e) { /* already exists */ }
