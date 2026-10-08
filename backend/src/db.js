@@ -72,15 +72,20 @@ async function loadDb() {
     }
   });
 
-  if (fs.existsSync(DB_PATH)) {
-    const fileBuffer = fs.readFileSync(DB_PATH);
-    db = new SQL.Database(fileBuffer);
-  } else {
+  const fresh = !fs.existsSync(DB_PATH);
+  if (fresh) {
     db = new SQL.Database();
     initialize();
+  } else {
+    const fileBuffer = fs.readFileSync(DB_PATH);
+    db = new SQL.Database(fileBuffer);
   }
 
   migrate();
+  if (fresh) {
+    seedData();
+    saveDb();
+  }
   return dbWrapper;
 }
 
@@ -473,6 +478,7 @@ function initialize() {
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL UNIQUE,
       code TEXT NOT NULL UNIQUE,
+      password TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
@@ -605,8 +611,6 @@ function initialize() {
     )
   `);
 
-  seedData();
-  saveDb();
 }
 
 function seedData() {
