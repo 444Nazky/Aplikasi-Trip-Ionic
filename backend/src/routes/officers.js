@@ -70,10 +70,9 @@ router.get('/my-region', authenticate, (req, res) => {
       if (me) myRegions = [{ region_id: me.region_id }];
     }
     const myRegionIds = new Set(myRegions.map(r => String(r.region_id)));
-    if (myRegionIds.size === 0) return res.json([]);
 
     const officers = db.prepare(`
-      SELECT o.id, o.name, o.username, o.region_id, o.is_active, r.name as region_name, r.code as region_code
+      SELECT o.id, o.name, o.username, o.region_id, o.is_active, o.pin AS pin_hash, r.name as region_name, r.code as region_code
       FROM officers o
       JOIN regions r ON o.region_id = r.id
       ORDER BY o.name
@@ -96,12 +95,22 @@ router.get('/my-region', authenticate, (req, res) => {
 
     const out = [];
     for (const o of officers) {
+      // Prioritas 1: regions dari junction officer_regions
       let regions = regionsStmt.all(String(o.id));
-      if (regions.length === 0) regions = [{ id: o.region_id, name: o.region_name, code: o.region_code }];
+      // Prioritas 2: fallback ke kolom region_id officer (untuk petugas baru)
+      if (regions.length === 0) {
+        regions = [{ id: o.region_id, name: o.region_name, code: o.region_code }];
+      }
       o.regions = regions;
       o.dermagas = dermagaStmt.all(String(o.id));
-      // Tampilkan petugas yang berbagi minimal satu wilayah dengan peminta
-      if (regions.some(r => myRegionIds.has(String(r.id)))) out.push(o);
+
+      // Sertakan petugas yang berbagi region DENGAN PEMINTA
+      // ATAU petugas yang aktif (agar admin baru bisa login)
+      const sharesRegion = regions.some(r => myRegionIds.has(String(r.id)));
+      const isActiveOfficer = o.is_active === 1;
+      if (sharesRegion || isActiveOfficer) {
+        out.push(o);
+      }
     }
 
     res.json(out);
