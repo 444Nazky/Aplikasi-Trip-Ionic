@@ -3,7 +3,7 @@ const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 const { db } = require('../db');
 const { authenticate } = require('../middleware/auth');
 
@@ -19,7 +19,7 @@ const { UPLOADS_DIR } = require('../uploads-dir');
 const uploadDocumentation = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
-    filename: (_req, file, cb) => cb(null, `${uuidv4()}${photoExtension(file.mimetype) || '.jpg'}`),
+    filename: (_req, file, cb) => cb(null, `${randomUUID()}${photoExtension(file.mimetype) || '.jpg'}`),
   }),
   limits: { fileSize: 5 * 1024 * 1024, files: 50 },
   fileFilter: (_req, file, cb) => {
@@ -88,7 +88,7 @@ router.post('/complete', authenticate, uploadDocumentation.array('photos', 50), 
 
     const photoPaths = files.map(file => `/uploads/${file.filename}`);
 
-    const tripId = existingTrip ? existingTrip.id : uuidv4();
+    const tripId = existingTrip ? existingTrip.id : randomUUID();
     const noTrip = existingTrip ? existingTrip.no_trip : generateTripNo();
 
     const insertVehicle = (vehicle, index, id) => {
@@ -111,7 +111,7 @@ router.post('/complete', authenticate, uploadDocumentation.array('photos', 50), 
         numericCoordinate(vehicle.latitude), numericCoordinate(vehicle.longitude)
       );
       db.prepare(`INSERT INTO trip_vehicles (id, trip_id, vehicle_id) VALUES (?, ?, ?)`)
-        .run(uuidv4(), tripId, id);
+        .run(randomUUID(), tripId, id);
     };
 
     if (existingTrip) {
@@ -134,7 +134,7 @@ router.post('/complete', authenticate, uploadDocumentation.array('photos', 50), 
         db.prepare(`DELETE FROM trip_vehicles WHERE trip_id = ? AND vehicle_id = ?`).run(tripId, row.vehicle_id);
         db.prepare(`DELETE FROM vehicles WHERE id = ?`).run(row.vehicle_id);
       }
-      vehicles.forEach((vehicle, index) => insertVehicle(vehicle, index, uuidv4()));
+      vehicles.forEach((vehicle, index) => insertVehicle(vehicle, index, randomUUID()));
       return res.status(200).json({ id: tripId, noTrip, updated: true });
     }
 
@@ -153,7 +153,7 @@ router.post('/complete', authenticate, uploadDocumentation.array('photos', 50), 
       payload.startedAt || null, payload.completedAt || null, clientTripId || null
     );
 
-    vehicles.forEach((vehicle, index) => insertVehicle(vehicle, index, uuidv4()));
+    vehicles.forEach((vehicle, index) => insertVehicle(vehicle, index, randomUUID()));
 
     return res.status(201).json({ id: tripId, noTrip });
   } catch (error) {
@@ -173,7 +173,7 @@ router.post('/', authenticate, (req, res) => {
       return res.status(400).json({ error: 'statusMuatan wajib diisi' });
     }
 
-    const tripId = uuidv4();
+    const tripId = randomUUID();
     const noTrip = generateTripNo();
 
     // trips.dermaga_id wajib terisi, tapi klien mobile tidak pernah mengirim
@@ -196,46 +196,6 @@ router.post('/', authenticate, (req, res) => {
   } catch (error) {
     console.error('Create trip error:', error);
     res.status(500).json({ error: 'Failed to create trip' });
-  }
-});
-
-// Add vehicle to trip
-router.post('/:tripId/vehicles', authenticate, (req, res) => {
-  try {
-    const { tripId } = req.params;
-    const { noPolisi, vehicleType, golongan, hasLoad, tariffAmount, fotoPath, latitude, longitude } = req.body;
-
-    // Prices are owned by admins: the server computes the amount from the
-    // master tariff whenever the vehicle type matches. The client-sent
-    // amount is only a fallback (legacy/offline data).
-    const masterTariff = db.prepare(`
-      SELECT * FROM tariffs WHERE vehicle_type = ? AND is_active = 1 LIMIT 1
-    `).get(vehicleType);
-
-    const amount = masterTariff
-      ? (hasLoad ? masterTariff.loaded_tariff : masterTariff.empty_tariff)
-      : (tariffAmount || 0);
-
-    const vehicleId = uuidv4();
-    db.prepare(`
-      INSERT INTO vehicles (id, no_polisi, vehicle_type, golongan, trip_id, has_load, tariff_id, tariff_amount, foto_path, latitude, longitude)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      vehicleId, noPolisi, vehicleType, golongan, tripId,
-      hasLoad ? 1 : 0, masterTariff ? masterTariff.id : null, amount,
-      fotoPath, latitude, longitude
-    );
-
-    // Link to trip
-    db.prepare(`
-      INSERT INTO trip_vehicles (id, trip_id, vehicle_id)
-      VALUES (?, ?, ?)
-    `).run(uuidv4(), tripId, vehicleId);
-
-    res.status(201).json({ id: vehicleId, noPolisi });
-  } catch (error) {
-    console.error('Add vehicle error:', error);
-    res.status(500).json({ error: 'Failed to add vehicle' });
   }
 });
 
@@ -271,33 +231,6 @@ router.get('/', authenticate, (req, res) => {
     res.json(trips);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch trips' });
-  }
-});
-
-// Get trip detail
-router.get('/:id', authenticate, (req, res) => {
-  try {
-    const trip = db.prepare(`
-      SELECT t.*, o.name as officer_name
-      FROM trips t
-      JOIN officers o ON t.officer_id = o.id
-      WHERE t.id = ?
-    `).get(req.params.id);
-
-    if (!trip) {
-      return res.status(404).json({ error: 'Trip not found' });
-    }
-
-    const vehicles = db.prepare(`
-      SELECT v.*, tv.id as trip_vehicle_id
-      FROM vehicles v
-      JOIN trip_vehicles tv ON v.id = tv.vehicle_id
-      WHERE tv.trip_id = ?
-    `).all(req.params.id);
-
-    res.json({ ...trip, vehicles });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch trip' });
   }
 });
 

@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../db');
 const { authenticate, requireAdmin } = require('../middleware/auth');
-const { v4: uuidv4 } = require('uuid');
-
+const { randomUUID } = require('crypto');
 // Bentuk baris SQLite → kontrak JSON yang dipakai mobile & dashboard admin.
 function shape(rows) {
   return (rows || []).map(r => ({
@@ -36,7 +35,7 @@ router.post('/', authenticate, requireAdmin, (req, res) => {
     if (!locationName || typeof latitude !== 'number' || typeof longitude !== 'number') {
       return res.status(400).json({ error: 'locationName, latitude, longitude wajib diisi' });
     }
-    const id = uuidv4();
+    const id = randomUUID();
     db.prepare(`
       INSERT INTO geofences (id, location_name, latitude, longitude, radius_meters, allowed_route_codes, allowed_directions, description)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
