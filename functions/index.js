@@ -156,7 +156,6 @@ exports.apiHealth = functions.https.onRequest(async (req, res) => {
     service: "endpoint-trip"
   });
 });
-});
 
 // ============================================
 // API INFO
@@ -186,5 +185,4 @@ exports.apiInfo = functions.https.onRequest(async (req, res) => {
   };
 
   return res.status(200).json(routes);
-});
 });
