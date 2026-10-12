@@ -5,7 +5,16 @@ const jwt = require('jsonwebtoken');
 const { db } = require('../db');
 const { authenticate } = require('../middleware/auth');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'trip-angkut-secret-key';
+// JWT_SECRET wajib dari environment — TANPA fallback.
+// Fallback literal mengekspos timing secret attacker (bisa forge token admin/officer).
+const JWT_SECRET = (() => {
+  const s = process.env.JWT_SECRET;
+  if (!s) {
+    console.error('[auth] JWT_SECRET environment variable is required — server cannot start without it');
+    process.exit(1);
+  }
+  return s;
+})();
 
 // Admin login (username/password) — issues a JWT with role: 'admin'
 //
@@ -33,7 +42,12 @@ router.post('/admin-login', (req, res) => {
         catch (_) { valid = false; }
       }
     } else {
-      // Belum pernah diganti → kredensial default/env.
+      // Belum pernah diganti: HANYA env vars yang berlaku.
+      // TANPA fallback literal (admin/admin123) — deployment tanpa
+      // ADMIN_PASSWORD tidak boleh bisa login dengan password publik.
+      if (!process.env.ADMIN_PASSWORD) {
+        return res.status(401).json({ error: 'Admin credentials not configured (set ADMIN_PASSWORD env or change password via dashboard)' });
+      }
       valid = username === adminUser && password === adminPass;
     }
 
@@ -399,7 +413,7 @@ router.post(`/change-admin-password`, async (req, res) => {
       try { valid = bcrypt.compareSync(currentPassword, storedHash) } catch (_) { valid = false }
     } else {
       // credential default admin/admin123, atau ADMIN_PASSWORD di env
-      const defAdminPass = process.env.ADMIN_PASSWORD ?? `admin123`
+      const defAdminPass = process.env.ADMIN_PASSWORD ?? null
       valid = currentPassword === defAdminPass
     }
 

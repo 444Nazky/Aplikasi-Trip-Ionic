@@ -105,11 +105,11 @@ router.get('/my-region', authenticate, (req, res) => {
       o.regions = regions;
       o.dermagas = dermagaStmt.all(String(o.id));
 
-      // Sertakan petugas yang berbagi region DENGAN PEMINTA
-      // ATAU petugas yang aktif (agar admin baru bisa login)
+      // Sertakan HANYA petugas yang berbagi region dengan peminta.
+      // Clause 'OR is_active' dihapus — itu membocorkan seluruh roster
+      // aktif lintas region ke petugas mana pun (privacy leak).
       const sharesRegion = regions.some(r => myRegionIds.has(String(r.id)));
-      const isActiveOfficer = o.is_active === 1;
-      if (sharesRegion || isActiveOfficer) {
+      if (sharesRegion) {
         out.push(o);
         requestedOfficerIds.add(String(o.id));
       }
