@@ -600,6 +600,21 @@ function initialize() {
     )
   `);
 
+  // Geofence rules table (dari Admin Dashboard; diunduh oleh aplikasi mobile)
+  db.run(`
+    CREATE TABLE IF NOT EXISTS geofences (
+      id TEXT PRIMARY KEY,
+      location_name TEXT NOT NULL,
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      radius_meters INTEGER NOT NULL DEFAULT 100,
+      allowed_route_codes TEXT NOT NULL DEFAULT '',
+      allowed_directions TEXT NOT NULL DEFAULT '',
+      description TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   // Trip_vehicles junction table
   db.run(`
     CREATE TABLE IF NOT EXISTS trip_vehicles (

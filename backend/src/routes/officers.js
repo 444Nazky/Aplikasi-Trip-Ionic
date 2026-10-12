@@ -94,6 +94,7 @@ router.get('/my-region', authenticate, (req, res) => {
     `);
 
     const out = [];
+    const requestedOfficerIds = new Set();
     for (const o of officers) {
       // Prioritas 1: regions dari junction officer_regions
       let regions = regionsStmt.all(String(o.id));
@@ -110,6 +111,22 @@ router.get('/my-region', authenticate, (req, res) => {
       const isActiveOfficer = o.is_active === 1;
       if (sharesRegion || isActiveOfficer) {
         out.push(o);
+        requestedOfficerIds.add(String(o.id));
+      }
+    }
+
+    // Jaminan: PEMINTA SENDIRI selalu ada di roster walau race kondisi
+    // junction belum lengkap — tanpa ini petugas bisa 'hilang' dari Ganti Petugas.
+    if (meId && !requestedOfficerIds.has(meId)) {
+      const me = officers.find(o => String(o.id) === meId);
+      if (me) {
+        let regions = regionsStmt.all(meId);
+        if (regions.length === 0) {
+          regions = [{ id: me.region_id, name: me.region_name, code: me.region_code }];
+        }
+        me.regions = regions;
+        me.dermagas = dermagaStmt.all(meId);
+        out.push(me);
       }
     }
 
