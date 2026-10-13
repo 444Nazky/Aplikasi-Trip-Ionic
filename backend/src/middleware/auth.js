@@ -9,8 +9,6 @@ const jwt = require('jsonwebtoken');
  */
 const JWT_SECRET = process.env.JWT_SECRET || 'trip-angkut-secret-key';
 
-module.exports.JWT_SECRET = JWT_SECRET;
-
 // Attach req.user / req.officer if the JWT is valid
 function authenticate(req, res, next) {
   try {
@@ -46,4 +44,4 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-module.exports = { authenticate, requireAdmin };
+module.exports = { authenticate, requireAdmin, JWT_SECRET };
