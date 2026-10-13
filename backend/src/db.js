@@ -193,6 +193,8 @@ function migrate() {
   // tarif region (lokal/eksternal) untuk region yang baru saja ditambahkan.
   ensureSpecRegions();
   seedSpecTables();
+  // Rotasi credential default lama di DB produksi (idempotent, cetak ke log).
+  rotateDefaultCredentials();
   saveDb();
 }
 
@@ -676,6 +678,47 @@ function seedData() {
   insertTariff.free();
 
   console.log('Database seeded: 3 wilayah, dermaga, rute, petugas, dan tarif');
+}
+
+// Rotasi credential default lama ("<code>123" region, "123456" PIN) yang masih
+// tersimpan di DB produksi. Jalan tiap boot (idempotent — hanya match default
+// yang diketahui; password/PIN yang sudah diganti admin tidak disentuh).
+function rotateDefaultCredentials() {
+  const rotated = [];
+
+  // 1. Region password yang masih hash "<code>123"
+  const regions = qAll(`SELECT id, code, password FROM regions WHERE password IS NOT NULL AND password != ''`);
+  for (const r of regions) {
+    const guess = `${String(r.code).toLowerCase()}123`;
+    let match = false;
+    try { match = bcrypt.compareSync(guess, r.password); } catch (_) { /* bukan hash */ }
+    if (!match && r.password === guess) match = true; // plain-text lama
+    if (match) {
+      const pw = randomSecret();
+      db.run(`UPDATE regions SET password = ? WHERE id = ?`, [bcrypt.hashSync(pw, 10), r.id]);
+      rotated.push(`region ${r.code} password → ${pw}`);
+    }
+  }
+
+  // 2. Officer PIN yang masih "123456"
+  const officers = qAll(`SELECT id, name, pin FROM officers WHERE pin IS NOT NULL AND pin != ''`);
+  for (const o of officers) {
+    let match = false;
+    try { match = bcrypt.compareSync('123456', o.pin); } catch (_) { /* bukan hash */ }
+    if (!match && o.pin === '123456') match = true;
+    if (match) {
+      const pin = randomSecret(6);
+      db.run(`UPDATE officers SET pin = ? WHERE id = ?`, [bcrypt.hashSync(pin, 10), o.id]);
+      rotated.push(`officer ${o.name} PIN → ${pin}`);
+    }
+  }
+
+  if (rotated.length) {
+    console.log('══════════════════════════════════════════════════════════════');
+    console.log('[security] CREDENTIAL DEFAULT LAMA DIROTASI (catat sekarang):');
+    for (const line of rotated) console.log(`[security]   ${line}`);
+    console.log('══════════════════════════════════════════════════════════════');
+  }
 }
 
 // Module exports — initialize/seedData TIDAK diekspor: dipakai hanya di dalam
