@@ -5,28 +5,23 @@ const jwt = require('jsonwebtoken');
 const { db } = require('../db');
 const { authenticate } = require('../middleware/auth');
 
-// JWT_SECRET wajib dari environment — TANPA fallback.
-// Fallback literal mengekspos timing secret attacker (bisa forge token admin/officer).
-const JWT_SECRET = (() => {
-  const s = process.env.JWT_SECRET;
-  if (!s) {
-    console.error('[auth] JWT_SECRET environment variable is required — server cannot start without it');
-    process.exit(1);
-  }
-  return s;
-})();
+// JWT_SECRET: SATU definisi — diimpor dari middleware/auth.js (fail-fast bila env kosong).
+const { JWT_SECRET } = require('../middleware/auth');
 
 // Admin login (username/password) — issues a JWT with role: 'admin'
 //
 // Deteksi kredensial khusus admin, dua lapis:
 //   1. Hasil "Ganti Password" di dashboard (tabel admin_credentials, bcrypt)
 //      — diprioritaskan; setelah password diganti, password lama SUDAH MATI.
-//   2. Fallback default admin/admin123 (atau ADMIN_USERNAME/ADMIN_PASSWORD env)
+//   2. Tanpa admin_credentials tersimpan: HANYA ADMIN_PASSWORD env yang berlaku
+//      (dicek eksplisit di else branch — tanpa fallback literal).
 router.post('/admin-login', (req, res) => {
   try {
     const { username, password } = req.body || {};
     const adminUser = process.env.ADMIN_USERNAME || 'admin';
-    const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
+    // TANPA fallback literal — 'admin123' tidak pernah dijalankan di jalur manapun
+    // (else branch sudah mewajibkan ADMIN_PASSWORD ter-set). Literatur lama hanya
+    // menyesatkan audit; variable tidak didefinisikan sama sekali.
 
     let row = null;
     try { row = adminGetCredentials(); } catch (_) { row = null; }
@@ -48,7 +43,7 @@ router.post('/admin-login', (req, res) => {
       if (!process.env.ADMIN_PASSWORD) {
         return res.status(401).json({ error: 'Admin credentials not configured (set ADMIN_PASSWORD env or change password via dashboard)' });
       }
-      valid = username === adminUser && password === adminPass;
+      valid = username === adminUser && password === process.env.ADMIN_PASSWORD;
     }
 
     if (!valid) {

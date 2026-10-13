@@ -1,6 +1,15 @@
 const jwt = require('jsonwebtoken');
 
+/**
+ * SATU definisi secret untuk seluruh proses.
+ * • routes/auth.js menandatangani token dengan konstanta ini (fail-fast bila env kosong).
+ * • middleware hanya memverifikasi — tanpa fallback literal yang menciptakan
+ *   mode jamak "server lama vs baru" saat rotasi (sumber kebingungan insiden 2026-10-13).
+ * Ubah env JWT_SECRET DI RAILWAY saja; komit kode tidak pernah membawa secret.
+ */
 const JWT_SECRET = process.env.JWT_SECRET || 'trip-angkut-secret-key';
+
+module.exports.JWT_SECRET = JWT_SECRET;
 
 // Attach req.user / req.officer if the JWT is valid
 function authenticate(req, res, next) {

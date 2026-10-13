@@ -50,9 +50,6 @@ const dbWrapper = {
       }
     };
   },
-  exec(sql) {
-    db.run(sql);
-  },
   get db() { return db; }
 };
 
@@ -675,10 +672,9 @@ function seedData() {
   console.log('Database seeded: 3 wilayah, dermaga, rute, petugas, dan tarif');
 }
 
-// Export async initialization
+// Module exports — initialize/seedData TIDAK diekspor: dipakai hanya di dalam
+// modul ini (loadDb memanggil keduanya tiap boot sejak commit idempotent-init).
 module.exports = {
   loadDb,
   db: dbWrapper,
-  initialize,
-  seedData
 };

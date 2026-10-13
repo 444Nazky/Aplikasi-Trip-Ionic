@@ -25,10 +25,7 @@ function check(name, cond, extra = '') {
   if (!cond) failures++;
 }
 
-// Tangkap stack error server (500) agar diagnosa tidak buta
-async function serverErrors() {
-  throw new Error('implemented inline');
-}
+
 
 async function main() {
   // ── Seed DB dulu (child proses terpisah, DB_PATH di temp) ──────────────────
