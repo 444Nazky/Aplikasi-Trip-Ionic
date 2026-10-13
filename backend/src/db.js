@@ -309,7 +309,14 @@ const DEMO_OFFICERS = [
   { name: 'Maya Sari', region: 'KELAPAKAMPIT', docks: ['D2'] },
 ];
 
-const regionDefaultPassword = (code) => `${String(code).toLowerCase()}123`;
+// Password/PIN seed: random + dicetak SEKALI ke log boot. Nilai lama
+// "<code>123" dan "123456" adalah backdoor publik (dipublikasikan di source).
+function randomSecret(len = 16) {
+  return require('crypto').randomBytes(len).toString('base64url').slice(0, len);
+}
+function seedCredential(label, value) {
+  console.log(`[seed] ${label}: ${value}`);
+}
 
 // Helper query — modul ini memakai objek sql.js mentah (bukan dbWrapper),
 // jadi SELECT memakai API statement: bind/step/getAsObject/free.
@@ -336,24 +343,26 @@ function ensureSpecRegions() {
     db.run(`ALTER TABLE regions ADD COLUMN password TEXT`);
   } catch (e) { /* kolom sudah ada */ }
 
-  const hashedPin = bcrypt.hashSync('123456', 10);
-
   for (const w of SPEC_WILAYAH) {
-    // 2. Region
+    // 2. Region — password acak dicetak sekali ke log boot.
     let region = q1(`SELECT * FROM regions WHERE code = ?`, [w.code]);
     if (!region) {
+      const pw = randomSecret();
+      seedCredential(`region ${w.code} password`, pw);
       db.run(
         `INSERT INTO regions (id, name, code, password) VALUES (?, ?, ?, ?)`,
-        [randomUUID(), w.name, w.code, bcrypt.hashSync(regionDefaultPassword(w.code), 10)]
+        [randomUUID(), w.name, w.code, bcrypt.hashSync(pw, 10)]
       );
       region = q1(`SELECT * FROM regions WHERE code = ?`, [w.code]);
     }
     if (!region) continue;
 
-    // 3. Password default bila belum diatur admin
+    // 3. Password default bila belum diatur admin — ACAK, bukan "<code>123".
     if (!region.password) {
+      const pw = randomSecret();
+      seedCredential(`region ${w.code} password (backfill)`, pw);
       db.run(`UPDATE regions SET password = ? WHERE id = ?`,
-        [bcrypt.hashSync(regionDefaultPassword(w.code), 10), region.id]);
+        [bcrypt.hashSync(pw, 10), region.id]);
     }
 
     // 4. Dua dermaga: D1 & D2
@@ -417,14 +426,17 @@ function ensureSpecRegions() {
 
   // 7. Keep the published demo accounts aligned with their documented region
   // and dock access, including existing databases created with older seeds.
+  // PIN baru: random + dicetak sekali (bukan '123456' yang dipublikasikan).
   for (const demo of DEMO_OFFICERS) {
     const region = q1(`SELECT id FROM regions WHERE code = ?`, [demo.region]);
     if (!region) continue;
     let officer = q1(`SELECT id FROM officers WHERE name = ?`, [demo.name]);
     if (!officer) {
       const id = randomUUID();
+      const pin = randomSecret(6);
+      seedCredential(`officer ${demo.name} PIN`, pin);
       db.run(`INSERT INTO officers (id, name, pin, region_id, is_active) VALUES (?, ?, ?, ?, 1)`,
-        [id, demo.name, hashedPin, region.id]);
+        [id, demo.name, bcrypt.hashSync(pin, 10), region.id]);
       officer = { id };
     } else {
       db.run(`UPDATE officers SET region_id = ? WHERE id = ?`, [region.id, officer.id]);
@@ -441,11 +453,13 @@ function ensureSpecRegions() {
     }
   }
 
-  // 8. Region lain (DB lama: SJRE/SBDZ/ENTIKONG) juga mendapat password default
+  // 8. Region lain (DB lama) tanpa password → acak, bukan "<code>123".
   const noPw = qAll(`SELECT id, code FROM regions WHERE password IS NULL OR password = ''`);
   for (const r of noPw) {
+    const pw = randomSecret();
+    seedCredential(`region ${r.code} password (legacy backfill)`, pw);
     db.run(`UPDATE regions SET password = ? WHERE id = ?`,
-      [bcrypt.hashSync(regionDefaultPassword(r.code), 10), r.id]);
+      [bcrypt.hashSync(pw, 10), r.id]);
   }
 }
 
@@ -642,14 +656,6 @@ function seedData() {
   // Seed 3 wilayah operasional (Revisi #3). Dermaga, rute dua arah, petugas
   // contoh, dan password wilayah dibuat oleh ensureSpecRegions() — satu sumber
   // kebenaran yang juga melengkapi DB lama saat boot.
-  const insertRegion = db.prepare('INSERT INTO regions (id, name, code, password) VALUES (?, ?, ?, ?)');
-  for (const w of SPEC_WILAYAH) {
-    insertRegion.bind([randomUUID(), w.name, w.code, bcrypt.hashSync(regionDefaultPassword(w.code), 10)]);
-    insertRegion.step();
-    insertRegion.reset();
-  }
-  insertRegion.free();
-
   ensureSpecRegions();
 
   // Seed tariffs

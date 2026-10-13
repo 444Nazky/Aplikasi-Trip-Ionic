@@ -16,9 +16,18 @@ const geofenceRoutes = require('./routes/geofences');
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Railway/Cloudflare taruh IP asli di X-Forwarded-For; tanpa ini rate limit
+// menghitung SEMUA request sebagai 1 IP proxy.
+app.set('trust proxy', 1);
+
+// CORS: allowlist dari env (koma-terpisah). '*' hanya non-production.
+const allowedOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',').map(s => s.trim()).filter(Boolean);
+const corsOptions = process.env.NODE_ENV === 'production' && allowedOrigins.length
+  ? { origin: allowedOrigins }
+  : {};
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10kb' }));
 
 // Serve uploaded photos publicly (folder yang sama dengan tujuan multer)
 const { UPLOADS_DIR } = require('./uploads-dir');

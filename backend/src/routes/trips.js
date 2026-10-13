@@ -64,8 +64,11 @@ router.post('/complete', authenticate, uploadDocumentation.array('photos', 50), 
     // (ganti plat / ambil ulang foto) — perbarui trip lama, JANGAN insert duplikat.
     // Ini yang membuat hasil edit sampai ke dashboard admin.
     const clientTripId = typeof payload.clientTripId === 'string' ? payload.clientTripId.trim() : '';
+    // Scope ke officer peminta — tanpa itu petugas mana pun bisa OVERWRITE
+    // trip petugas lain via retry idempoten (IDOR).
     const existingTrip = clientTripId
-      ? db.prepare(`SELECT id, no_trip FROM trips WHERE client_trip_id = ? LIMIT 1`).get(clientTripId)
+      ? db.prepare(`SELECT id, no_trip FROM trips WHERE client_trip_id = ? AND officer_id = ? LIMIT 1`)
+          .get(clientTripId, String(req.user?.officerId ?? ''))
       : undefined;
 
     const tripPhotoIndex = validPhotoIndex(payload.tripPhotoIndex, files);
