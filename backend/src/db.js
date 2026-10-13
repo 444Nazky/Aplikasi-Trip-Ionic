@@ -75,17 +75,22 @@ async function loadDb() {
   const fresh = !fs.existsSync(DB_PATH);
   if (fresh) {
     db = new SQL.Database();
-    initialize();
   } else {
     const fileBuffer = fs.readFileSync(DB_PATH);
     db = new SQL.Database(fileBuffer);
   }
 
+  // initialize() berisi SEMUA "CREATE TABLE IF NOT EXISTS" — idempotent sehingga
+  // AMAN dipanggil juga untuk DB lama. Tanpa ini, tabel yang ditambahkan belakangan
+  // (mis. geofences) tidak pernah terbentuk di DB volume production →
+  // GET /api/geofences 500 "no such table: geofences".
+  initialize();
+
   migrate();
   if (fresh) {
     seedData();
-    saveDb();
   }
+  saveDb();
   return dbWrapper;
 }
 
