@@ -75,7 +75,13 @@ function getDownloadUrl(version) {
   // 5. Try Railway static URL
   if (RAILWAY_STATIC_URL) return `${RAILWAY_STATIC_URL}/releases/app-${version}.apk`;
 
-  // 6. Fallback to local path
+  // 6. Hardcoded fallback for production (update URL when new release)
+  const HARDCODED_URLS = {
+    '1.0.0': 'https://files.catbox.moe/f67x5q.apk',
+  };
+  if (HARDCODED_URLS[version]) return HARDCODED_URLS[version];
+
+  // 7. Fallback to local path
   const apkPath = path.join(APK_DIR, `app-${version}.apk`);
   return fs.existsSync(apkPath) ? `/api/v1/app-download/${version}` : null;
 }
