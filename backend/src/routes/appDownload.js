@@ -10,7 +10,10 @@ const crypto = require('crypto');
 // Path to APK storage
 const APK_DIR = path.join(__dirname, '..', '..', 'apks');
 const METADATA_DIR = path.join(__dirname, '..', '..', 'metadata');
+
+// CDN/Static URL
 const APK_CDN_BASE = process.env.APK_CDN_URL || '';
+const RAILWAY_STATIC_URL = process.env.RAILWAY_STATIC_URL || '';
 
 // Load version metadata for hash verification
 function loadVersionMetadata() {
@@ -46,6 +49,13 @@ router.get('/app-download/:version', (req, res) => {
       return res.redirect(302, cdnUrl);
     }
 
+    // If Railway static URL is configured, redirect to it
+    if (RAILWAY_STATIC_URL) {
+      const staticUrl = `${RAILWAY_STATIC_URL}/releases/app-${version}.apk`;
+      console.log(`Redirecting to static: ${staticUrl}`);
+      return res.redirect(302, staticUrl);
+    }
+
     const apkPath = path.join(APK_DIR, `app-${version}.apk`);
 
     // Check if APK exists locally
@@ -69,7 +79,6 @@ router.get('/app-download/:version', (req, res) => {
     // Stream the APK file
     const fileStream = fs.createReadStream(apkPath);
 
-    // Handle stream errors
     fileStream.on('error', (error) => {
       console.error('Error streaming APK:', error);
       if (!res.headersSent) {
@@ -145,11 +154,11 @@ router.get('/apk-list', (req, res) => {
     const files = fs.readdirSync(APK_DIR)
       .filter(f => f.startsWith('app-') && f.endsWith('.apk'))
       .map(f => {
-        const version = f.replace('app-', '').replace('.apk', '');
+        const ver = f.replace('app-', '').replace('.apk', '');
         const filePath = path.join(APK_DIR, f);
         const stats = fs.statSync(filePath);
         return {
-          version,
+          version: ver,
           filename: f,
           size: stats.size,
           sizeFormatted: formatBytes(stats.size),
@@ -157,7 +166,6 @@ router.get('/apk-list', (req, res) => {
         };
       })
       .sort((a, b) => {
-        // Sort by version (descending)
         const [a1, a2, a3] = a.version.split('.').map(Number);
         const [b1, b2, b3] = b.version.split('.').map(Number);
         if (b1 !== a1) return b1 - a1;

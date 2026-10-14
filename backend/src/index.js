@@ -35,6 +35,11 @@ app.use(express.json({ limit: '10kb' }));
 const { UPLOADS_DIR } = require('./uploads-dir');
 app.use('/uploads', express.static(UPLOADS_DIR));
 
+// Serve APK releases (static files)
+const path = require('path');
+const releasesDir = path.join(__dirname, '..', 'public', 'releases');
+app.use('/releases', express.static(releasesDir));
+
 // Attach db to all requests
 app.use((req, _res, next) => {
   req.db = dbModule.db;

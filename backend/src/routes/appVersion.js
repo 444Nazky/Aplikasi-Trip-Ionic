@@ -9,10 +9,12 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 // Path to APK storage and metadata
-// Use external CDN base URL for APK downloads (Railway doesn't persist files)
-const APK_CDN_BASE = process.env.APK_CDN_URL || '';
 const APK_DIR = path.join(__dirname, '..', '..', 'apks');
 const METADATA_DIR = path.join(__dirname, '..', '..', 'metadata');
+
+// CDN/Static URL for APK downloads (Railway doesn't persist files)
+const APK_CDN_BASE = process.env.APK_CDN_URL || '';
+const RAILWAY_STATIC_URL = process.env.RAILWAY_STATIC_URL || '';
 
 // Ensure directories exist
 function ensureDirs() {
@@ -52,6 +54,23 @@ function compareVersions(current, latest) {
   if (l1 === c1 && l2 > c2) return 1;
   if (l1 === c1 && l2 === c2 && l3 > c3) return 1;
   return 0;
+}
+
+// Get download URL for a version (CDN > Railway Static > Local)
+function getDownloadUrl(version) {
+  // 1. Try external CDN first
+  if (APK_CDN_BASE) {
+    return `${APK_CDN_BASE}/app-${version}.apk`;
+  }
+
+  // 2. Try Railway static URL
+  if (RAILWAY_STATIC_URL) {
+    return `${RAILWAY_STATIC_URL}/releases/app-${version}.apk`;
+  }
+
+  // 3. Fallback to local path
+  const apkPath = path.join(APK_DIR, `app-${version}.apk`);
+  return fs.existsSync(apkPath) ? `/api/v1/app-download/${version}` : null;
 }
 
 // GET /api/v1/app-version?current=:version
@@ -98,12 +117,7 @@ router.get('/app-version', (req, res) => {
       latestVersion,
       updateAvailable,
       isForceUpdate: metadata.latest.isForceUpdate || false,
-      // Use CDN URL if configured, otherwise use local path
-      downloadUrl: (apkExists || APK_CDN_BASE)
-        ? (APK_CDN_BASE
-            ? `${APK_CDN_BASE}/app-${latestVersion}.apk`
-            : `/api/v1/app-download/${latestVersion}`)
-        : null,
+      downloadUrl: getDownloadUrl(latestVersion),
       releaseNotes: metadata.latest.releaseNotes || 'Perbaikan dan peningkatan performa',
       apkSize,
       apkHash,
@@ -126,7 +140,6 @@ router.get('/release-notes/:version', (req, res) => {
     const metadata = loadVersionMetadata();
 
     if (!metadata || !metadata.releases || !metadata.releases[version]) {
-      // Try to find version in latest
       if (metadata?.latest?.version === version) {
         return res.json({
           version,
@@ -159,7 +172,6 @@ router.get('/release-notes/:version', (req, res) => {
 });
 
 // POST /api/v1/publish-version (Admin only - untuk publish APK baru)
-// Body: { version, downloadUrl?, apkBase64?, releaseNotes, isForceUpdate, minVersion, apkHash }
 router.post('/publish-version', (req, res) => {
   try {
     const secret = req.headers['x-publish-secret'];
@@ -172,7 +184,6 @@ router.post('/publish-version', (req, res) => {
       });
     }
 
-    // Support both downloadUrl (external CDN) and apkBase64 (embedded)
     const { version, downloadUrl, apkBase64, releaseNotes, isForceUpdate, minVersion, notes, apkHash } = req.body;
 
     if (!version) {
