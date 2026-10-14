@@ -9,6 +9,8 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 // Path to APK storage and metadata
+// Use external CDN base URL for APK downloads (Railway doesn't persist files)
+const APK_CDN_BASE = process.env.APK_CDN_URL || '';
 const APK_DIR = path.join(__dirname, '..', '..', 'apks');
 const METADATA_DIR = path.join(__dirname, '..', '..', 'metadata');
 
@@ -96,7 +98,12 @@ router.get('/app-version', (req, res) => {
       latestVersion,
       updateAvailable,
       isForceUpdate: metadata.latest.isForceUpdate || false,
-      downloadUrl: apkExists ? `/api/v1/app-download/${latestVersion}` : null,
+      // Use CDN URL if configured, otherwise use local path
+      downloadUrl: (apkExists || APK_CDN_BASE)
+        ? (APK_CDN_BASE
+            ? `${APK_CDN_BASE}/app-${latestVersion}.apk`
+            : `/api/v1/app-download/${latestVersion}`)
+        : null,
       releaseNotes: metadata.latest.releaseNotes || 'Perbaikan dan peningkatan performa',
       apkSize,
       apkHash,
@@ -152,11 +159,9 @@ router.get('/release-notes/:version', (req, res) => {
 });
 
 // POST /api/v1/publish-version (Admin only - untuk publish APK baru)
-// Body: { version, apkPath, releaseNotes, isForceUpdate, minVersion }
+// Body: { version, downloadUrl?, apkBase64?, releaseNotes, isForceUpdate, minVersion, apkHash }
 router.post('/publish-version', (req, res) => {
   try {
-    // TODO: Add admin authentication check
-    // For now, require a secret header
     const secret = req.headers['x-publish-secret'];
     const expectedSecret = process.env.PUBLISH_SECRET || 'trip-angkut-secret';
 
@@ -167,7 +172,8 @@ router.post('/publish-version', (req, res) => {
       });
     }
 
-    const { version, apkBase64, releaseNotes, isForceUpdate, minVersion, notes } = req.body;
+    // Support both downloadUrl (external CDN) and apkBase64 (embedded)
+    const { version, downloadUrl, apkBase64, releaseNotes, isForceUpdate, minVersion, notes, apkHash } = req.body;
 
     if (!version) {
       return res.status(400).json({
@@ -185,10 +191,18 @@ router.post('/publish-version', (req, res) => {
       });
     }
 
+    // Must have either downloadUrl or apkBase64
+    if (!downloadUrl && !apkBase64) {
+      return res.status(400).json({
+        error: 'MISSING_DOWNLOAD_SOURCE',
+        message: 'Harus provide downloadUrl atau apkBase64'
+      });
+    }
+
     ensureDirs();
 
-    // Handle APK upload (base64 encoded)
-    if (apkBase64) {
+    // Handle APK upload (base64 encoded) - only if no external URL
+    if (apkBase64 && !downloadUrl) {
       try {
         const apkBuffer = Buffer.from(apkBase64, 'base64');
         const apkPath = path.join(APK_DIR, `app-${version}.apk`);
@@ -211,7 +225,8 @@ router.post('/publish-version', (req, res) => {
       releaseNotes: releaseNotes || '',
       notes: notes || [],
       isForceUpdate: isForceUpdate || false,
-      minVersion: minVersion || null
+      minVersion: minVersion || null,
+      apkHash: apkHash || null,
     };
 
     // Update latest if this version is newer

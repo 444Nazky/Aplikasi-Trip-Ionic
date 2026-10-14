@@ -10,6 +10,7 @@ const crypto = require('crypto');
 // Path to APK storage
 const APK_DIR = path.join(__dirname, '..', '..', 'apks');
 const METADATA_DIR = path.join(__dirname, '..', '..', 'metadata');
+const APK_CDN_BASE = process.env.APK_CDN_URL || '';
 
 // Load version metadata for hash verification
 function loadVersionMetadata() {
@@ -38,9 +39,16 @@ router.get('/app-download/:version', (req, res) => {
       });
     }
 
+    // If CDN URL is configured, redirect to it
+    if (APK_CDN_BASE) {
+      const cdnUrl = `${APK_CDN_BASE}/app-${version}.apk`;
+      console.log(`Redirecting to CDN: ${cdnUrl}`);
+      return res.redirect(302, cdnUrl);
+    }
+
     const apkPath = path.join(APK_DIR, `app-${version}.apk`);
 
-    // Check if APK exists
+    // Check if APK exists locally
     if (!fs.existsSync(apkPath)) {
       return res.status(404).json({
         error: 'APK_NOT_FOUND',
