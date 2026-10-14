@@ -56,13 +56,25 @@ function compareVersions(current, latest) {
   return 0;
 }
 
-// Get download URL for a version (CDN > Railway Static > Local)
+// Get download URL for a version (metadata > CDN > Railway Static > Local)
+// Get download URL for a version (metadata > CDN > Railway Static > Local)
 function getDownloadUrl(version) {
-  // 1. Try external CDN first
-  if (APK_CDN_BASE) {
-    return `${APK_CDN_BASE}/app-${version}.apk`;
-  }
-
+  const metadata = loadVersionMetadata();
+  
+  // 1. Check metadata for explicit downloadUrl
+  if (metadata?.releases?.[version]?.downloadUrl) return metadata.releases[version].downloadUrl;
+  if (metadata?.latest?.version === version && metadata.latest?.downloadUrl) return metadata.latest.downloadUrl;
+  
+  // 2. Try external CDN
+  if (APK_CDN_BASE) return `${APK_CDN_BASE}/app-${version}.apk`;
+  
+  // 3. Try Railway static URL
+  if (RAILWAY_STATIC_URL) return `${RAILWAY_STATIC_URL}/releases/app-${version}.apk`;
+  
+  // 4. Fallback to local path
+  const apkPath = path.join(APK_DIR, `app-${version}.apk`);
+  return fs.existsSync(apkPath) ? `/api/v1/app-download/${version}` : null;
+}
   // 2. Try Railway static URL
   if (RAILWAY_STATIC_URL) {
     return `${RAILWAY_STATIC_URL}/releases/app-${version}.apk`;
@@ -232,6 +244,7 @@ router.post('/publish-version', (req, res) => {
 
     const releaseData = {
       version,
+      downloadUrl: downloadUrl || null,
       releaseDate: new Date().toISOString(),
       releaseNotes: releaseNotes || '',
       notes: notes || [],
