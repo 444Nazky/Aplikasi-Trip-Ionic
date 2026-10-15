@@ -42,21 +42,17 @@ router.get('/app-download/:version', (req, res) => {
       });
     }
 
-    if (APK_CDN_BASE) {
-      const cdnUrl = `${APK_CDN_BASE}/app-${version}.apk`;
-      console.log(`Redirecting to CDN: ${cdnUrl}`);
-      return res.redirect(302, cdnUrl);
-    }
-
-    if (RAILWAY_STATIC_URL) {
-      const staticUrl = `${RAILWAY_STATIC_URL}/releases/app-${version}.apk`;
-      console.log(`Redirecting to static: ${staticUrl}`);
-      return res.redirect(302, staticUrl);
-    }
-
+    // File lokal di image lebih utama: selalu bisa di-serve walau
+    // env CDN/static rusak atau tak berskema. Redirect hanya fallback.
     const apkPath = path.join(APK_DIR, `app-${version}.apk`);
 
     if (!fs.existsSync(apkPath)) {
+      if (APK_CDN_BASE && /^https?:\/\//i.test(APK_CDN_BASE)) {
+        return res.redirect(302, `${APK_CDN_BASE}/app-${version}.apk`);
+      }
+      if (RAILWAY_STATIC_URL && /^https?:\/\//i.test(RAILWAY_STATIC_URL)) {
+        return res.redirect(302, `${RAILWAY_STATIC_URL}/releases/app-${version}.apk`);
+      }
       return res.status(404).json({
         error: 'APK_NOT_FOUND',
         message: `File APK versi ${version} tidak ditemukan`
@@ -193,32 +189,5 @@ function ensureDir(dir) {
 }
 
 
-
-router.get('/debug-fs', (req, res) => {
-  try {
-    const fs = require('fs');
-    const path = require('path');
-    const dirs = [
-      process.env.APK_DIR || 'apks',
-      'backend/apks',
-      '/data/apks',
-      '/app/backend/apks',
-      '.'
-    ];
-    const info = {};
-    for (const d of dirs) {
-      try {
-        const exists = fs.existsSync(d);
-        const files = exists ? fs.readdirSync(d).filter(f => f.endsWith('.apk')) : [];
-        info[d] = { exists, files, size: files.length };
-      } catch(e) {
-        info[d] = { error: e.message };
-      }
-    }
-    res.json({ apkDir: process.env.APK_DIR || 'default', info, cwd: process.cwd(), env: { APK_DIR: process.env.APK_DIR } });
-  } catch(e) {
-    res.status(500).json({ error: e.message });
-  }
-});
 
 module.exports = router;

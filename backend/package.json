@@ -4,7 +4,7 @@
   "description": "Backend API for Aplikasi Trip Angkutan",
   "main": "src/index.js",
   "scripts": {
-    "start": "node -e \"const fs=require('fs'),p=process.env.APK_DIR||'apks';console.log('APK_DIR:',p);try{fs.mkdirSync(p,{recursive:true})}catch(e){console.log('mkdir err:',e.message)}try{const f=p+'/app-1.0.4.apk';if(!fs.existsSync(f)){console.log('APK not found at',f);const src='backend/apks/app-1.0.4.apk';if(fs.existsSync(src)){fs.copyFileSync(src,f);console.log('Copied APK to',f)}else{console.log('Source APK not found:',src)}}else{console.log('APK exists at',p)}if(fs.readdirSync(p).length)console.log('Files:',fs.readdirSync(p))}catch(e){console.log('Error:',e.message)}\" && node src/index.js",
+    "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "check": "node scripts/check-client-trip-id.js"
   },
