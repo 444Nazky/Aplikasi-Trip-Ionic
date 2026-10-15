@@ -1,12 +1,12 @@
 {
   "latest": {
-    "version": "1.0.6",
-    "downloadUrl": "https://aplikasi-trip-api-production.up.railway.app/api/v1/app-download/1.0.6",
-    "releaseDate": "2026-10-15T07:29:29.054Z",
-    "releaseNotes": "Sinkron geofence akurat per dermaga + purge saat logout, skema backend selaras.",
+    "version": "1.0.9",
+    "downloadUrl": "https://aplikasi-trip-api-production.up.railway.app/api/v1/app-download/1.0.9",
+    "releaseDate": "2026-10-15T08:51:19.002Z",
+    "releaseNotes": "Rilis 1.0.9 terverifikasi biner.",
     "isForceUpdate": false,
     "minVersion": "1.0.0",
-    "apkHash": "12a0994bfbd1356afc331b2d46d01f8cd18097c5980950b699e0f2263de08d52"
+    "apkHash": "a5712955af584776449d4bc17e382c73b1c4dfa4a4b961bf8f28620476daf375"
   },
   "releases": {
     "1.0.4": {
@@ -42,6 +42,15 @@
       "isForceUpdate": false,
       "minVersion": "1.0.0",
       "apkHash": "12a0994bfbd1356afc331b2d46d01f8cd18097c5980950b699e0f2263de08d52"
+    },
+    "1.0.9": {
+      "version": "1.0.9",
+      "downloadUrl": "https://aplikasi-trip-api-production.up.railway.app/api/v1/app-download/1.0.9",
+      "releaseDate": "2026-10-15T08:51:19.002Z",
+      "releaseNotes": "Rilis 1.0.9 terverifikasi biner.",
+      "isForceUpdate": false,
+      "minVersion": "1.0.0",
+      "apkHash": "a5712955af584776449d4bc17e382c73b1c4dfa4a4b961bf8f28620476daf375"
     }
   }
 }
