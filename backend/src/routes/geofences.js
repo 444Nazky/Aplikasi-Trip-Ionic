@@ -96,7 +96,10 @@ router.get('/resolve-link', authenticate, async (req, res) => {
 function shape(rows) {
   return (rows || []).map(r => ({
     id: r.id,
-    locationName: r.location_name,
+    // name & location_name dibaca bergantian: skema lama hanya punya `name`,
+    // skema baru menulis keduanya.
+    name: r.name || r.location_name,
+    locationName: r.location_name || r.name,
     dermagaId: r.dermaga_id ?? null,
     latitude: Number(r.latitude),
     longitude: Number(r.longitude),
@@ -114,10 +117,21 @@ router.get('/', authenticate, (req, res) => {
   try {
     const dermagaId = String(req.query.dermagaId ?? '').trim();
     const scopeAll = String(req.query.scope ?? '').toLowerCase() === 'all';
+    const ORDER = 'ORDER BY COALESCE(location_name, name, id)';
+
+    // Skema diperiksa lebih dulu: DB lama tanpa kolom dermaga_id membuat query
+    // filter melempar "no such column" → 500 → petugas menerima 0 titik dan input
+    // trip terkunci. Rute ini tidak boleh pernah 500.
+    const hasDermaga = db.prepare('PRAGMA table_info(geofences)').all().some(c => c.name === 'dermaga_id');
 
     // tanpa filter (atau scope=all untuk dashboard) = master lengkap
     if (!dermagaId || scopeAll) {
-      return res.json(shape(db.prepare(`SELECT * FROM geofences ORDER BY location_name`).all()));
+      return res.json(shape(db.prepare(`SELECT * FROM geofences ${ORDER}`).all()));
+    }
+
+    if (!hasDermaga) {
+      console.warn('[geofence] skema lama tanpa kolom dermaga_id → kirim master lengkap (anti-500)');
+      return res.json(shape(db.prepare(`SELECT * FROM geofences ${ORDER}`).all()));
     }
 
     // Permintaan petugas untuk satu dermaga: sertakan juga titik "berlaku umum"
@@ -128,7 +142,7 @@ router.get('/', authenticate, (req, res) => {
     const rows = db.prepare(`
       SELECT * FROM geofences
       WHERE dermaga_id = ? OR dermaga_id IS NULL OR TRIM(COALESCE(dermaga_id, '')) = ''
-      ORDER BY location_name
+      ${ORDER}
     `).all(dermagaId);
     res.json(shape(rows));
   } catch (error) {
@@ -153,11 +167,14 @@ router.post('/', authenticate, requireAdmin, (req, res) => {
       });
     }
     const id = randomUUID();
+    // `name` ikut diisi: kolom itu NOT NULL pada skema lama, jadi INSERT yang
+    // hanya mengirim location_name gagal (500) di DB produksi lama.
     db.prepare(`
-      INSERT INTO geofences (id, location_name, dermaga_id, latitude, longitude, radius_meters, allowed_route_codes, allowed_directions, description, enabled)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO geofences (id, name, location_name, dermaga_id, latitude, longitude, radius_meters, allowed_route_codes, allowed_directions, description, enabled)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `    ).run(
       id,
+      String(locationName).trim(),
       String(locationName).trim(),
       dermagaId ? String(dermagaId) : null,
       lat,
@@ -196,7 +213,12 @@ router.put('/:id', authenticate, requireAdmin, (req, res) => {
       return res.status(400).json({ error: 'Koordinat di luar rentang valid — lat ±90, lng ±180' });
     }
 
-    if (b.locationName !== undefined) { sets.push('location_name = ?'); args.push(String(b.locationName).trim()); }
+    if (b.locationName !== undefined) {
+      // Kedua kolom nama diperbarui supaya baris skema lama & baru tetap konsisten.
+      const n = String(b.locationName).trim();
+      sets.push('location_name = ?'); args.push(n);
+      sets.push('name = ?'); args.push(n);
+    }
     if (lat !== undefined) { sets.push('latitude = ?'); args.push(lat); }
     if (lng !== undefined) { sets.push('longitude = ?'); args.push(lng); }
     if (b.radiusMeters !== undefined) { sets.push('radius_meters = ?'); args.push(clampRadius(b.radiusMeters)); }

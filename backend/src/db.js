@@ -103,10 +103,21 @@ function migrate() {
   } catch (e) {
   }
 
-  // samakan skema geofence lama dengan dialek mobile
+  // Samakan skema geofence lama dengan dialek mobile.
+  // DB produksi (volume Railway) dibuat sebelum sebagian kolom ini ada, dan
+  // `CREATE TABLE IF NOT EXISTS` tidak menambahkan kolom ke tabel yang sudah ada.
+  // Dulu hanya dermaga_id/enabled yang ditambal, sehingga SELECT/INSERT lain
+  // (allowed_directions, description, name) melempar 500 di DB lama.
   for (const [table, definition] of [
     ['geofences', 'dermaga_id TEXT'],
     ['geofences', 'enabled INTEGER NOT NULL DEFAULT 1'],
+    ['geofences', 'name TEXT DEFAULT \'\''],
+    ['geofences', 'location_name TEXT'],
+    ['geofences', 'allowed_route_codes TEXT'],
+    ['geofences', 'allowed_directions TEXT'],
+    ['geofences', 'description TEXT DEFAULT \'\''],
+    ['geofences', 'radius_meters INTEGER DEFAULT 100'],
+    ['geofences', 'strict_enforce_outside INTEGER DEFAULT 1'],
   ]) {
     try { db.run(`ALTER TABLE ${table} ADD COLUMN ${definition}`); } catch (e) { /* sudah ada */ }
   }
