@@ -165,6 +165,44 @@ async function main() {
   const e2 = await fetch(`${base}/api/geofences/resolve-link?url=${encodeURIComponent('http://169.254.169.254/latest/meta-data/')}`, { headers: headers.admin });
   check('E2 metadata cloud 169.254.169.254 → 400', e2.status === 400, 'status=' + e2.status);
 
+  // [F] CORS — origin dev/native harus selalu dapat Access-Control-Allow-Origin,
+  // supaya dev-server (localhost:5173) dan shell Capacitor tidak diblokir browser
+  // walau NODE_ENV=production + CORS_ORIGIN whitelist di Railway.
+  console.log('\n[F] CORS origin dev & preflight');
+  const devOrigins = ['http://localhost:5173', 'http://127.0.0.1:49812', 'capacitor://localhost'];
+  for (const origin of devOrigins) {
+    const res = await fetch(`${base}/api/health`, { headers: { Origin: origin } });
+    const acao = res.headers.get('access-control-allow-origin');
+    check(`F ACAO untuk ${origin}`, res.ok && acao === origin, `status=${res.status} acao=${acao}`);
+  }
+
+  const pre = await fetch(`${base}/api/v1/app-version`, {
+    method: 'OPTIONS',
+    headers: {
+      Origin: 'http://localhost:5173',
+      'Access-Control-Request-Method': 'GET',
+      'Access-Control-Request-Headers': 'authorization,content-type',
+    },
+  });
+  const preAcao = pre.headers.get('access-control-allow-origin');
+  const preHeaders = String(pre.headers.get('access-control-allow-headers') || '').toLowerCase();
+  check('F preflight dev origin → 204 + ACAO', pre.status === 204 && preAcao === 'http://localhost:5173', `status=${pre.status} acao=${preAcao}`);
+  check('F preflight mengizinkan header authorization', preHeaders.includes('authorization'), 'allow-headers=' + preHeaders);
+
+  if (String(process.env.CORS_ORIGIN || '').trim() === '*') {
+    console.log('  (lewati kontrol negatif: CORS_ORIGIN=* mengizinkan semua origin)');
+  } else {
+    const evil = await fetch(`${base}/api/health`, { headers: { Origin: 'https://not-allowed.example.net' } });
+    const evilAcao = evil.headers.get('access-control-allow-origin');
+    check('F origin tak dikenal tetap TANPA ACAO', evil.ok && !evilAcao, `status=${evil.status} acao=${evilAcao}`);
+    const whitelist = String(process.env.CORS_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean);
+    for (const origin of whitelist) {
+      if (origin === '*') continue;
+      const res = await fetch(`${base}/api/health`, { headers: { Origin: origin } });
+      check(`F ACAO untuk whitelist ${origin}`, res.headers.get('access-control-allow-origin') === origin, 'acao=' + res.headers.get('access-control-allow-origin'));
+    }
+  }
+
   console.log('\n' + (failures === 0 ? 'SMOKETEST LULUS SEMUA' : `${failures} CHECK GAGAL`));
   child.kill();
   try { fs.rmSync(TMP, { recursive: true, force: true }); } catch {}
