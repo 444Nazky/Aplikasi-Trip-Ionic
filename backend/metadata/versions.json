@@ -1,7 +1,7 @@
 {
   "latest": {
     "version": "1.0.4",
-    "downloadUrl": "https://aplikasi-trip-api-production.up.railway.app/releases/app-1.0.4.apk",
+    "downloadUrl": "https://aplikasi-trip-api-production.up.railway.app/api/v1/app-download/1.0.4",
     "releaseDate": "2026-10-15T03:00:00.000Z",
     "releaseNotes": "Perbaikan: Geofence seed 8 titik, permission lokasi auto-request, sinkronisasi otomatis, PIN reset 123456",
     "isForceUpdate": false,
@@ -10,7 +10,7 @@
   "releases": {
     "1.0.4": {
       "version": "1.0.4",
-      "downloadUrl": "https://aplikasi-trip-api-production.up.railway.app/releases/app-1.0.4.apk",
+      "downloadUrl": "https://aplikasi-trip-api-production.up.railway.app/api/v1/app-download/1.0.4",
       "releaseDate": "2026-10-15T03:00:00.000Z",
       "releaseNotes": "Perbaikan: Geofence seed 8 titik, permission lokasi auto-request, sinkronisasi otomatis, PIN reset 123456",
       "isForceUpdate": false,
