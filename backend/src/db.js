@@ -190,6 +190,7 @@ function migrate() {
   ensureSpecRegions();
   seedSpecTables();
   rotateDefaultCredentials();
+  seedDefaultGeofences();
   saveDb();
 }
 
@@ -644,6 +645,44 @@ function seedData() {
   insertTariff.free();
 
   console.log('Database seeded: 3 wilayah, dermaga, rute, petugas, dan tarif');
+}
+
+
+
+function seedDefaultGeofences() {
+  const defaults = [
+    {
+      id: 'badau-d1',
+      location_name: 'Badau Dermaga 1',
+      dermaga_id: 'BADAU-D1',
+      latitude: -6.1891005,
+      longitude: 106.8371641,
+      radius_meters: 100,
+      allowed_route_codes: 'SJRE-SBDZ',
+    },
+    {
+      id: 'badau-d2',
+      location_name: 'Badau Dermaga 2',
+      dermaga_id: 'BADAU-D2',
+      latitude: -6.2389899548617285,
+      longitude: 106.97475839406252,
+      radius_meters: 100,
+      allowed_route_codes: 'SBDZ-SJRE',
+    },
+  ];
+  const check = db.prepare('SELECT id FROM geofences LIMIT 1');
+  const hasAny = check.step();
+  check.free();
+  if (hasAny) return;
+  const ins = db.prepare(`
+    INSERT INTO geofences (id, location_name, dermaga_id, latitude, longitude, radius_meters, allowed_route_codes, enabled)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+  `);
+  for (const g of defaults) {
+    ins.run([g.id, g.location_name, g.dermaga_id, g.latitude, g.longitude, g.radius_meters, g.allowed_route_codes]);
+  }
+  ins.free();
+  console.log('[geofence] Seed default: Badau Dermaga 1 & 2');
 }
 
 
