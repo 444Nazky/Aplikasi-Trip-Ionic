@@ -97,12 +97,14 @@ function shape(rows) {
   return (rows || []).map(r => ({
     id: r.id,
     locationName: r.location_name,
+    dermagaId: r.dermaga_id ?? null,
     latitude: Number(r.latitude),
     longitude: Number(r.longitude),
     radiusMeters: clampRadius(r.radius_meters),
     allowedRouteCodes: String(r.allowed_route_codes ?? '').split(',').map(s => s.trim()).filter(Boolean),
     allowedDirections: String(r.allowed_directions ?? '').split(',').map(s => s.trim()).filter(Boolean),
     description: r.description ?? '',
+    enabled: r.enabled === undefined || r.enabled === null ? true : Number(r.enabled) !== 0,
   }));
 }
 
@@ -110,7 +112,11 @@ function shape(rows) {
 
 router.get('/', authenticate, (req, res) => {
   try {
-    const rows = db.prepare(`SELECT * FROM geofences ORDER BY location_name`).all();
+    // saring per dermaga bila diminta — tanpa filter = semua master
+    const dermagaId = String(req.query.dermagaId ?? '').trim();
+    const rows = dermagaId
+      ? db.prepare(`SELECT * FROM geofences WHERE dermaga_id = ? ORDER BY location_name`).all(dermagaId)
+      : db.prepare(`SELECT * FROM geofences ORDER BY location_name`).all();
     res.json(shape(rows));
   } catch (error) {
     console.error('Get geofences error:', error);
@@ -122,7 +128,7 @@ router.get('/', authenticate, (req, res) => {
 
 router.post('/', authenticate, requireAdmin, (req, res) => {
   try {
-    const { locationName, latitude, longitude, radiusMeters, allowedRouteCodes, allowedDirections, description } = req.body || {};
+    const { locationName, dermagaId, latitude, longitude, radiusMeters, allowedRouteCodes, allowedDirections, description, enabled } = req.body || {};
     const lat = numericCoordinate(latitude);
     const lng = numericCoordinate(longitude);
     if (!locationName || String(locationName).trim() === '') {
@@ -135,17 +141,19 @@ router.post('/', authenticate, requireAdmin, (req, res) => {
     }
     const id = randomUUID();
     db.prepare(`
-      INSERT INTO geofences (id, location_name, latitude, longitude, radius_meters, allowed_route_codes, allowed_directions, description)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO geofences (id, location_name, dermaga_id, latitude, longitude, radius_meters, allowed_route_codes, allowed_directions, description, enabled)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `    ).run(
       id,
       String(locationName).trim(),
+      dermagaId ? String(dermagaId) : null,
       lat,
       lng,
       clampRadius(radiusMeters),
       Array.isArray(allowedRouteCodes) ? allowedRouteCodes.join(',') : String(allowedRouteCodes ?? ''),
       Array.isArray(allowedDirections) ? allowedDirections.join(',') : String(allowedDirections ?? ''),
       description ? String(description) : '',
+      enabled === undefined || enabled === null ? 1 : (enabled ? 1 : 0),
     );
     res.status(201).json({ id });
   } catch (error) {
@@ -188,6 +196,8 @@ router.put('/:id', authenticate, requireAdmin, (req, res) => {
       args.push(Array.isArray(b.allowedDirections) ? b.allowedDirections.join(',') : String(b.allowedDirections));
     }
     if (b.description !== undefined) { sets.push('description = ?'); args.push(String(b.description ?? '')); }
+    if (b.dermagaId !== undefined) { sets.push('dermaga_id = ?'); args.push(b.dermagaId ? String(b.dermagaId) : null); }
+    if (b.enabled !== undefined) { sets.push('enabled = ?'); args.push(b.enabled ? 1 : 0); }
 
     if (sets.length) {
       args.push(id);

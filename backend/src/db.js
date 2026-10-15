@@ -103,6 +103,14 @@ function migrate() {
   } catch (e) {
   }
 
+  // samakan skema geofence lama dengan dialek mobile
+  for (const [table, definition] of [
+    ['geofences', 'dermaga_id TEXT'],
+    ['geofences', 'enabled INTEGER NOT NULL DEFAULT 1'],
+  ]) {
+    try { db.run(`ALTER TABLE ${table} ADD COLUMN ${definition}`); } catch (e) { /* sudah ada */ }
+  }
+
   try {
     db.run(`ALTER TABLE officers ADD COLUMN username TEXT`);
     console.log('Migrated: officers.username column added');
@@ -583,12 +591,14 @@ function initialize() {
     CREATE TABLE IF NOT EXISTS geofences (
       id TEXT PRIMARY KEY,
       location_name TEXT NOT NULL,
+      dermaga_id TEXT,
       latitude REAL NOT NULL,
       longitude REAL NOT NULL,
       radius_meters INTEGER NOT NULL DEFAULT 100,
       allowed_route_codes TEXT NOT NULL DEFAULT '',
       allowed_directions TEXT NOT NULL DEFAULT '',
       description TEXT,
+      enabled INTEGER NOT NULL DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
