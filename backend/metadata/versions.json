@@ -1,8 +1,8 @@
 {
   "latest": {
     "version": "1.0.4",
-    "downloadUrl": "https://files.catbox.moe/o0dsko.apk",
-    "releaseDate": "2026-10-15T02:55:00.000Z",
+    "downloadUrl": "https://aplikasi-trip-api-production.up.railway.app/releases/app-1.0.4.apk",
+    "releaseDate": "2026-10-15T03:00:00.000Z",
     "releaseNotes": "Perbaikan: Geofence seed 8 titik, permission lokasi auto-request, sinkronisasi otomatis, PIN reset 123456",
     "isForceUpdate": false,
     "minVersion": "1.0.0"
@@ -10,8 +10,8 @@
   "releases": {
     "1.0.4": {
       "version": "1.0.4",
-      "downloadUrl": "https://files.catbox.moe/o0dsko.apk",
-      "releaseDate": "2026-10-15T02:55:00.000Z",
+      "downloadUrl": "https://aplikasi-trip-api-production.up.railway.app/releases/app-1.0.4.apk",
+      "releaseDate": "2026-10-15T03:00:00.000Z",
       "releaseNotes": "Perbaikan: Geofence seed 8 titik, permission lokasi auto-request, sinkronisasi otomatis, PIN reset 123456",
       "isForceUpdate": false,
       "minVersion": "1.0.0"
