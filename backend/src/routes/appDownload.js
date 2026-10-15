@@ -6,8 +6,8 @@ const crypto = require('crypto');
 
 
 
-const APK_DIR = path.join(__dirname, '..', '..', 'apks');
-const METADATA_DIR = path.join(__dirname, '..', '..', 'metadata');
+const APK_DIR = process.env.APK_DIR || path.join(__dirname, '..', '..', 'apks');
+const METADATA_DIR = process.env.METADATA_DIR || path.join(__dirname, '..', '..', 'metadata');
 
 
 
