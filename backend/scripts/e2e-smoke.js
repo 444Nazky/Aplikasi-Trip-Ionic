@@ -247,6 +247,10 @@ async function main() {
 
   const av = await (await fetch(`${base}/api/v1/app-version?current=1.0.0`)).json();
   check('H1 ada paket → updateAvailable true + downloadUrl', av.updateAvailable === true && Boolean(av.downloadUrl), JSON.stringify(av));
+  // URL unduhan WAJIB absolut: klien versi lama menggabungkan path relatif terhadap
+  // base URL-nya sendiri (`.../api` + `/api/v1/...`) → 404 JSON → "dokumen error"
+  // dan update tak pernah berhasil di perangkat petugas.
+  check('H1b downloadUrl ABSOLUT (bukan path relatif)', /^https?:\/\//i.test(String(av.downloadUrl)), 'url=' + av.downloadUrl);
   check('H2 apkHash NYATA (sha256 file, bukan null)', av.apkHash === fakeHash, `got=${av.apkHash}`);
   check('H3 apkSize NYATA', av.apkSize === fakeApk.length, `got=${av.apkSize} want=${fakeApk.length}`);
   const dl = await fetch(`${base}${String(av.downloadUrl).replace(/^https?:\/\/[^/]+/i, '')}`, { method: 'GET' });
