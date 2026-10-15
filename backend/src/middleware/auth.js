@@ -1,22 +1,17 @@
 const jwt = require('jsonwebtoken');
 
-/**
- * SATU definisi secret untuk seluruh proses.
- * FAIL-FAST: server TIDAK boleh start tanpa JWT_SECRET yang di-set.
- * • routes/auth.js menandatangani token dengan konstanta ini.
- * • middleware hanya memverifikasi — tanpa fallback literal yang menciptakan
- *   mode jamak "server lama vs baru" saat rotasi (sumber kebingungan insiden 2026-10-13).
- * SECURITY: fallback DIHAPUS karena menciptakan security hole.
- * Ubah env JWT_SECRET DI RAILWAY saja; komit kode tidak pernah membawa secret.
- */
+
+
 if (!process.env.JWT_SECRET) {
   console.error('[auth] CRITICAL: JWT_SECRET environment variable is required');
   console.error('[auth] Server cannot start without JWT_SECRET');
   process.exit(1);
 }
+
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Attach req.user / req.officer if the JWT is valid
+
+
 function authenticate(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
@@ -34,7 +29,6 @@ function authenticate(req, res, next) {
     };
 
     req.user = ctx;
-    // Back-compat for existing routes that read req.officer.*
     req.officer = ctx;
 
     next();
@@ -43,12 +37,15 @@ function authenticate(req, res, next) {
   }
 }
 
-// Must be used after authenticate — gates routes to admin role only
+
+
 function requireAdmin(req, res, next) {
   if (!req.user || req.user.role !== 'admin') {
     return res.status(403).json({ error: 'Admin access required' });
   }
   next();
 }
+
+
 
 module.exports = { authenticate, requireAdmin, JWT_SECRET };

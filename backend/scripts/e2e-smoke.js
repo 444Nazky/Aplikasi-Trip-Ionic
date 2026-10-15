@@ -1,17 +1,10 @@
-// Smoke test E2E LOKAL — boot backend endpoint-trip dengan DB/uploads SEKALI PAKAI.
-// Tidak menyentuh data produksi (DB_PATH & UPLOADS_DIR diarahkan ke folder temp).
-// Alur yang diuji:
-//   A. Admin-login password salah → 401 (no fallback literal)
-//   B. Officer login → GET /api/officers/my-region: roster self-region, tanpa bocor region lain
-//   C. POST /api/trips/complete (multipart) ×2 dengan clientTripId sama → upsert (no_trip sama)
-//   D. POST /api/geofences: clamp radius 45000→100, 0→100, 250→250; placeholder koordinat → 400
-//   E. GET /api/geofences/resolve-link: host internal/cloud-metadata → 400 (SSRF allowlist)
-
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const crypto = require('crypto');
 const { spawn, spawnSync } = require('child_process');
+
+
 
 const BACKEND = path.resolve(__dirname, '..');
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'trip-e2e-'));
@@ -19,7 +12,12 @@ const PORT = 45791;
 const JWT_SECRET = 'e2e-secret-' + crypto.randomBytes(8).toString('hex');
 const ADMIN_PASS = 'e2e-admin-' + crypto.randomBytes(6).toString('hex');
 
+
+
 let failures = 0;
+
+
+
 function check(name, cond, extra = '') {
   console.log((cond ? '  ok ' : '  FAIL ') + name + (cond ? '' : `  << ${extra}`));
   if (!cond) failures++;
@@ -28,7 +26,6 @@ function check(name, cond, extra = '') {
 
 
 async function main() {
-  // ── Seed DB dulu (child proses terpisah, DB_PATH di temp) ──────────────────
   const seedScript = path.join(TMP, 'seed.js');
   fs.writeFileSync(seedScript, `
     process.env.DB_PATH = ${JSON.stringify(path.join(TMP, 'trip.db'))};
@@ -36,16 +33,16 @@ async function main() {
     dbModule.loadDb().then(() => {
       const { db } = dbModule;
       const { randomUUID } = require('crypto');
+      const bcrypt = require(${JSON.stringify(path.join(BACKEND, 'node_modules/bcryptjs'))});
       const rid = randomUUID(), rid2 = randomUUID(), did = randomUUID(), oid = randomUUID();
       const st = sql => db.prepare(sql);
       st('INSERT INTO regions (id, name, code, password) VALUES (?, ?, ?, ?)').run(rid, 'Region E2E', 'E2E', 'pw');
       st('INSERT INTO regions (id, name, code, password) VALUES (?, ?, ?, ?)').run(rid2, 'Region Lain', 'OTH', 'pw');
       st('INSERT INTO dermagas (id, region_id, name, code) VALUES (?, ?, ?, ?)').run(did, rid, 'Dermaga E2E', 'E2E-D1');
-      st('INSERT INTO officers (id, name, pin, region_id, is_active) VALUES (?, ?, ?, ?, 1)').run(oid, 'Petugas E2E', '123456', rid);
+      st('INSERT INTO officers (id, name, pin, region_id, is_active) VALUES (?, ?, ?, ?, 1)').run(oid, 'Petugas E2E', bcrypt.hashSync('123456', 10), rid);
       st('INSERT OR IGNORE INTO officer_regions (officer_id, region_id) VALUES (?, ?)').run(oid, rid);
       st('INSERT OR IGNORE INTO officer_dermagas (officer_id, dermaga_id) VALUES (?, ?)').run(oid, did);
-      // Petugas region LAIN — tidak boleh muncul di roster my-region
-      st('INSERT INTO officers (id, name, pin, region_id, is_active) VALUES (?, ?, ?, ?, 1)').run(randomUUID(), 'Petugas Lain', '654321', rid2);
+      st('INSERT INTO officers (id, name, pin, region_id, is_active) VALUES (?, ?, ?, ?, 1)').run(randomUUID(), 'Petugas Lain', bcrypt.hashSync('654321', 10), rid2);
       console.log(out(rid + ' ' + oid));
     });
     function out(x) { return 'SEEDED ' + x; }
@@ -59,7 +56,6 @@ async function main() {
   }
   console.log('Seed OK — officerId:', seededOfficerId, '| regionId:', seededRegionId);
 
-  // ── Boot server (env terisolasi, uploads & DB di temp) ────────────────────
   const child = spawn(process.execPath, [path.join(BACKEND, 'src/index.js')], {
     env: {
       ...process.env,
@@ -81,7 +77,7 @@ async function main() {
     try {
       const r = await fetch(`${base}/api/health`);
       if (r.ok) { up = true; break; }
-    } catch { /* belum hidup */ }
+    } catch {}
     await new Promise(r => setTimeout(r, 500));
   }
   if (!up) {
@@ -101,7 +97,6 @@ async function main() {
   };
   const adminToken = headers.admin.Authorization;
 
-  // ── A: admin-login password salah → 401 ───────────────────────────────────
   const badAdmin = await fetch(`${base}/api/auth/admin-login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -110,7 +105,6 @@ async function main() {
   console.log('[A] admin-login password salah →', badAdmin.status);
   check('A1 password salah → 401 (bukan fallback admin123)', badAdmin.status === 401, 'status=' + badAdmin.status);
 
-  // ── B: my-region ──────────────────────────────────────────────────────────
   const mr = await fetch(`${base}/api/officers/my-region`, { headers: headers.officer });
   const mrb = await mr.json().catch(() => ({}));
   console.log('\n[B] GET /api/officers/my-region →', mr.status);
@@ -122,7 +116,6 @@ async function main() {
     check('B3 roster TIDAK berisi Petugas Lain (privacy fix)', !names.includes('Petugas Lain'), JSON.stringify(names));
   }
 
-  // ── C: trips upsert (multipart × 2) ───────────────────────────────────────
   const mkForm = () => {
     const f = new FormData();
     f.append('payload', JSON.stringify({
@@ -148,7 +141,6 @@ async function main() {
   check('C2 retry (upsert) sukses (200)', t2.status === 200, JSON.stringify(t2b).slice(0, 300));
   check('C3 no_trip sama di kedua submit (bukan duplikat)', t1b.noTrip && t1b.noTrip === t2b.noTrip, `${t1b.noTrip} vs ${t2b.noTrip}`);
 
-  // ── D: clamp radius geofence ──────────────────────────────────────────────
   const postGeo = async (body) => fetch(`${base}/api/geofences`, {
     method: 'POST',
     headers: { ...headers.admin, 'Content-Type': 'application/json' },
@@ -167,7 +159,6 @@ async function main() {
   const bad = await postGeo({ locationName: 'E2E placeholder', latitude: 'Otomatis dari Link Maps', longitude: 106.84 });
   check('D8 latitude placeholder string → 400', bad.status === 400, 'status=' + bad.status);
 
-  // ── E: resolve-link SSRF guard ────────────────────────────────────────────
   console.log('\n[E] resolve-link SSRF allowlist');
   const e1 = await fetch(`${base}/api/geofences/resolve-link?url=${encodeURIComponent('http://127.0.0.1:22/')}`, { headers: headers.admin });
   check('E1 host internal 127.0.0.1 → 400', e1.status === 400, 'status=' + e1.status);
@@ -176,7 +167,7 @@ async function main() {
 
   console.log('\n' + (failures === 0 ? 'SMOKETEST LULUS SEMUA' : `${failures} CHECK GAGAL`));
   child.kill();
-  try { fs.rmSync(TMP, { recursive: true, force: true }); } catch { /* temp */ }
+  try { fs.rmSync(TMP, { recursive: true, force: true }); } catch {}
   process.exit(failures === 0 ? 0 : 1);
 }
 

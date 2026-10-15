@@ -4,14 +4,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { db } = require('../db');
 const { authenticate } = require('../middleware/auth');
-
-// JWT_SECRET: SATU definisi — diimpor dari middleware/auth.js (fail-fast bila env kosong).
 const { JWT_SECRET } = require('../middleware/auth');
 
-// ── Rate limiter in-memory (per-IP, sliding window) ──────────────────────────
-// Cukup untuk single-instance Railway. Bila multi-instance → pindah ke Redis.
-// ponytail: in-memory map, per-IP; upgrade to Redis if multi-instance
+
+
+// ponytail: map memori, redis bila multi
 const rateBuckets = new Map();
+
+
+
 function rateLimit(max, windowMs) {
   return (req, res, next) => {
     const key = req.ip || 'unknown';
@@ -23,7 +24,6 @@ function rateLimit(max, windowMs) {
     }
     hits.push(now);
     rateBuckets.set(key, hits);
-    // prune map agar tidak bocor memori
     if (rateBuckets.size > 10000) {
       for (const [k, v] of rateBuckets) {
         if (v.every(t => now - t >= windowMs)) rateBuckets.delete(k);
@@ -32,11 +32,18 @@ function rateLimit(max, windowMs) {
     next();
   };
 }
-const authRateLimiter = rateLimit(5, 60_000);      // 5/menit untuk login
-const strictRateLimiter = rateLimit(3, 60_000);    // 3/menit untuk ganti password
 
-// ── Admin credentials store (SQLite, lazy table) ─────────────────────────────
+
+
+const authRateLimiter = rateLimit(5, 60_000);
+const strictRateLimiter = rateLimit(3, 60_000);
+
+
+
 let adminTableReady = false;
+
+
+
 function ensureAdminCredentialsTable() {
   if (adminTableReady) return;
   db.prepare(`
@@ -49,12 +56,16 @@ function ensureAdminCredentialsTable() {
   adminTableReady = true;
 }
 
+
+
 function adminGetCredentials() {
   ensureAdminCredentialsTable();
   const stmt = db.prepare(`SELECT id, username, password FROM admin_credentials LIMIT 1`);
   const row = stmt.get();
   return row ?? null;
 }
+
+
 
 function adminSetCredentials(username, passwordHash) {
   ensureAdminCredentialsTable();
@@ -63,15 +74,13 @@ function adminSetCredentials(username, passwordHash) {
     .run(username, passwordHash);
 }
 
-// Bootstrap sekali: bila tidak ada admin_credentials dan tidak ada ADMIN_PASSWORD
-// env → generate password acak, simpan hash, cetak plaintext SEKALI ke log boot.
-// TIDAK PERNAH memakai 'admin123' atau default publik lain.
+
+
 function bootstrapAdminIfNeeded() {
   try {
     const row = adminGetCredentials();
     if (row) return;
     if (process.env.ADMIN_PASSWORD) {
-      // Env sudah diset — biarkan jalur env yang menangani (tidak perlu simpan).
       return;
     }
     const crypto = require('crypto');
@@ -89,10 +98,10 @@ function bootstrapAdminIfNeeded() {
   }
 }
 
-// Admin login (username/password) — issues a JWT with role: 'admin'
+
+
 router.post('/admin-login', authRateLimiter, (req, res) => {
   try {
-    // Lazy: db sql.js (WASM) belum siap saat module-load — bootstrap di request pertama.
     bootstrapAdminIfNeeded();
     const { username, password } = req.body || {};
     const adminUser = process.env.ADMIN_USERNAME || 'admin';
@@ -110,7 +119,6 @@ router.post('/admin-login', authRateLimiter, (req, res) => {
         catch (_) { valid = false; }
       }
     } else {
-      // Belum pernah diganti: HANYA env vars yang berlaku. Tanpa default.
       if (!process.env.ADMIN_PASSWORD) {
         return res.status(503).json({ error: 'Admin credentials not configured' });
       }
@@ -134,9 +142,8 @@ router.post('/admin-login', authRateLimiter, (req, res) => {
   }
 });
 
-// ── Login wilayah (langkah 1) ────────────────────────────────────────────────
-// Password wilayah: HANYA bcrypt. Tanpa fallback "<code>123" atau plain-text —
-// itu backdoor publik (kode wilayah dipublikasikan + pola password diketahui).
+
+
 router.post('/region-login', authRateLimiter, (req, res) => {
   try {
     const { regionCode, password } = req.body || {};
@@ -151,7 +158,6 @@ router.post('/region-login', authRateLimiter, (req, res) => {
       `SELECT * FROM regions WHERE UPPER(code) = UPPER(?)`
     ).get(code);
 
-    // Pesan seragam (anti-enumerasi): "tidak ditemukan" dan "salah" sama.
     if (!region || !region.password) {
       return res.status(401).json({ error: 'Kode wilayah atau password salah' });
     }
@@ -164,7 +170,6 @@ router.post('/region-login', authRateLimiter, (req, res) => {
       return res.status(401).json({ error: 'Kode wilayah atau password salah' });
     }
 
-    // Daftar petugas aktif — TANPA PIN/hash.
     const officers = db.prepare(`
       SELECT o.id, o.name
       FROM officers o
@@ -186,10 +191,8 @@ router.post('/region-login', authRateLimiter, (req, res) => {
   }
 });
 
-// ── Member/officer login (username + PIN) ────────────────────────────────────
-// Password = PIN petugas sendiri (bcrypt di kolom officers.pin).
-// Backdoor MEMBER_PASSWORD bersama ('123456') DIHAPUS — itu satu password
-// untuk SEMUA petugas = token petugas mana pun.
+
+
 const OFFICER_USERNAME_MAP = {
   'budi': 'Budi Santoso',
   'andi': 'Andi Pratama',
@@ -197,6 +200,8 @@ const OFFICER_USERNAME_MAP = {
   'rizky': 'Rizky Maulana',
   'dewi': 'Dewi Kusuma'
 };
+
+
 
 router.post('/member-login', authRateLimiter, (req, res) => {
   try {
@@ -208,7 +213,6 @@ router.post('/member-login', authRateLimiter, (req, res) => {
       return res.status(400).json({ error: 'Username dan PIN wajib diisi' });
     }
 
-    // Cari petugas aktif: kolom username dulu, lalu map legacy.
     let officer = db.prepare(
       `SELECT * FROM officers WHERE LOWER(username) = ? AND is_active = 1`
     ).get(normalizedUsername);
@@ -255,7 +259,8 @@ router.post('/member-login', authRateLimiter, (req, res) => {
   }
 });
 
-// Login with PIN (dipakai mobile setelah pilih petugas)
+
+
 router.post('/login', authRateLimiter, (req, res) => {
   try {
     const { officerId, pin } = req.body;
@@ -271,7 +276,6 @@ router.post('/login', authRateLimiter, (req, res) => {
       WHERE o.id = ? AND o.is_active = 1
     `).get(String(officerId));
 
-    // Pesan seragam (anti-enumerasi).
     if (!officer) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -283,7 +287,6 @@ router.post('/login', authRateLimiter, (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Dermaga yang bisa diakses petugas
     const dermagas = db.prepare(`
       SELECT d.id, d.name, d.code, r.name as region_name, r.code as region_code
       FROM officer_dermagas od
@@ -330,7 +333,8 @@ router.post('/login', authRateLimiter, (req, res) => {
   }
 });
 
-// Select dermaga for dual-access officers
+
+
 router.post('/select-dermaga', authenticate, (req, res) => {
   try {
     const { dermagaId } = req.body;
@@ -371,7 +375,8 @@ router.post('/select-dermaga', authenticate, (req, res) => {
   }
 });
 
-// Terbitkan ulang token petugas dari klaim terbaru di database.
+
+
 router.post('/refresh', authenticate, (req, res) => {
   try {
     const officer = db.prepare(`
@@ -407,7 +412,8 @@ router.post('/refresh', authenticate, (req, res) => {
   }
 });
 
-// ── POST /auth/change-admin-password ─────────────────────────────────────────
+
+
 router.post(`/change-admin-password`, strictRateLimiter, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body ?? {}
@@ -443,5 +449,7 @@ router.post(`/change-admin-password`, strictRateLimiter, async (req, res) => {
     res.status(500).json({ error: `Gagal memproses permintaan` })
   }
 })
+
+
 
 module.exports = router;
