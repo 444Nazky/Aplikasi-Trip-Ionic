@@ -1,13 +1,21 @@
 {
   "latest": {
-    "version": "1.0.3",
-    "downloadUrl": "https://files.catbox.moe/bmkh1o.apk",
-    "releaseDate": "2026-10-14T15:17:47.682Z",
-    "releaseNotes": "Rebuild 1.0.3: PIN numerik, sesi lintas tab, native version, bcrypt-only",
+    "version": "1.0.4",
+    "downloadUrl": "https://files.catbox.moe/o0dsko.apk",
+    "releaseDate": "2026-10-15T02:55:00.000Z",
+    "releaseNotes": "Perbaikan: Geofence seed 8 titik, permission lokasi auto-request, sinkronisasi otomatis, PIN reset 123456",
     "isForceUpdate": false,
     "minVersion": "1.0.0"
   },
   "releases": {
+    "1.0.4": {
+      "version": "1.0.4",
+      "downloadUrl": "https://files.catbox.moe/o0dsko.apk",
+      "releaseDate": "2026-10-15T02:55:00.000Z",
+      "releaseNotes": "Perbaikan: Geofence seed 8 titik, permission lokasi auto-request, sinkronisasi otomatis, PIN reset 123456",
+      "isForceUpdate": false,
+      "minVersion": "1.0.0"
+    },
     "1.0.3": {
       "version": "1.0.3",
       "downloadUrl": "https://files.catbox.moe/bmkh1o.apk",
