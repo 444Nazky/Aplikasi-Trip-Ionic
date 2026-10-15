@@ -650,11 +650,31 @@ function seedData() {
 
 
 function seedDefaultGeofences() {
+  // dermaga_id WAJIB UUID asli dari tabel dermagas. Dulu di-hardcode 'BADAU-D1'/
+  // 'BADAU-D2' yang TIDAK PERNAH cocok dengan dermaga_id petugas, sehingga titik
+  // default tidak pernah tersinkron ke aplikasi mobile (mobile selalu kosong).
+  const badau = q1(`SELECT id FROM regions WHERE code = 'BADAU'`);
+  if (!badau) return;
+  const d1 = q1(`SELECT id FROM dermagas WHERE region_id = ? AND code = 'D1'`, [badau.id]);
+  const d2 = q1(`SELECT id FROM dermagas WHERE region_id = ? AND code = 'D2'`, [badau.id]);
+  if (!d1 || !d2) {
+    console.warn('[geofence] Dermaga BADAU D1/D2 belum ada — seed default dilewati');
+    return;
+  }
+
+  // Perbaiki titik lama yang masih memakai kode karangan (DB produksi).
+  try {
+    db.run(`UPDATE geofences SET dermaga_id = ? WHERE id = 'badau-d1' AND (dermaga_id = 'BADAU-D1' OR dermaga_id IS NULL OR TRIM(dermaga_id) = '')`, [d1.id]);
+    db.run(`UPDATE geofences SET dermaga_id = ? WHERE id = 'badau-d2' AND (dermaga_id = 'BADAU-D2' OR dermaga_id IS NULL OR TRIM(dermaga_id) = '')`, [d2.id]);
+  } catch (e) {
+    console.warn('[geofence] Gagal memperbaiki dermaga_id default:', e && e.message);
+  }
+
   const defaults = [
     {
       id: 'badau-d1',
       location_name: 'Badau Dermaga 1',
-      dermaga_id: 'BADAU-D1',
+      dermaga_id: d1.id,
       latitude: -6.1891005,
       longitude: 106.8371641,
       radius_meters: 100,
@@ -663,7 +683,7 @@ function seedDefaultGeofences() {
     {
       id: 'badau-d2',
       location_name: 'Badau Dermaga 2',
-      dermaga_id: 'BADAU-D2',
+      dermaga_id: d2.id,
       latitude: -6.2389899548617285,
       longitude: 106.97475839406252,
       radius_meters: 100,
@@ -682,7 +702,7 @@ function seedDefaultGeofences() {
     ins.run([g.id, g.location_name, g.dermaga_id, g.latitude, g.longitude, g.radius_meters, g.allowed_route_codes]);
   }
   ins.free();
-  console.log('[geofence] Seed default: Badau Dermaga 1 & 2');
+  console.log('[geofence] Seed default: Badau Dermaga 1 & 2 (dermaga_id = UUID asli)');
 }
 
 

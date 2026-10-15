@@ -64,6 +64,10 @@ async function main() {
       ADMIN_PASSWORD: ADMIN_PASS,
       DB_PATH: path.join(TMP, 'trip.db'),
       UPLOADS_DIR: path.join(TMP, 'uploads'),
+      // Metadata/APK diarahkan ke temp: uji update TIDAK boleh mengubah berkas
+      // metadata/APK repo (dulu bisa "mem-publish" versi palsu ke repo).
+      METADATA_DIR: path.join(TMP, 'metadata'),
+      APK_DIR: path.join(TMP, 'apks'),
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -165,6 +169,25 @@ async function main() {
   const e2 = await fetch(`${base}/api/geofences/resolve-link?url=${encodeURIComponent('http://169.254.169.254/latest/meta-data/')}`, { headers: headers.admin });
   check('E2 metadata cloud 169.254.169.254 → 400', e2.status === 400, 'status=' + e2.status);
 
+  // [G] Titik geofence yang dibuat admin dashboard TIDAK mengirim dermagaId →
+  // tersimpan dermaga_id NULL. Dulu GET ?dermagaId=<uuid> hanya mencari
+  // `dermaga_id = ?` sehingga titik itu tak pernah sampai ke HP petugas
+  // ("Belum ada titik geofence tersimpan") dan input trip terkunci.
+  console.log('\n[G] sinkron geofence petugas (titik berlaku umum harus ikut terkirim)');
+  const anyDermaga = crypto.randomUUID();
+  const gRes = await fetch(`${base}/api/geofences?dermagaId=${anyDermaga}`, { headers: headers.officer });
+  const gRows = await gRes.json().catch(() => null);
+  check('G1 petugas (bukan admin) boleh membaca master geofence', gRes.ok, 'status=' + gRes.status);
+  check('G2 titik tanpa dermaga (NULL) ikut terkirim ke petugas',
+    Array.isArray(gRows) && gRows.some(g => g.locationName === 'E2E r250'),
+    JSON.stringify(Array.isArray(gRows) ? gRows.map(g => g.locationName) : gRows).slice(0, 200));
+  check('G3 payload memuat allowedRouteCodes (dipakai scoping mobile)',
+    Array.isArray(gRows) && gRows.every(g => Array.isArray(g.allowedRouteCodes)),
+    JSON.stringify(gRows && gRows[0]));
+  const gAll = await (await fetch(`${base}/api/geofences`, { headers: headers.admin })).json();
+  check('G4 tanpa filter → master lengkap (dashboard)', Array.isArray(gAll) && gAll.length >= (Array.isArray(gRows) ? gRows.length : 0),
+    `all=${Array.isArray(gAll) ? gAll.length : 'n/a'} filtered=${Array.isArray(gRows) ? gRows.length : 'n/a'}`);
+
   // [F] CORS — origin dev/native harus selalu dapat Access-Control-Allow-Origin,
   // supaya dev-server (localhost:5173) dan shell Capacitor tidak diblokir browser
   // walau NODE_ENV=production + CORS_ORIGIN whitelist di Railway.
@@ -202,6 +225,69 @@ async function main() {
       check(`F ACAO untuk whitelist ${origin}`, res.headers.get('access-control-allow-origin') === origin, 'acao=' + res.headers.get('access-control-allow-origin'));
     }
   }
+
+  // [H] API update TIDAK BOLEH mengiklankan paket yang tak bisa diunduh, dan
+  // hash/ukuran harus nyata supaya klien bisa verifikasi integritas. Ini akar
+  // kegagalan update produksi: versions.json menunjuk 1.0.12 tanpa berkas →
+  // server bilang "ada update", aplikasi mengunduh → 404 → update selalu gagal.
+  console.log('\n[H] API update (hanya iklankan paket nyata + hash asli)');
+  const metadataDir = path.join(TMP, 'metadata');
+  const apkDir = path.join(TMP, 'apks');
+  fs.mkdirSync(metadataDir, { recursive: true });
+  fs.mkdirSync(apkDir, { recursive: true });
+  const fakeApk = crypto.randomBytes(1_100_000);
+  fs.writeFileSync(path.join(apkDir, 'app-9.9.9.apk'), fakeApk);
+  const fakeHash = crypto.createHash('sha256').update(fakeApk).digest('hex');
+  fs.writeFileSync(path.join(metadataDir, 'versions.json'), JSON.stringify({
+    latest: { version: '9.9.9', downloadUrl: '/api/v1/app-download/9.9.9', releaseNotes: 'E2E: perbaikan bug sinkronisasi', minVersion: '1.0.0', apkHash: fakeHash },
+    releases: {
+      '9.9.9': { version: '9.9.9', downloadUrl: '/api/v1/app-download/9.9.9', releaseNotes: 'E2E: perbaikan bug sinkronisasi', minVersion: '1.0.0' },
+    },
+  }, null, 2));
+
+  const av = await (await fetch(`${base}/api/v1/app-version?current=1.0.0`)).json();
+  check('H1 ada paket → updateAvailable true + downloadUrl', av.updateAvailable === true && Boolean(av.downloadUrl), JSON.stringify(av));
+  check('H2 apkHash NYATA (sha256 file, bukan null)', av.apkHash === fakeHash, `got=${av.apkHash}`);
+  check('H3 apkSize NYATA', av.apkSize === fakeApk.length, `got=${av.apkSize} want=${fakeApk.length}`);
+  const dl = await fetch(`${base}${String(av.downloadUrl).replace(/^https?:\/\/[^/]+/i, '')}`, { method: 'GET' });
+  const dlBytes = Buffer.from(await dl.arrayBuffer());
+  check('H4 berkas bisa diunduh + byte identik', dl.ok && dlBytes.length === fakeApk.length && crypto.createHash('sha256').update(dlBytes).digest('hex') === fakeHash, `status=${dl.status} size=${dlBytes.length}`);
+  const rn = await fetch(`${base}/api/v1/release-notes/9.9.9`);
+  const rnb = await rn.json().catch(() => ({}));
+  check('H5 release-notes ada (mobile memanggilnya)', rn.ok && Array.isArray(rnb.notes) && rnb.notes.length > 0, `status=${rn.status} ${JSON.stringify(rnb).slice(0, 120)}`);
+  const pubRel = await fetch(`${base}/api/v1/publish-version`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-publish-secret': process.env.PUBLISH_SECRET || 'trip-angkut-secret' },
+    body: JSON.stringify({ version: '9.9.10', downloadUrl: '/api/v1/app-download/9.9.10' }),
+  });
+  check('H6 publish dengan downloadUrl relatif ditolak (400)', pubRel.status === 400, 'status=' + pubRel.status);
+  const pubOk = await fetch(`${base}/api/v1/publish-version`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-publish-secret': process.env.PUBLISH_SECRET || 'trip-angkut-secret' },
+    body: JSON.stringify({ version: '9.9.11', downloadUrl: 'https://cdn.invalid.example/app-9.9.11.apk', releaseNotes: 'E2E' }),
+  });
+  check('H7 publish versi tanpa berkas lokal tetap 200 (metadata lengkap)', pubOk.status === 200, 'status=' + pubOk.status);
+
+  // Metadata menunjuk versi tanpa berkas (persis bug produksi) → TIDAK diiklankan.
+  fs.writeFileSync(path.join(metadataDir, 'versions.json'), JSON.stringify({
+    latest: { version: '9.9.11', downloadUrl: '/api/v1/app-download/9.9.11', releaseNotes: 'E2E tanpa berkas', minVersion: '1.0.0' },
+    releases: { '9.9.11': { version: '9.9.11', downloadUrl: '/api/v1/app-download/9.9.11', releaseNotes: 'E2E tanpa berkas', minVersion: '1.0.0' } },
+  }, null, 2));
+  const av2 = await (await fetch(`${base}/api/v1/app-version?current=1.0.0`)).json();
+  check('H8 versi tanpa paket → updateAvailable false (tidak memicu update gagal)', av2.updateAvailable === false && av2.downloadUrl === null, JSON.stringify(av2));
+
+  // Metadata yang mengaku 9.9.12 padahal berkasnya isi versi lain → JANGAN diiklankan.
+  // Ini bug produksi nyata: app-1.0.8.apk berisi 1.0.6 → update "berhasil" tapi
+  // versi aplikasi tak pernah berubah (popup update muncul terus).
+  const fakeMismatch = crypto.randomBytes(1_100_000);
+  fs.writeFileSync(path.join(apkDir, 'app-9.9.12.apk'), fakeMismatch);
+  fs.writeFileSync(path.join(metadataDir, 'versions.json'), JSON.stringify({
+    latest: { version: '9.9.12', downloadUrl: '/api/v1/app-download/9.9.12', releaseNotes: 'E2E salah label', minVersion: '1.0.0', apkVersionName: '9.9.9' },
+    releases: { '9.9.12': { version: '9.9.12', downloadUrl: '/api/v1/app-download/9.9.12', releaseNotes: 'E2E salah label', minVersion: '1.0.0', apkVersionName: '9.9.9' } },
+  }, null, 2));
+  const av3 = await (await fetch(`${base}/api/v1/app-version?current=1.0.0`)).json();
+  check('H9 paket salah label (apkVersionName ≠ versi) → tidak diiklankan',
+    av3.updateAvailable === false && av3.downloadUrl === null, JSON.stringify(av3));
 
   console.log('\n' + (failures === 0 ? 'SMOKETEST LULUS SEMUA' : `${failures} CHECK GAGAL`));
   child.kill();

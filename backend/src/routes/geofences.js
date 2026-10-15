@@ -112,11 +112,24 @@ function shape(rows) {
 
 router.get('/', authenticate, (req, res) => {
   try {
-    // saring per dermaga bila diminta — tanpa filter = semua master
     const dermagaId = String(req.query.dermagaId ?? '').trim();
-    const rows = dermagaId
-      ? db.prepare(`SELECT * FROM geofences WHERE dermaga_id = ? ORDER BY location_name`).all(dermagaId)
-      : db.prepare(`SELECT * FROM geofences ORDER BY location_name`).all();
+    const scopeAll = String(req.query.scope ?? '').toLowerCase() === 'all';
+
+    // tanpa filter (atau scope=all untuk dashboard) = master lengkap
+    if (!dermagaId || scopeAll) {
+      return res.json(shape(db.prepare(`SELECT * FROM geofences ORDER BY location_name`).all()));
+    }
+
+    // Permintaan petugas untuk satu dermaga: sertakan juga titik "berlaku umum"
+    // (dermaga_id NULL/kosong). Dulu hanya `dermaga_id = ?`, sehingga titik yang
+    // dibuat dari dashboard admin (tidak mengirim dermagaId → tersimpan NULL)
+    // TIDAK PERNAH sampai ke perangkat: mobile selalu berakhir dengan daftar
+    // kosong ("Belum ada titik geofence tersimpan") dan petugas tak bisa input trip.
+    const rows = db.prepare(`
+      SELECT * FROM geofences
+      WHERE dermaga_id = ? OR dermaga_id IS NULL OR TRIM(COALESCE(dermaga_id, '')) = ''
+      ORDER BY location_name
+    `).all(dermagaId);
     res.json(shape(rows));
   } catch (error) {
     console.error('Get geofences error:', error);
