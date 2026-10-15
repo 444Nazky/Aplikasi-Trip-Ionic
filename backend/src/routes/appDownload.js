@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { absoluteBase } = require('../absolute-url');
 
 
 
@@ -47,11 +48,16 @@ router.get('/app-download/:version', (req, res) => {
     const apkPath = path.join(APK_DIR, `app-${version}.apk`);
 
     if (!fs.existsSync(apkPath)) {
-      if (APK_CDN_BASE && /^https?:\/\//i.test(APK_CDN_BASE)) {
-        return res.redirect(302, `${APK_CDN_BASE}/app-${version}.apk`);
+      // Env bisa diisi tanpa skema. res.redirect() memperlakukan URL tanpa skema
+      // sebagai path relatif (Location: "host/releases/app-x.apk") sehingga APK
+      // tidak pernah terunduh — selalu bikin absolut dulu.
+      const cdnBase = absoluteBase(APK_CDN_BASE);
+      if (cdnBase) {
+        return res.redirect(302, `${cdnBase}/app-${version}.apk`);
       }
-      if (RAILWAY_STATIC_URL && /^https?:\/\//i.test(RAILWAY_STATIC_URL)) {
-        return res.redirect(302, `${RAILWAY_STATIC_URL}/releases/app-${version}.apk`);
+      const staticBase = absoluteBase(RAILWAY_STATIC_URL);
+      if (staticBase) {
+        return res.redirect(302, `${staticBase}/releases/app-${version}.apk`);
       }
       return res.status(404).json({
         error: 'APK_NOT_FOUND',

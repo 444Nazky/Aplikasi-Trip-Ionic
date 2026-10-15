@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { absoluteBase } = require('../absolute-url');
 
 
 
@@ -69,9 +70,13 @@ function getDownloadUrl(version) {
   if (metadata?.releases?.[version]?.downloadUrl) return metadata.releases[version].downloadUrl;
   if (metadata?.latest?.version === version && metadata?.latest?.downloadUrl) return metadata.latest.downloadUrl;
 
-  if (APK_CDN_BASE) return `${APK_CDN_BASE}/app-${version}.apk`;
+  // URL unduhan harus absolut: URL tanpa skema akan dianggap path relatif oleh
+  // klien (CapacitorHttp/WebView) dan unduhan APK gagal.
+  const cdnBase = absoluteBase(APK_CDN_BASE);
+  if (cdnBase) return `${cdnBase}/app-${version}.apk`;
 
-  if (RAILWAY_STATIC_URL) return `${RAILWAY_STATIC_URL}/releases/app-${version}.apk`;
+  const staticBase = absoluteBase(RAILWAY_STATIC_URL);
+  if (staticBase) return `${staticBase}/releases/app-${version}.apk`;
 
   const HARDCODED_URLS = {
     '1.0.1': 'https://files.catbox.moe/dfvc89.apk',
