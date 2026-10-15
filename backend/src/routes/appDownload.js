@@ -194,4 +194,31 @@ function ensureDir(dir) {
 
 
 
+router.get('/debug-fs', (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const dirs = [
+      process.env.APK_DIR || 'apks',
+      'backend/apks',
+      '/data/apks',
+      '/app/backend/apks',
+      '.'
+    ];
+    const info = {};
+    for (const d of dirs) {
+      try {
+        const exists = fs.existsSync(d);
+        const files = exists ? fs.readdirSync(d).filter(f => f.endsWith('.apk')) : [];
+        info[d] = { exists, files, size: files.length };
+      } catch(e) {
+        info[d] = { error: e.message };
+      }
+    }
+    res.json({ apkDir: process.env.APK_DIR || 'default', info, cwd: process.cwd(), env: { APK_DIR: process.env.APK_DIR } });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 module.exports = router;
