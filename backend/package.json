@@ -4,7 +4,7 @@
   "description": "Backend API for Aplikasi Trip Angkutan",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node -e \"const fs=require('fs'),p=process.env.APK_DIR||'apks';try{fs.mkdirSync(p,{recursive:true})}catch(e){}const src='backend/apks';try{if(!fs.readdirSync(p).length&&fs.existsSync(src)){fs.readdirSync(src).forEach(f=>{try{fs.copyFileSync(src+'/'+f,p+'/'+f)}catch(e){}})}}catch(e){}\" && node src/index.js",
     "dev": "node --watch src/index.js",
     "check": "node scripts/check-client-trip-id.js"
   },
