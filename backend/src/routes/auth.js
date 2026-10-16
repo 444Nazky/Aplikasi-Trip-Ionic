@@ -8,6 +8,13 @@ const { JWT_SECRET } = require('../middleware/auth');
 
 
 
+// ponytail: sesi PETUGAS tidak praktis pernah kedaluwarsa (permintaan operasional:
+// petugas di lapangan tidak boleh tiba-tiba "belum login" saat mau input trip atau
+// sync geofence hanya karena token 24 jam habis). Token dashboard/admin tetap 24 jam.
+const OFFICER_TOKEN_TTL = '3650d';
+
+
+
 // ponytail: map memori, redis bila multi
 const rateBuckets = new Map();
 
@@ -251,7 +258,7 @@ router.post('/member-login', authRateLimiter, (req, res) => {
     const token = jwt.sign(
       { officerId: officer.id, regionId: officer.region_id, role: 'officer' },
       JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: OFFICER_TOKEN_TTL }
     );
 
     res.json({
@@ -322,7 +329,7 @@ router.post('/login', authRateLimiter, (req, res) => {
     const token = jwt.sign(
       { officerId: officer.id, regionId: officer.region_id, role: 'officer', isDualAccess },
       JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: OFFICER_TOKEN_TTL }
     );
 
     res.json({
@@ -405,7 +412,7 @@ router.post('/refresh', authenticate, (req, res) => {
     const token = jwt.sign(
       { officerId: officer.id, regionId: officer.region_id, role: 'officer' },
       JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: OFFICER_TOKEN_TTL }
     );
 
     res.json({
