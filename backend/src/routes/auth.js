@@ -213,23 +213,35 @@ router.post('/member-login', authRateLimiter, (req, res) => {
       return res.status(400).json({ error: 'Username dan PIN wajib diisi' });
     }
 
-    let officer = db.prepare(
-      `SELECT * FROM officers WHERE LOWER(username) = ? AND is_active = 1`
-    ).get(normalizedUsername);
-    if (!officer && OFFICER_USERNAME_MAP[normalizedUsername]) {
-      officer = db.prepare(
+    // ponytail: ambil SEMUA baris username ini — nama kembar bisa menghasilkan
+    // username turunan yang sama; PIN dicocokkan ke tiap baris sampai ketemu yang pas.
+    // Dulu .get() hanya mengambil baris pertama sembarang → PIN benar pun 401.
+    const rows = db.prepare(
+      `SELECT * FROM officers WHERE LOWER(username) = ?`
+    ).all(normalizedUsername);
+    if (!rows.length && OFFICER_USERNAME_MAP[normalizedUsername]) {
+      const byName = db.prepare(
         `SELECT * FROM officers WHERE LOWER(name) = LOWER(?) AND is_active = 1`
       ).get(OFFICER_USERNAME_MAP[normalizedUsername]);
+      if (byName) rows.push(byName);
     }
 
-    let valid = false;
-    if (officer && officer.pin) {
-      try { valid = bcrypt.compareSync(pin, officer.pin); }
-      catch (_) { valid = false; }
+    if (!rows.length) {
+      return res.status(401).json({ error: 'Username tidak terdaftar' });
+    }
+    if (!rows.some(r => Number(r.is_active) === 1)) {
+      return res.status(401).json({ error: 'Akun nonaktif' });
     }
 
-    if (!officer || !valid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    let officer = null;
+    for (const r of rows) {
+      if (Number(r.is_active) !== 1 || !r.pin) continue;
+      try { if (bcrypt.compareSync(pin, r.pin)) { officer = r; break; } }
+      catch (_) { /* hash rusak — lanjut ke baris berikut */ }
+    }
+
+    if (!officer) {
+      return res.status(401).json({ error: 'PIN salah' });
     }
 
     const regionInfo = db.prepare(
